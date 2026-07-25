@@ -15,6 +15,18 @@
 const UPSTAGE_BASE_URL = 'https://api.upstage.ai/v1'
 const MODEL = 'solar-pro3'
 
+// §8-5 위험 신호 감지 2차 검사(서버) — 클라이언트 1차 검사를 우회해서 들어온 요청이라도
+// LLM 호출 자체를 하지 않는다. 목록은 src/data/safetyKeywords.js와 동일하게 유지할 것.
+const SAFETY_KEYWORDS = [
+  '자살', '죽고 싶', '죽고싶', '살기 싫', '살기싫', '사라지고 싶', '없어지고 싶',
+  '자해', '극단적 선택', '더 이상 못 견디', '더이상 못 견디', '희망이 없',
+]
+
+function containsSafetySignal(text: string) {
+  const normalized = text.replace(/\s+/g, '')
+  return SAFETY_KEYWORDS.some((kw) => normalized.includes(kw.replace(/\s+/g, '')))
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -39,6 +51,13 @@ Deno.serve(async (req) => {
     if (!systemPrompt || !userMessage) {
       return new Response(JSON.stringify({ error: 'systemPrompt / userMessage가 필요합니다.' }), {
         status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (containsSafetySignal(systemPrompt) || containsSafetySignal(userMessage)) {
+      return new Response(JSON.stringify({ error: '위험 신호가 감지되어 생성 요청을 처리하지 않았습니다.' }), {
+        status: 422,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }

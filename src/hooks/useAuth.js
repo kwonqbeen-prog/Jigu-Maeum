@@ -80,6 +80,30 @@ export function useAuth() {
     await supabase.auth.signOut()
   }, [])
 
+  const sendPasswordReset = useCallback(async (email) => {
+    setAuthError(null)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + import.meta.env.BASE_URL,
+    })
+    if (error) {
+      setAuthError(error.message)
+      return false
+    }
+    return true
+  }, [])
+
+  const updatePassword = useCallback(async (newPassword) => {
+    setAuthError(null)
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    if (error) {
+      setAuthError(error.message)
+      return false
+    }
+    return true
+  }, [])
+
+  const clearAuthError = useCallback(() => setAuthError(null), [])
+
   return {
     session,
     user: session?.user ?? null,
@@ -91,5 +115,8 @@ export function useAuth() {
     signOut,
     updateDisplayName,
     updateUserMetadata,
+    sendPasswordReset,
+    updatePassword,
+    clearAuthError,
   }
 }

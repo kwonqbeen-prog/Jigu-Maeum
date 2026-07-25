@@ -3,7 +3,10 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 const STORAGE_KEY = 'climatemood:display-settings'
 
 export const THEME_OPTIONS = ['light', 'dark', 'system', 'high-contrast']
-export const COLORBLIND_OPTIONS = ['none', 'red-green', 'blue-yellow']
+// 화면설계서 §5-1 / §7.1: 없음 / 적록 1형(protanopia) / 적록 2형(deuteranopia) / 청황형(tritanopia)
+export const COLORBLIND_OPTIONS = ['none', 'protanopia', 'deuteranopia', 'tritanopia']
+// 글자 크기: 화면설계서 §7.1 5단계 슬라이더 (100~200%)
+export const FONT_SCALE_STEPS = [1, 1.25, 1.5, 1.75, 2]
 
 export const DEFAULT_SETTINGS = {
   theme: 'system',

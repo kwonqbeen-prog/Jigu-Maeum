@@ -1,7 +1,22 @@
 import { supabase } from '../lib/supabaseClient'
 
+// §8-1: 하루의 경계는 기기 로컬 자정 — UTC 기준 toISOString()을 쓰면 자정 근처에서
+// 날짜가 하루 밀리는 문제가 생기므로 로컬 날짜를 직접 조합한다.
 export function todayISO() {
-  return new Date().toISOString().slice(0, 10)
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+export function daysAgoISO(days) {
+  const d = new Date()
+  d.setDate(d.getDate() - days)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 async function getUserId() {
@@ -12,187 +27,395 @@ async function getUserId() {
   return data.user.id
 }
 
-function toMission(row) {
-  return {
-    id: row.id,
-    title: row.title,
-    description: row.description,
-    category: row.category,
-    createdDate: row.created_date,
-    isCompleted: row.is_completed,
-    difficultyFeedback: row.difficulty_feedback,
-  }
+// ============================================================
+// user_profiles (명세 2.3 / 2.4 / 7.3)
+// ============================================================
+
+export async function getUserProfile() {
+  const userId = await getUserId()
+  const { data, error } = await supabase.from('user_profiles').select('*').eq('user_id', userId).maybeSingle()
+  if (error) throw error
+  return data
 }
 
-export async function getMissions() {
+export async function upsertUserProfile(partial) {
   const userId = await getUserId()
   const { data, error } = await supabase
-    .from('missions')
+    .from('user_profiles')
+    .upsert({ user_id: userId, ...partial, updated_at: new Date().toISOString() })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function markOnboardingCompleted() {
+  return upsertUserProfile({ onboarding_completed_at: new Date().toISOString() })
+}
+
+export async function markCoachmarkSeen() {
+  return upsertUserProfile({ coachmark_seen_at: new Date().toISOString() })
+}
+
+// ============================================================
+// checkins (명세 3.1~3.4, 3.6)
+// ============================================================
+
+export async function getTodayCheckin() {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('checkins')
     .select('*')
     .eq('user_id', userId)
-    .order('created_at', { ascending: true })
+    .eq('date', todayISO())
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
   if (error) throw error
-  return data.map(toMission)
+  return data
 }
 
-export async function addMissions(missionDrafts) {
+export async function upsertCheckinDraft(id, partial, step) {
   const userId = await getUserId()
-  const today = todayISO()
-  const rows = missionDrafts.map((m) => ({
-    user_id: userId,
-    title: m.title,
-    description: m.description,
-    category: m.category,
-    created_date: today,
-    is_completed: false,
-    difficulty_feedback: null,
-  }))
-  const { data, error } = await supabase.from('missions').insert(rows).select()
+  const payload = {
+    ...partial,
+    step,
+    status: 'draft',
+    date: todayISO(),
+    updated_at: new Date().toISOString(),
+  }
+  if (id) {
+    const { data, error } = await supabase
+      .from('checkins')
+      .update(payload)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select()
+      .single()
+    if (error) throw error
+    return data
+  }
+  const { data, error } = await supabase
+    .from('checkins')
+    .insert({ user_id: userId, ...payload })
+    .select()
+    .single()
   if (error) throw error
-  return data.map(toMission)
+  return data
 }
 
-export async function completeMission(id, difficultyFeedback) {
+export async function completeCheckin(id, freeText) {
   const userId = await getUserId()
   const { data, error } = await supabase
-    .from('missions')
-    .update({ is_completed: true, difficulty_feedback: difficultyFeedback })
+    .from('checkins')
+    .update({ free_text: freeText, status: 'completed', updated_at: new Date().toISOString() })
     .eq('id', id)
     .eq('user_id', userId)
     .select()
     .single()
   if (error) throw error
-  return toMission(data)
+  return data
 }
 
-export async function getTodayMissions() {
-  const missions = await getMissions()
-  const today = todayISO()
-  return missions.filter((m) => m.createdDate === today)
-}
-
-export async function getTodayCompletedCount() {
-  const todayMissions = await getTodayMissions()
-  return todayMissions.filter((m) => m.isCompleted).length
-}
-
-export async function getTotalCompletedCount() {
-  const missions = await getMissions()
-  return missions.filter((m) => m.isCompleted).length
-}
-
-export async function getCompletedHistory() {
-  const missions = await getMissions()
-  return missions
-    .filter((m) => m.isCompleted)
-    .sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1))
-}
-
-export async function getIncompleteMissions() {
-  const missions = await getMissions()
-  const today = todayISO()
-  return missions.filter((m) => !m.isCompleted && m.createdDate !== today)
-}
-
-export async function getSessions() {
+export async function discardCheckin(id) {
   const userId = await getUserId()
-  const { data, error } = await supabase
-    .from('sessions')
-    .select('*')
+  const { error } = await supabase.from('checkins').delete().eq('id', id).eq('user_id', userId)
+  if (error) throw error
+}
+
+export async function incrementCheckinRetry(id) {
+  const userId = await getUserId()
+  const { data: current, error: fetchError } = await supabase
+    .from('checkins')
+    .select('retry_count')
+    .eq('id', id)
     .eq('user_id', userId)
-    .order('created_at', { ascending: true })
-  if (error) throw error
-  return data.map((row) => ({
-    date: row.date,
-    emotionType: row.emotion_type,
-    energyLevel: row.energy_level,
-    missionCount: row.mission_count,
-  }))
-}
-
-export async function addSession(session) {
-  const userId = await getUserId()
-  const { error } = await supabase.from('sessions').insert({
-    user_id: userId,
-    emotion_type: session.emotionType,
-    energy_level: session.energyLevel,
-    mission_count: session.missionCount,
-    date: todayISO(),
-  })
-  if (error) throw error
-  return getSessions()
-}
-
-function toChatMessage(row, missionsById) {
-  return {
-    id: row.id,
-    role: row.role,
-    type: row.type,
-    text: row.text,
-    chips: row.chips ?? [],
-    offerMission: row.offer_mission,
-    missions:
-      row.type === 'missions'
-        ? (row.mission_ids ?? []).map((id) => missionsById[id]).filter(Boolean)
-        : undefined,
-    rawModelJson: row.raw_model_json,
-  }
-}
-
-export async function getTodayChatMessages() {
-  const userId = await getUserId()
-  const today = todayISO()
+    .single()
+  if (fetchError) throw fetchError
   const { data, error } = await supabase
-    .from('chat_messages')
-    .select('*')
+    .from('checkins')
+    .update({ retry_count: (current?.retry_count ?? 0) + 1 })
+    .eq('id', id)
     .eq('user_id', userId)
-    .eq('created_date', today)
-    .order('created_at', { ascending: true })
-  if (error) throw error
-
-  const needsMissions = data.some((row) => (row.mission_ids ?? []).length > 0)
-  const missionsById = needsMissions
-    ? Object.fromEntries((await getTodayMissions()).map((m) => [m.id, m]))
-    : {}
-
-  return data.map((row) => toChatMessage(row, missionsById))
-}
-
-export async function addChatMessage(msg) {
-  const userId = await getUserId()
-  const { data, error } = await supabase
-    .from('chat_messages')
-    .insert({
-      user_id: userId,
-      role: msg.role,
-      type: msg.type ?? 'text',
-      text: msg.text ?? null,
-      chips: msg.chips ?? [],
-      offer_mission: Boolean(msg.offerMission),
-      mission_ids: msg.missionIds ?? [],
-      raw_model_json: msg.rawModelJson ?? null,
-      created_date: todayISO(),
-    })
     .select()
     .single()
   if (error) throw error
-  return toChatMessage(data, {})
+  return data
 }
+
+// ============================================================
+// missions (명세 4.x, 6.4)
+// ============================================================
+
+export async function getAllMissions() {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('missions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function getTodayMissions() {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('missions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('created_date', todayISO())
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  return data
+}
+
+export async function getRecentMissions(days) {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('missions')
+    .select('*')
+    .eq('user_id', userId)
+    .gte('created_date', daysAgoISO(days))
+  if (error) throw error
+  return data
+}
+
+export async function insertMissions(missionDrafts, { checkinId, source = 'checkin' } = {}) {
+  const userId = await getUserId()
+  const today = todayISO()
+  const rows = missionDrafts.map((m) => ({
+    user_id: userId,
+    checkin_id: checkinId ?? null,
+    title: m.title,
+    description: m.description,
+    why: m.why ?? null,
+    category: m.category ?? m.type,
+    type: m.type,
+    difficulty: m.difficulty ?? 'normal',
+    est_minutes: m.est_minutes ?? null,
+    source,
+    created_date: today,
+    is_completed: false,
+    liked: false,
+  }))
+  const { data, error } = await supabase.from('missions').insert(rows).select()
+  if (error) throw error
+  return data
+}
+
+export async function toggleMissionComplete(mission) {
+  const userId = await getUserId()
+  const nextCompleted = !mission.is_completed
+  const { data, error } = await supabase
+    .from('missions')
+    .update({ is_completed: nextCompleted, completed_at: nextCompleted ? new Date().toISOString() : null })
+    .eq('id', mission.id)
+    .eq('user_id', userId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function toggleMissionLike(mission) {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('missions')
+    .update({ liked: !mission.liked })
+    .eq('id', mission.id)
+    .eq('user_id', userId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+// S-42 보관함: 미션명 기준 최신 1건만 (마지막 실천일 내림차순)
+export async function getArchiveMissions() {
+  const all = await getAllMissions()
+  const byTitle = new Map()
+  for (const m of all) {
+    const existing = byTitle.get(m.title)
+    if (!existing || new Date(m.created_at) > new Date(existing.created_at)) {
+      byTitle.set(m.title, m)
+    }
+  }
+  return Array.from(byTitle.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+}
+
+export async function retryMission(mission) {
+  return insertMissions(
+    [
+      {
+        title: mission.title,
+        description: mission.description,
+        why: mission.why,
+        type: mission.type,
+        difficulty: mission.difficulty,
+        est_minutes: mission.est_minutes,
+      },
+    ],
+    { source: 'retry' },
+  )
+}
+
+// ============================================================
+// reflections (명세 6.5)
+// ============================================================
+
+export async function getReflection(date) {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('reflections')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('date', date)
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
+export async function upsertReflection(date, content) {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('reflections')
+    .upsert(
+      { user_id: userId, date, content, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id,date' },
+    )
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+// ============================================================
+// achievements (명세 5.2)
+// ============================================================
+
+export async function getAchievements() {
+  const userId = await getUserId()
+  const { data, error } = await supabase.from('achievements').select('*').eq('user_id', userId)
+  if (error) throw error
+  return data
+}
+
+export async function getReflectionsCount() {
+  const userId = await getUserId()
+  const { count, error } = await supabase
+    .from('reflections')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+  if (error) throw error
+  return count ?? 0
+}
+
+export async function unlockAchievement(code) {
+  const userId = await getUserId()
+  const { error } = await supabase
+    .from('achievements')
+    .upsert({ user_id: userId, code }, { onConflict: 'user_id,code', ignoreDuplicates: true })
+  if (error) throw error
+}
+
+// ============================================================
+// user_memories (명세 3.5)
+// ============================================================
 
 export async function getUserMemories(limit = 20) {
   const userId = await getUserId()
   const { data, error } = await supabase
     .from('user_memories')
-    .select('content')
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit)
   if (error) throw error
-  return data.map((row) => row.content)
+  return data
 }
 
 export async function addUserMemory(content) {
   const userId = await getUserId()
   const { error } = await supabase.from('user_memories').insert({ user_id: userId, content })
   if (error) throw error
+}
+
+export async function deleteUserMemory(id) {
+  const userId = await getUserId()
+  const { error } = await supabase.from('user_memories').delete().eq('id', id).eq('user_id', userId)
+  if (error) throw error
+}
+
+// ============================================================
+// §7-2 파생값 — 테이블로 저장하지 않고 계산
+// ============================================================
+
+export function getTotalCompletedCount(missions) {
+  return missions.filter((m) => m.is_completed).length
+}
+
+// 연속 실천일: "미션을 1개 이상 완료한 날"이 오늘(또는 어제)부터 역순 연속인 일수
+export function getStreakDays(missions) {
+  const completedDates = new Set(
+    missions.filter((m) => m.is_completed && m.completed_at).map((m) => m.completed_at.slice(0, 10)),
+  )
+  if (completedDates.size === 0) return 0
+
+  let streak = 0
+  let cursor = new Date()
+  const today = todayISO()
+  const cursorISO = () => {
+    const y = cursor.getFullYear()
+    const m = String(cursor.getMonth() + 1).padStart(2, '0')
+    const d = String(cursor.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
+  }
+
+  if (!completedDates.has(today)) {
+    cursor.setDate(cursor.getDate() - 1)
+  }
+
+  while (completedDates.has(cursorISO())) {
+    streak += 1
+    cursor.setDate(cursor.getDate() - 1)
+  }
+  return streak
+}
+
+// 최근 N일 완료된 미션의 유형 분포
+export function getTypeDistribution(missions, days = 30) {
+  const cutoff = daysAgoISO(days)
+  const relevant = missions.filter((m) => m.created_date >= cutoff)
+  const counts = { carbon: 0, nature: 0, social: 0 }
+  for (const m of relevant) {
+    if (m.type && counts[m.type] !== undefined) counts[m.type] += 1
+  }
+  return counts
+}
+
+export function getAllTypesCompleted(missions) {
+  const types = new Set(missions.filter((m) => m.is_completed).map((m) => m.type))
+  return ['carbon', 'nature', 'social'].every((t) => types.has(t))
+}
+
+// S-64D 회원 탈퇴 — auth.users 삭제는 서비스 롤 권한이 필요해 Edge Function 없이는
+// 클라이언트에서 불가능하다. 여기서는 사용자 소유 데이터를 전부 지우고 로그아웃까지만 처리한다.
+export async function deleteAllUserData() {
+  const userId = await getUserId()
+  const tables = ['missions', 'checkins', 'reflections', 'achievements', 'user_memories', 'user_profiles']
+  for (const table of tables) {
+    const { error } = await supabase.from(table).delete().eq('user_id', userId)
+    if (error) throw error
+  }
+}
+
+export function getWeekDots(missions) {
+  const days = []
+  for (let i = 6; i >= 0; i -= 1) {
+    const dateISO = daysAgoISO(i)
+    const count = missions.filter((m) => m.is_completed && m.completed_at?.slice(0, 10) === dateISO).length
+    days.push({ date: dateISO, count })
+  }
+  return days
 }

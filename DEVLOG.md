@@ -1,5 +1,92 @@
 # 개발일지
 
+## 2026-07-26 — 기능명세서·화면설계서 기반 전면 재설계 (`feature/spec-based-redesign` 브랜치)
+
+`[지구마음] 기능명세서.csv`(10개 구분·32개 기능)와 `지구마음_화면설계서.md`(v1.3, 28개
+화면)를 받아서, 기존 구현을 전제하지 않고 문서 기준으로 새로 구현. 사용자가 결과물을
+확인한 뒤 이어갈지 처음부터 다시 할지 정하겠다고 해서 별도 브랜치(`main`에서 분기)로
+작업. 화면설계서 §11 구현 순서(1~10단계)를 그대로 따름.
+
+### 핵심 방향 전환 (화면설계서 §9 부록 A 요약)
+
+- **자유 대화(freechat) 완전 폐기(D1)** → 감정/에너지/장소 3개 칩 선택 + 선택적 자유
+  텍스트 1개로 구성된 4스텝 "체크인" 폼으로 대체. `useConversation.js`, `ChatScreen.jsx`
+  등 대화형 관련 코드 전부 삭제
+- **2탭(이야기/나의 지구) → 3탭(마음 지구/미션/기록) + 설정 스택**
+- 에너지 레벨의 의미가 "미션 개수(1/3/5)" → "난이도 보정"으로 바뀜(미션은 항상 3개)
+- 미션 분류 4종(생활실천/가치연결/마음챙김/함께하기) → 3종(carbon/nature/social,
+  **화면에 노출 안 함**, D4)으로 교체
+- 완료 시 난이도 3택 입력 → 좋아요(♡) 토글로 대체
+- `user_profiles`(대처 성향/사회적 선호/관심 분야), 체크인 임시저장+이어보기,
+  위험 신호 감지 안전망(S-70), 사용자 프로필 화면 등 신규 기능 다수 추가
+
+### 데이터 모델 (Phase 1)
+
+`supabase/schema.sql`을 재작성. 기존 `missions` 테이블은 데이터 손실 방지를 위해
+DROP 대신 `ALTER TABLE ADD COLUMN IF NOT EXISTS`로 확장(`checkin_id`, `why`, `type`,
+`difficulty`, `est_minutes`, `source`, `completed_at`, `liked`). `user_profiles`,
+`checkins`, `reflections`, `achievements` 4개 테이블 신규(전부 RLS `auth.uid() =
+user_id` 정책). `sessions`/`chat_messages`는 자유대화 폐기로 미사용이지만 기존 데이터
+보존을 위해 DROP하지 않고 주석 처리만 함. **이 SQL은 아직 Supabase 대시보드에서
+실행 전 — 실행 전까지는 체크인/미션 저장이 실패한다.**
+
+### 디자인 시스템 (Phase 2)
+
+기존 `index.css`의 시맨틱 토큰(`surface`/`ink`/`accent` 등)이 화면설계서 §5-1과
+거의 그대로 일치해서 재사용. 색약 보정 옵션을 2종(`red-green`/`blue-yellow`) →
+명세대로 4종(`none`/`protanopia`/`deuteranopia`/`tritanopia`)으로 확장. 마음 지구
+오브 그라데이션을 3단계(seed/growing/flourishing) → 5단계(§6 S-20 임계값 0/3/10/25/50)로
+재설계, 4단계부터 글로우 링, 5단계는 느린 자전 애니메이션 추가. `src/components/common/`에
+공통 컴포넌트 C-01~C-18(AppBar/BottomTabBar/StepProgress/ChoiceChip/ChipGroup/
+PrimaryButton/GhostButton/MissionCard/PlanetOrb/StatTile/SectionHeader/EmptyState/
+BottomSheet/ConfirmDialog/InlineBanner/TextField/SegmentedControl) 전부 신규 작성.
+Toast(C-13)는 `contexts/ToastContext.jsx`의 Provider+훅 형태로 구현.
+
+### 화면 구현 (Phase 3~10)
+
+`src/screens/` 아래 기능별로 재구성 (`onboarding/`, `checkin/`, `home/`, `missions/`,
+`records/`, `settings/`). 온보딩 4스텝(화면모드→닉네임→프로필 3스텝→안전고지),
+체크인 4스텝(감정→에너지→장소→자유입력, 당일 임시저장+이어보기 다이얼로그 포함),
+미션 생성 중/결과 화면, 오늘의 미션/상세시트/보관함, 마음 지구 홈(+업적 시트), 기록
+홈/히스토리/하루마무리, 설정 5화면(홈/화면접근성/계정/프로필수정/로그아웃탈퇴)까지
+28개 화면 전부 구현.
+
+**미션 생성 로직(§8-3, `src/hooks/useMissionGeneration.js` + `src/prompts/
+systemPrompts.js`)**: few-shot 예시가 아니라 판단기준·절차·부정규칙 3부 구성으로
+지시(D8). 최근 14일 유형 분포 기반 균형 배분(부족한 유형 최소 1개 포함), 자카드
+유사도 0.7 이상이면 중복으로 판단해 1회 재생성, 실패 시 유형당 8개 이상 확보한
+로컬 폴백 풀(`missionPool.js`)로 대체. 난이도는 누적 완료 10개마다 한 단계 상승
+(장기) × 오늘의 의욕 수준(단기) 조합을 프롬프트에서 모델이 계산하도록 위임.
+
+**안전망(§8-5)**: 클라이언트 1차 검사(`src/data/safetyKeywords.js`, 체크인 자유
+입력+하루 마무리 회고 양쪽에 적용)에 더해, `supabase/functions/solar-proxy/index.ts`에
+동일한 키워드 목록으로 서버 2차 검사를 추가해 감지 시 Upstage 호출 자체를 막음
+(감지돼도 흐름은 차단하지 않고 안내 화면(S-70)만 한 번 보여준 뒤 이어감, D12).
+
+**미결정 항목(Q2~Q10) 처리**: 사용자 확인 후 화면설계서에 이미 적힌 "현재 전제" 값
+그대로 채택(미션 3개 고정, 재체크인 1회+다시받기 2회, 사회적 미션 회피 시 최대
+1개+light 고정, 업적 8종·성장 5단계 임계값 등). 상담 채널 번호(109/1577-0199/1388)는
+문서 값 그대로 사용 — **배포 전 최신 정보로 재확인 필요**(문서 자체에 명시된 주의사항).
+
+### 알려진 한계 / 후속 세션 필요 사항
+
+- **`supabase/schema.sql`을 대시보드에서 아직 실행 안 함** — 실행 전까지 체크인/
+  미션 저장이 전부 실패함
+- **회원 탈퇴(S-64D)는 부분 구현** — 서비스 롤 권한이 필요한 `auth.users` 삭제는
+  Edge Function 없이 클라이언트에서 불가능해서, 사용자 소유 데이터(테이블 행)만
+  지우고 로그아웃까지만 처리함. 진짜 계정 삭제는 별도 Edge Function 필요
+- **탭 전환 시 스크롤/스택 상태 유지(§2-2)는 미구현** — 현재는 탭 전환마다
+  화면이 다시 마운트됨(데이터는 새로 불러오지만 스크롤 위치는 유지 안 됨)
+- **하단 탭 배지(§2-2, 오늘 미완료 미션 수 / 기록 탭 점)는 미연결** — `BottomTabBar`
+  컴포넌트 자체는 `badges` prop을 지원하지만 실제 데이터를 아직 연결 안 함
+- **코치마크 투어(S-21)는 미구현** — 설정에서 "안내 다시 보기"를 누르면 토스트만 뜸
+  (§11에서 "여유 시" 항목으로 분류된 부분)
+- 검증: `npm run build`/`npm run lint` 통과. Playwright로 로그인 없이 볼 수 있는
+  S-01(로그인) 화면까지는 스크린샷으로 확인함. 회원가입 테스트는 Supabase 프로젝트의
+  이메일 발송 rate limit(`over_email_send_rate_limit`)에 걸려 온보딩 이후 화면은
+  실제 로그인 상태로 검증하지 못함 — **온보딩~체크인~미션~기록 전체 플로우는 사용자가
+  직접 로그인해서 확인 필요**
+
 ## 2026-07-19 — MVP 구축, Supabase 전환, 자유 대화형 개편
 
 ### 1. MVP 첫 구축 (오전)

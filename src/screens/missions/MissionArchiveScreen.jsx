@@ -1,0 +1,86 @@
+import { useEffect, useState } from 'react'
+import AppBar from '../../components/common/AppBar'
+import SegmentedControl from '../../components/common/SegmentedControl'
+import EmptyState from '../../components/common/EmptyState'
+import { getArchiveMissions, getTodayMissions, retryMission } from '../../data/storage'
+import { useToast } from '../../contexts/ToastContext'
+
+// S-42 · 미션 보관함 (명세 4.6)
+export default function MissionArchiveScreen({ onBack, onStartCheckin }) {
+  const [filter, setFilter] = useState('completed')
+  const [archive, setArchive] = useState(null)
+  const [todayTitles, setTodayTitles] = useState([])
+  const [justAdded, setJustAdded] = useState(null)
+  const showToast = useToast()
+
+  const refresh = async () => {
+    const [archiveRows, todayRows] = await Promise.all([getArchiveMissions(), getTodayMissions()])
+    setArchive(archiveRows)
+    setTodayTitles(todayRows.map((m) => m.title))
+  }
+
+  useEffect(() => {
+    refresh()
+  }, [])
+
+  if (archive === null) return null
+
+  const list = archive.filter((m) => (filter === 'completed' ? m.is_completed : !m.is_completed))
+
+  const handleRetry = async (mission) => {
+    await retryMission(mission)
+    setJustAdded(mission.title)
+    showToast('오늘 미션에 담았어요')
+    refresh()
+    setTimeout(() => setJustAdded(null), 2000)
+  }
+
+  return (
+    <div className="flex min-h-svh flex-col bg-surface">
+      <AppBar title="미션 보관함" leading="back" onLeadingClick={onBack} />
+      <div className="flex-1 space-y-4 px-4 py-4">
+        <SegmentedControl
+          items={[
+            { value: 'completed', label: '완료한 미션' },
+            { value: 'not-completed', label: '안 한 미션' },
+          ]}
+          value={filter}
+          onChange={setFilter}
+        />
+
+        {list.length === 0 ? (
+          <EmptyState
+            title="아직 담긴 미션이 없어요"
+            body="체크인하고 첫 미션을 받아보세요"
+            actionLabel="오늘의 마음 확인하기"
+            onAction={onStartCheckin}
+          />
+        ) : (
+          <div className="space-y-2">
+            {list.map((m) => {
+              const alreadyToday = todayTitles.includes(m.title)
+              return (
+                <div key={m.id} className="flex items-center justify-between rounded-2xl bg-surface-alt px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-[14px] font-bold text-ink">{m.title}</p>
+                    <p className="text-[12px] text-ink-muted">{m.created_date}</p>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={alreadyToday}
+                    onClick={() => handleRetry(m)}
+                    className={`shrink-0 rounded-full px-3 py-2 text-[12px] font-bold ${
+                      alreadyToday ? 'bg-disabled text-disabled-ink' : 'bg-ink text-surface'
+                    }`}
+                  >
+                    {justAdded === m.title ? '담김' : alreadyToday ? '오늘 담겨 있어요' : '다시 도전'}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
