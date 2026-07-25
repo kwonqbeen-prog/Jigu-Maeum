@@ -68,11 +68,13 @@
      잘 보이도록 상향 조정 (기존 0.35는 무채색 시절 값이라 너무 흐렸음) */
   --star-opacity: 0.6;
 
-  /* 감성 레이어: "마음 지구" 상태별 그라데이션. 카테고리별 색상 구분은 폐기하고
-     성장 단계(seed/growing/flourishing)만 무채색 명도 차이로 표현한다 */
-  --gradient-planet-seed: radial-gradient(circle at 35% 30%, #e8e8e8 0%, #b5b5b5 60%, #8a8a8a 100%);
-  --gradient-planet-growing: radial-gradient(circle, var(--color-ink-faint), #7a7a7a);
-  --gradient-planet-flourishing: radial-gradient(circle, var(--color-ink), #4d4d4d);
+  /* 감성 레이어: "마음 지구" 5단계 그라데이션 (화면설계서 §6 S-20). 카테고리별 색상
+     구분은 폐기하고 밝기·단계만 무채색 명도 차이로 표현한다 (D5) */
+  --gradient-planet-1: radial-gradient(circle at 35% 30%, #d0d0d0 0%, #9c9c9c 60%, #767676 100%);
+  --gradient-planet-2: radial-gradient(circle at 35% 30%, #dedede 0%, #a8a8a8 60%, #7f7f7f 100%);
+  --gradient-planet-3: radial-gradient(circle at 35% 30%, #e8e8e8 0%, #b5b5b5 60%, #8a8a8a 100%);
+  --gradient-planet-4: radial-gradient(circle at 35% 30%, var(--color-ink-faint), #7a7a7a);
+  --gradient-planet-5: radial-gradient(circle at 35% 30%, var(--color-ink), #4d4d4d);
 }
 
 [data-theme='dark'] {
@@ -102,9 +104,11 @@
   --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.55);
   --star-opacity: 0.7;
 
-  --gradient-planet-seed: radial-gradient(circle at 35% 30%, #6b6b6b, #454545, #2a2a2a);
-  --gradient-planet-growing: radial-gradient(circle, var(--color-ink-faint), #999999);
-  --gradient-planet-flourishing: radial-gradient(circle, var(--color-ink), #d4d4d4);
+  --gradient-planet-1: radial-gradient(circle at 35% 30%, #4a4a4a, #333333, #202020);
+  --gradient-planet-2: radial-gradient(circle at 35% 30%, #5c5c5c, #3d3d3d, #262626);
+  --gradient-planet-3: radial-gradient(circle at 35% 30%, #6b6b6b, #454545, #2a2a2a);
+  --gradient-planet-4: radial-gradient(circle at 35% 30%, var(--color-ink-faint), #999999);
+  --gradient-planet-5: radial-gradient(circle at 35% 30%, var(--color-ink), #d4d4d4);
 }
 
 /*
@@ -147,9 +151,11 @@
   --focus-ring-width: 4px;
   --star-opacity: 0.6;
 
-  --gradient-planet-seed: radial-gradient(circle, #333333, #1a1a1a);
-  --gradient-planet-growing: radial-gradient(circle, var(--color-ink-faint), #666666);
-  --gradient-planet-flourishing: radial-gradient(circle, var(--color-ink), #cccccc);
+  --gradient-planet-1: radial-gradient(circle, #262626, #141414);
+  --gradient-planet-2: radial-gradient(circle, #2c2c2c, #171717);
+  --gradient-planet-3: radial-gradient(circle, #333333, #1a1a1a);
+  --gradient-planet-4: radial-gradient(circle, var(--color-ink-faint), #666666);
+  --gradient-planet-5: radial-gradient(circle, var(--color-ink), #cccccc);
 }
 
 /*
@@ -160,21 +166,26 @@
   대비만으로 충분하다고 가정했었지만, 저시력과 색각이상이 함께 있는 사용자도 있으므로
   가정하지 않고 동일하게 적용한다.
 */
-[data-theme='light'][data-colorblind='red-green'] {
+[data-theme='light'][data-colorblind='protanopia'],
+[data-theme='light'][data-colorblind='deuteranopia'] {
   --color-success: #0060a0;
   --color-danger: #a34700;
   --color-warning: #7a6600;
 }
-[data-theme='dark'][data-colorblind='red-green'] {
+[data-theme='dark'][data-colorblind='protanopia'],
+[data-theme='dark'][data-colorblind='deuteranopia'] {
   --color-success: #56b4e9;
   --color-danger: #ff8f5e;
   --color-warning: #f0e442;
 }
-[data-theme='high-contrast'][data-colorblind='red-green'] {
+[data-theme='high-contrast'][data-colorblind='protanopia'],
+[data-theme='high-contrast'][data-colorblind='deuteranopia'] {
   --color-success: #6cc4ff;
   --color-danger: #ff9166;
   --color-warning: #ffe066;
 }
+/* 청황형(tritanopia)은 기본 상태색(빨강/초록/버밀리언 계열)이 이미 파랑↔초록,
+   노랑↔분홍 혼동축을 피하고 있어 별도 오버라이드가 필요 없다 (위 주석 참고) */
 /*
   청황색약(tritanopia)은 파랑↔초록, 노랑↔분홍/보라 축에서 혼동이 생기지만 빨강↔초록
   구분은 영향을 받지 않는다(Wong/Okabe-Ito 색맹 안전 팔레트 기준). 이 앱의 기본 상태색은
@@ -293,7 +304,7 @@ body {
   position: relative;
   z-index: 0; /* ::before의 z-index:-1이 오브 자신의 뒤로만 가도록 스태킹 컨텍스트를 여기서 새로 만든다.
                  없으면 z-index:-1이 이 오브를 넘어 조상 배경 뒤로 밀려나 광채가 완전히 안 보이게 된다 */
-  background-image: var(--gradient-planet-seed);
+  background-image: var(--gradient-planet-1);
   transition:
     background-image 0.3s ease,
     filter 0.3s ease;
@@ -311,10 +322,48 @@ body {
   filter: blur(28px) brightness(1.3) saturate(1.1);
   opacity: 0.6;
 }
-/* 카테고리 구분 없이 성장 단계만 무채색 명도 차이로 표현 (모든 테마 공통) */
-.mind-planet__orb[data-planet-stage='growing'] {
-  background-image: var(--gradient-planet-growing);
+/* 5단계 성장 (§6 S-20) — 카테고리 구분 없이 밝기 차이로만 표현 (모든 테마 공통, D5) */
+.mind-planet__orb[data-planet-stage='2'] {
+  background-image: var(--gradient-planet-2);
 }
-.mind-planet__orb[data-planet-stage='flourishing'] {
-  background-image: var(--gradient-planet-flourishing);
+.mind-planet__orb[data-planet-stage='3'] {
+  background-image: var(--gradient-planet-3);
+}
+.mind-planet__orb[data-planet-stage='4'] {
+  background-image: var(--gradient-planet-4);
+}
+.mind-planet__orb[data-planet-stage='5'] {
+  background-image: var(--gradient-planet-5);
+  animation: mind-planet-spin 14s linear infinite;
+}
+/* 4단계부터 대기층(글로우 링) 추가 */
+.mind-planet__orb[data-planet-stage='4']::after,
+.mind-planet__orb[data-planet-stage='5']::after {
+  content: '';
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-ink-faint);
+  opacity: 0.35;
+  animation: mind-planet-ambient 10s ease-in-out infinite;
+}
+@keyframes mind-planet-spin {
+  from {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  to {
+    filter: hue-rotate(0deg) brightness(1);
+    transform: rotate(360deg);
+  }
+}
+@keyframes mind-planet-ambient {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.03);
+  }
 }
