@@ -126,6 +126,9 @@ create table if not exists public.reflections (
   unique (user_id, date)
 );
 
+-- 2026-07-27 IA 개편: 미션 탭 상시 "미션 후 기분" 3단 선택 추가
+alter table public.reflections add column if not exists mood text check (mood in ('bad', 'ok', 'great'));
+
 create index if not exists reflections_user_date_idx on public.reflections(user_id, date);
 
 alter table public.reflections enable row level security;

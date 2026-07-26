@@ -23,39 +23,52 @@
 
   2026-07-21 두 번째 패스로 전체 색상을 웜뉴트럴(테라코타/코랄/앰버 계열)에서 순수
   무채색(그레이 스케일)으로 전환하고, 박스 테두리(border)를 전부 제거해 배경 명도 차이
-  만으로 요소를 구분하도록 바꿨다. 재변경 시 손대야 할 곳:
-  1. 아래 3개 테마 블록의 --color-accent/--color-accent-strong/--color-accent-soft/
-     --color-accent-on 값 (--color-success와 --color-focus-ring은
-     var(--color-accent...)를 참조하므로 자동으로 따라옴 — 새로 값을 넣지 말 것)
-  2. --color-highlight(보조 강조색)는 accent와 독립적인 색이라 자동으로 안 바뀜
-  3. ThemePreviewThumb.jsx의 SWATCHES는 3개 테마를 동시에 보여주는 미리보기 목업이라
-     CSS 변수를 못 쓰고 값을 하드코딩해뒀음 — 여기 값도 같이 바꿔야 함
-  4. --color-danger/--color-warning과 색약 보정 오버라이드는 브랜드색이 아니라 기능적
-     상태색이라 의도적으로 무채색화 대상에서 제외했다 — 그대로 유지할 것
-  5. 카카오 로그인 버튼(#FEE500)은 카카오 브랜드 규정 색이라 무관하게 그대로 둘 것
-  6. --gradient-planet-*는 카테고리별 색상 구분을 폐기하고 seed/growing/flourishing
-     3단계를 모든 테마에서 --color-ink-faint/--color-ink 기반 무채색 명도 차이로만
-     표현한다(기존에는 고대비 모드에서만 이렇게 했음)
+  만으로 요소를 구분하도록 바꿨다.
+
+  2026-07-26 `climatemood_color_mapping.md` 기준 컬러/텍스트 위계 개편 — 두 레이어 원칙
+  자체는 그대로 두고 값만 교체했다:
+  1. 기능 레이어(:root의 --color-surface/ink/line/accent/highlight 계열)를 화이트·
+     라이트그레이 확장 쪽으로 재조정(surface가 순백 #FFFFFF, surface-alt/sunken은
+     surface보다 살짝 톤다운). 다크 테마는 이 문서에 값이 없어서, 기존 다크 팔레트가
+     라이트를 미러링하던 관계(surface류는 좁은 간격 대신 최소 15~20/255 명도차 유지 —
+     2026-07-21 밤 세션에서 얻은 교훈, surface/surface-alt/surface-sunken은 그대로 두고)를
+     유지하면서 ink/line/accent 계열만 라이트 쪽 변화 방향(부드러워짐)에 맞춰 대칭 재계산함.
+  2. --gradient-planet-1~5(마음 지구 오브)만 그레이스케일에서 파스텔 4색
+     (#FFF4D1 라이트옐로우 · #FFDCE8 라이트핑크 · #E4D9F7 라벤더 · #D3E7FB 스카이블루)
+     블렌드로 교체 — 1단계는 옅고 좁게, 5단계로 갈수록 4색이 다 섞이며 확산·채도가
+     커지도록 구성. 다크 테마는 같은 4색을 어두운 앵커와 섞어 톤다운한 버전을 쓴다.
+     고대비 모드는 AAA 검증된 무채색 유지 원칙(아래 고대비 블록 주석 참고)이라 그대로 둠.
+  3. 온보딩(S-10~13)/스플래시/데이랩업/업적 시트/체크인 완료 화면에만 은은한 파스텔
+     라디얼 워시(`--gradient-pastel-wash`, `.pastel-wash` 클래스)를 추가. MissionCard 등
+     실행/입력 중심 화면은 과자극 방지를 위해 대상에서 제외(문서 §2 참고).
+  4. ThemePreviewThumb.jsx의 SWATCHES 하드코딩 값도 같이 갱신함(재변경 시 계속 같이
+     맞춰야 함 — 아래 항목은 계속 유효):
+  - --color-danger/--color-warning과 색약 보정 오버라이드는 브랜드색이 아니라 기능적
+    상태색이라 의도적으로 무채색화 대상에서 제외했다 — 그대로 유지할 것
+  - 카카오 로그인 버튼(#FEE500)은 카카오 브랜드 규정 색이라 무관하게 그대로 둘 것
+  - --color-success와 --color-focus-ring은 var(--color-accent...)를 참조하므로 accent를
+    바꾸면 자동으로 따라옴 — 새로 값을 넣지 말 것
 */
 :root {
   color-scheme: light;
 
-  --color-surface: #f5f5f5;
-  --color-surface-alt: #ffffff;
-  --color-surface-sunken: #e8e8e8;
-  --color-ink: #171717;
-  --color-ink-muted: #525252;
-  --color-ink-faint: #a3a3a3;
-  --color-line: #e0e0e0;
-  --color-line-input: #8a8a8a;
-  /* 무채색(다크 그레이) 톤 — 구조적 강조는 순수 그레이 스케일만 사용 */
-  --color-accent: #262626;
-  --color-accent-strong: #0a0a0a;
-  --color-accent-soft: #ececec;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8f9fa;
+  --color-surface-sunken: #eef0f2;
+  --color-ink: #26282b;
+  --color-ink-muted: #767b82;
+  --color-ink-faint: #b0b3b8;
+  --color-line: #e4e6e9;
+  --color-line-input: #c7cacf;
+  /* 무채색(다크 그레이) 톤 — 구조적 강조는 순수 그레이 스케일만 사용, accent는 ink와 통일 */
+  --color-accent: #26282b;
+  --color-accent-strong: #000000;
+  --color-accent-soft: #f0f1f3;
   --color-accent-on: #ffffff;
-  --color-highlight: #6b6b6b;
+  --color-highlight: #5b5f66;
   --color-success: var(--color-accent-strong);
   --color-danger: #be123c;
+  --color-danger-soft: #fdecef;
   --color-warning: #92400e;
   --color-warning-soft: #fef7ed;
   --color-disabled-bg: #e0e0e0;
@@ -68,34 +81,58 @@
      잘 보이도록 상향 조정 (기존 0.35는 무채색 시절 값이라 너무 흐렸음) */
   --star-opacity: 0.6;
 
-  /* 감성 레이어: "마음 지구" 5단계 그라데이션 (화면설계서 §6 S-20). 카테고리별 색상
-     구분은 폐기하고 밝기·단계만 무채색 명도 차이로 표현한다 (D5) */
-  --gradient-planet-1: radial-gradient(circle at 35% 30%, #d0d0d0 0%, #9c9c9c 60%, #767676 100%);
-  --gradient-planet-2: radial-gradient(circle at 35% 30%, #dedede 0%, #a8a8a8 60%, #7f7f7f 100%);
-  --gradient-planet-3: radial-gradient(circle at 35% 30%, #e8e8e8 0%, #b5b5b5 60%, #8a8a8a 100%);
-  --gradient-planet-4: radial-gradient(circle at 35% 30%, var(--color-ink-faint), #7a7a7a);
-  --gradient-planet-5: radial-gradient(circle at 35% 30%, var(--color-ink), #4d4d4d);
+  /* 감성 레이어: "마음 지구" 5단계 그라데이션 (화면설계서 §6 S-20). 2026-07-26 컬러
+     매핑 문서 §2 기준 파스텔 4색(라이트옐로우/라이트핑크/라벤더/스카이블루) 블렌드로
+     교체 — 1단계는 옅고 좁게, 5단계로 갈수록 4색이 다 섞이며 확산·채도가 커진다 */
+  --gradient-planet-1: radial-gradient(circle at 35% 30%, #ffffff 0%, #fff4d1 60%, #fff4d1 100%);
+  --gradient-planet-2: radial-gradient(circle at 35% 30%, #fffdf5 0%, #fff4d1 40%, #ffdce8 100%);
+  --gradient-planet-3: radial-gradient(circle at 35% 30%, #fff4d1 0%, #ffdce8 40%, #e4d9f7 100%);
+  --gradient-planet-4: radial-gradient(circle at 35% 30%, #fff4d1 0%, #ffdce8 30%, #e4d9f7 60%, #d3e7fb 100%);
+  --gradient-planet-5: radial-gradient(
+    circle at 35% 30%,
+    #fff4d1 0%,
+    #ffdce8 25%,
+    #e4d9f7 50%,
+    #d3e7fb 75%,
+    #fff4d1 100%
+  );
+
+  /* 감성 레이어: 온보딩/스플래시/데이랩업/업적 시트/체크인 완료 화면 전용 은은한
+     파스텔 워시(.pastel-wash 클래스가 소비). 오브와 같은 4색을 아주 낮은 불투명도로 */
+  --gradient-pastel-wash: radial-gradient(
+    ellipse 120% 60% at 50% 0%,
+    rgba(255, 244, 209, 0.35),
+    rgba(255, 220, 232, 0.28) 35%,
+    rgba(228, 217, 247, 0.2) 60%,
+    rgba(211, 231, 251, 0.12) 80%,
+    transparent 100%
+  );
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
 
+  /* surface 3종은 그대로 유지 — 라이트가 좁은 간격(255/249/240)으로 재조정됐지만,
+     다크는 좁은 간격을 그대로 옮기면 구분이 안 보인다(2026-07-21 밤 세션 교훈, 최소
+     15~20/255 명도차 필요). 대신 ink/line/accent 계열을 라이트 쪽 변화 방향(더 부드럽게,
+     더 옅게)에 맞춰 대칭 재계산했다 */
   --color-surface: #121212;
   --color-surface-alt: #232323;
   --color-surface-sunken: #323232;
-  --color-ink: #f5f5f5;
-  --color-ink-muted: #a3a3a3;
-  --color-ink-faint: #737373;
-  --color-line: #333333;
-  --color-line-input: #7a7a7a;
-  /* 무채색(라이트 그레이) 톤 — 라이트와 대칭되는 그레이 스케일 */
-  --color-accent: #d4d4d4;
+  --color-ink: #e9eaeb;
+  --color-ink-muted: #9ca0a6;
+  --color-ink-faint: #7b7f85;
+  --color-line: #35373a;
+  --color-line-input: #4a4d51;
+  /* 무채색(라이트 그레이) 톤 — 라이트와 대칭되는 그레이 스케일, accent는 ink와 통일 */
+  --color-accent: #e9eaeb;
   --color-accent-strong: #ffffff;
-  --color-accent-soft: #2e2e2e;
+  --color-accent-soft: #262830;
   --color-accent-on: #171717;
-  --color-highlight: #a3a3a3;
+  --color-highlight: #9599a0;
   --color-success: var(--color-accent-strong);
   --color-danger: #f87171;
+  --color-danger-soft: #2a1519;
   --color-warning: #fcd34d;
   --color-warning-soft: #2a2113;
   --color-disabled-bg: #333333;
@@ -104,11 +141,30 @@
   --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.55);
   --star-opacity: 0.7;
 
-  --gradient-planet-1: radial-gradient(circle at 35% 30%, #4a4a4a, #333333, #202020);
-  --gradient-planet-2: radial-gradient(circle at 35% 30%, #5c5c5c, #3d3d3d, #262626);
-  --gradient-planet-3: radial-gradient(circle at 35% 30%, #6b6b6b, #454545, #2a2a2a);
-  --gradient-planet-4: radial-gradient(circle at 35% 30%, var(--color-ink-faint), #999999);
-  --gradient-planet-5: radial-gradient(circle at 35% 30%, var(--color-ink), #d4d4d4);
+  /* 라이트와 같은 파스텔 4색을 어두운 앵커와 섞어 톤다운(디자인 결정: 다크에서도
+     오브는 그레이스케일이 아니라 파스텔 톤 유지, 그레이스케일은 고대비 전용) */
+  --gradient-planet-1: radial-gradient(circle at 35% 30%, #3a3e44 0%, #2c2e31 65%, #202224 100%);
+  --gradient-planet-2: radial-gradient(circle at 35% 30%, #4a4046 0%, #3a3e44 45%, #26282b 100%);
+  --gradient-planet-3: radial-gradient(circle at 35% 30%, #6b5f50 0%, #6b5560 35%, #56505f 65%, #3d4650 100%);
+  --gradient-planet-4: radial-gradient(circle at 35% 30%, #8a7a5c 0%, #8a6a76 30%, #6f6685 50%, #557690 100%);
+  --gradient-planet-5: radial-gradient(
+    circle at 35% 30%,
+    #b89a68 0%,
+    #b8829a 25%,
+    #9484b8 50%,
+    #6ea0c2 75%,
+    #b89a68 100%
+  );
+
+  /* 라이트보다 훨씬 낮은 불투명도로 — 다크 배경 위에서 은은하게만 보이도록 */
+  --gradient-pastel-wash: radial-gradient(
+    ellipse 120% 60% at 50% 0%,
+    rgba(255, 244, 209, 0.14),
+    rgba(255, 220, 232, 0.11) 35%,
+    rgba(228, 217, 247, 0.09) 60%,
+    rgba(211, 231, 251, 0.06) 80%,
+    transparent 100%
+  );
 }
 
 /*
@@ -142,6 +198,7 @@
   --color-highlight: #e5e5e5;
   --color-success: var(--color-accent);
   --color-danger: #ff8f80;
+  --color-danger-soft: #0a0a0a;
   --color-warning: #ffc773;
   --color-warning-soft: #0a0a0a;
   --color-disabled-bg: #262626;
@@ -156,6 +213,9 @@
   --gradient-planet-3: radial-gradient(circle, #333333, #1a1a1a);
   --gradient-planet-4: radial-gradient(circle, var(--color-ink-faint), #666666);
   --gradient-planet-5: radial-gradient(circle, var(--color-ink), #cccccc);
+
+  /* 파스텔 워시는 대비 손실 위험이 있어 고대비 모드에서는 아예 끔 (AAA 원칙 유지) */
+  --gradient-pastel-wash: none;
 }
 
 /*
@@ -297,6 +357,22 @@ body {
 }
 .mind-planet__star--sparkle {
   clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+}
+
+/* 온보딩/스플래시/데이랩업/업적 시트/체크인 완료 화면 전용 은은한 파스텔 워시.
+   z-index:0으로 새 스태킹 컨텍스트를 만들어서 ::before(z-index:-1)가 이 요소의 배경
+   위·일반 자식 콘텐츠 아래에만 오도록 한다(.mind-planet__orb와 동일한 패턴) */
+.pastel-wash {
+  position: relative;
+  z-index: 0;
+}
+.pastel-wash::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--gradient-pastel-wash);
 }
 
 /* "마음 지구" 오브젝트 — data-planet-stage/data-planet-category로 CSS만으로 분기 */

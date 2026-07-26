@@ -14,7 +14,7 @@ import TodayMissionsScreen from './screens/missions/TodayMissionsScreen'
 import MissionArchiveScreen from './screens/missions/MissionArchiveScreen'
 import RecordsHomeScreen from './screens/records/RecordsHomeScreen'
 import HistoryScreen from './screens/records/HistoryScreen'
-import DayWrapUpScreen from './screens/records/DayWrapUpScreen'
+import StreakCalendarScreen from './screens/records/StreakCalendarScreen'
 import CheckinFlowScreen from './screens/checkin/CheckinFlowScreen'
 import SettingsHomeScreen from './screens/settings/SettingsHomeScreen'
 import DisplayAccessibilityScreen from './screens/settings/DisplayAccessibilityScreen'
@@ -56,6 +56,8 @@ function AuthenticatedApp({ auth, justSignedUp }) {
     setScreen('main')
     setActiveTab('planet')
   }
+  // 탭 전환 없이 main으로만 복귀 — 여러 탭에서 진입 가능한 화면(미션 보관함 등)의 뒤로가기용
+  const goMain = () => setScreen('main')
 
   if (screen === 'splash') {
     if (profileError) {
@@ -128,7 +130,7 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   }
 
   if (screen === 'archive') {
-    return <MissionArchiveScreen onBack={goHome} onStartCheckin={() => setScreen('checkin')} />
+    return <MissionArchiveScreen onBack={goMain} onStartCheckin={() => setScreen('checkin')} />
   }
 
   if (screen === 'history') {
@@ -143,14 +145,13 @@ function AuthenticatedApp({ auth, justSignedUp }) {
     )
   }
 
-  if (screen === 'day-wrapup') {
+  if (screen === 'records-streak') {
     return (
-      <DayWrapUpScreen
-        onDone={() => {
+      <StreakCalendarScreen
+        onBack={() => {
           setScreen('main')
-          setActiveTab('planet')
+          setActiveTab('records')
         }}
-        onSkip={() => setScreen('main')}
       />
     )
   }
@@ -225,7 +226,6 @@ function AuthenticatedApp({ auth, justSignedUp }) {
             onStartCheckin={() => setScreen('checkin')}
             onGoMissions={() => setActiveTab('missions')}
             onOpenSettings={() => setScreen('settings-home')}
-            onOpenDayWrapUp={() => setScreen('day-wrapup')}
             onOpenArchive={() => setScreen('archive')}
           />
         )}
@@ -234,14 +234,14 @@ function AuthenticatedApp({ auth, justSignedUp }) {
             onOpenSettings={() => setScreen('settings-home')}
             onStartCheckin={() => setScreen('checkin')}
             onOpenArchive={() => setScreen('archive')}
-            onOpenDayWrapUp={() => setScreen('day-wrapup')}
           />
         )}
         {activeTab === 'records' && (
           <RecordsHomeScreen
             onOpenSettings={() => setScreen('settings-home')}
             onOpenHistory={() => setScreen('history')}
-            onOpenDayWrapUp={() => setScreen('day-wrapup')}
+            onOpenStreak={() => setScreen('records-streak')}
+            onOpenArchive={() => setScreen('archive')}
           />
         )}
       </div>

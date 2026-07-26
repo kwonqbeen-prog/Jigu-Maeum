@@ -13,7 +13,7 @@ export default function SplashScreen({ error, onRetry }) {
   }, [error])
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-surface px-6 text-center">
+    <div className="pastel-wash flex min-h-svh flex-col items-center justify-center gap-4 bg-surface px-6 text-center">
       <div className="mind-planet__orb h-20 w-20 rounded-full" data-planet-stage="1" aria-hidden="true" />
       <div>
         <p className="text-[20px] font-bold text-ink">지구 마음</p>

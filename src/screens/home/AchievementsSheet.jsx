@@ -9,7 +9,7 @@ export default function AchievementsSheet({ totalCompleted, unlockedCodes, onClo
   const nextThreshold = STAGE_THRESHOLDS.find((t) => t.min > totalCompleted)
 
   return (
-    <BottomSheet title="마음 지구" onClose={onClose}>
+    <BottomSheet title="마음 지구" onClose={onClose} className="pastel-wash">
       <p className="text-[14px] font-semibold text-ink">
         {current.stage}단계 · {current.name}
       </p>

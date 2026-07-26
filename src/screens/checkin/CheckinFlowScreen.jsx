@@ -210,7 +210,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   if (phase === 'result') {
     const retryLeft = MAX_RETRY - (checkin.retry_count ?? 0)
     return (
-      <div className="flex min-h-svh flex-col bg-surface px-6 py-6">
+      <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6">
         <AppBar title="" leading="close" onLeadingClick={() => setShowConfirmClose(true)} />
         <h1 className="mt-2 text-[20px] font-bold leading-snug text-ink">
           {profile?.displayName ? `${profile.displayName}님, ` : ''}오늘은 이렇게 해보면 어떨까요?
