@@ -23,6 +23,7 @@ export default {
         highlight: 'var(--color-highlight)',
         success: 'var(--color-success)',
         danger: 'var(--color-danger)',
+        'danger-soft': 'var(--color-danger-soft)',
         warning: 'var(--color-warning)',
         'warning-soft': 'var(--color-warning-soft)',
         disabled: 'var(--color-disabled-bg)',

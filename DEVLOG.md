@@ -1,5 +1,60 @@
 # 개발일지
 
+## 2026-07-27 — 컬러/타이포 매핑 적용 + IA 재구조화 (`feature/ui-color-font-redesign` 브랜치)
+
+디자인 개선 작업. `climatemood_color_mapping.md`(컬러 매핑 문서)와 `climatemood_ia_v2.html`
+(화면 흐름 프로토타입) 두 산출물을 기준으로 진행. 새 화면/컴포넌트는 기존 리포 구조
+(`src/screens`, `src/components/common`)와 라우팅 방식을 그대로 따르고, 기존 공통
+컴포넌트 재사용을 우선했다.
+
+### 컬러/타이포 매핑 적용
+
+- `index.css`의 `:root` 기능 레이어 12개 변수를 매핑 문서 표1대로 교체(surface 순백,
+  ink/line/accent 계열 재조정, accent는 ink와 통일). 다크 테마는 문서에 값이 없어
+  surface 3종은 그대로 두고(2026-07-21 밤 세션에서 얻은 "최소 15~20/255 명도차" 교훈
+  때문), ink/line/accent 계열만 라이트 쪽 변화 방향에 맞춰 대칭 재계산
+- `--gradient-planet-1~5`(마음 지구 오브)를 그레이스케일 → 파스텔 4색(라이트옐로우/
+  라이트핑크/라벤더/스카이블루) 블렌드로 교체. 1단계는 옅고 좁게, 5단계로 갈수록
+  4색이 다 섞이며 확산·채도가 커지도록 구성. 다크 테마는 같은 4색을 톤다운한 버전,
+  고대비 모드는 접근성 근거(AAA 무채색) 그대로 유지
+- 온보딩 4종/스플래시/업적 시트/체크인 결과 화면에 은은한 파스텔 라디얼 워시
+  (`--gradient-pastel-wash`, `.pastel-wash` 클래스) 추가 — 다크는 낮은 불투명도로
+- `ThemePreviewThumb.jsx`의 하드코딩 SWATCHES 값 동기화
+- 회원 탈퇴 "탈퇴하기" 버튼: 진한 빨강 배경 → 연한 빨강 배경 + 빨강 텍스트로 변경
+  (`--color-danger-soft` 토큰 신규, 3개 테마 전부)
+
+### IA 재구조화 (탭/서브라우트/컴포넌트 통일)
+
+- 하단 탭 라벨 "기록" → "마음 기록"
+- 마음 지구 탭: 드래그 가능한 7일 날짜 슬라이더(dot 표시) 추가, 탭하면 `DayDetailSheet`
+  (신규, `BottomSheet` 재사용)로 해당 날짜 완료 미션 + 마음 일기 확인
+- 마음일기 + 기분 3단 선택을 `DayWrapUpScreen`(모든 미션 완료 후에만 진입)에서
+  `TodayMissionsScreen`의 미션 체크리스트 바로 아래 상시 노출로 이전 — 완료 여부와
+  무관하게 항상 보이고, 접근성 설정과 동일한 600ms 디바운스로 자동저장. 이 결과
+  `DayWrapUpScreen`과 그 진입 경로(HomeScreen/TodayMissionsScreen CTA, App.jsx
+  `day-wrapup` 라우트)는 전부 중복이 되어 제거
+- `MissionCard`를 리스트 행(row)으로 재설계하고 신규 `ListBlock`(흰 배경 + 옅은 회색
+  구분선)과 조합하는 구조로 변경, 체크박스는 행 오른쪽 끝으로 이동 —
+  `TodayMissionsScreen`/`HistoryScreen`/`RecordsHomeScreen`/`DayDetailSheet` 전체에
+  통일 적용
+- 기록 탭(`RecordsHomeScreen`): "연속 실천" 스탯 타일 → 신규 `StreakCalendarScreen`
+  (월간 캘린더 그리드, 기존 공통 컴포넌트로 커버 안 되는 유일한 신규 UI). "성공 미션"
+  스탯 타일 → 기존 `HistoryScreen` 재사용(필터 기본값 "완료한 미션만", 토글로 전체
+  보기 전환 가능). "다시 도전해요" 미리보기 카드 신규 추가 → 기존 `MissionArchiveScreen`
+  재사용("더보기"). 이후 "이번 주" dot 바(사용 안 함)와 "전체 기록 보기" 링크(성공
+  미션 타일과 중복)는 삭제
+- `reflections` 테이블에 `mood` 컬럼 추가 — **`supabase/schema.sql`을 대시보드에서
+  재실행하기 전까지는 기분 저장이 실패한다**
+
+### 검증
+
+- `npm run build`/`npm run lint` 통과 확인. Playwright로 라이트/다크 양쪽에서 파스텔
+  오브 5단계, 파스텔 워시, MissionCard/ListBlock 스타일, 탈퇴 버튼 톤을 스크린샷으로
+  시각 검증함
+- 로그인 필요한 실제 데이터 흐름(체크인 → 미션 → 일기/기분 저장 → 날짜 슬라이더 dot
+  반영, 캘린더 dot 반영 등)은 테스트 계정이 없어 코드 리뷰 + 빌드/린트로만 확인 —
+  실제 화면은 사용자가 직접 확인 필요
+
 ## 2026-07-26 — 기능명세서·화면설계서 기반 전면 재설계 (`feature/spec-based-redesign` 브랜치)
 
 `[지구마음] 기능명세서.csv`(10개 구분·32개 기능)와 `지구마음_화면설계서.md`(v1.3, 28개

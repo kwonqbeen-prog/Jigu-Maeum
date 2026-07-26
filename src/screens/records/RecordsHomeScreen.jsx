@@ -2,36 +2,20 @@ import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import StatTile from '../../components/common/StatTile'
 import MissionCard from '../../components/common/MissionCard'
-import PrimaryButton from '../../components/common/PrimaryButton'
-import {
-  getAllMissions,
-  getTodayMissions,
-  getReflection,
-  getStreakDays,
-  getTotalCompletedCount,
-  getWeekDots,
-  toggleMissionComplete,
-  todayISO,
-} from '../../data/storage'
-
-const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
+import ListBlock from '../../components/common/ListBlock'
+import { getAllMissions, getTodayMissions, getArchiveMissions, getStreakDays, getTotalCompletedCount, toggleMissionComplete } from '../../data/storage'
 
 // S-50 · 기록 홈 (탭3) — 명세 6.1, 6.2, 6.3
-export default function RecordsHomeScreen({ onOpenSettings, onOpenHistory, onOpenDayWrapUp }) {
+export default function RecordsHomeScreen({ onOpenSettings, onOpenHistory, onOpenStreak, onOpenArchive }) {
   const [data, setData] = useState(null)
 
   const refresh = async () => {
-    const [allMissions, todayMissions, reflection] = await Promise.all([
-      getAllMissions(),
-      getTodayMissions(),
-      getReflection(todayISO()),
-    ])
+    const [allMissions, todayMissions, archive] = await Promise.all([getAllMissions(), getTodayMissions(), getArchiveMissions()])
     setData({
       streak: getStreakDays(allMissions),
       total: getTotalCompletedCount(allMissions),
       todayMissions,
-      reflectionDone: Boolean(reflection),
-      weekDots: getWeekDots(allMissions),
+      retryPreview: archive.slice(0, 2),
     })
   }
 
@@ -41,22 +25,19 @@ export default function RecordsHomeScreen({ onOpenSettings, onOpenHistory, onOpe
 
   if (!data) return null
 
-  const todayDone = data.todayMissions.filter((m) => m.is_completed).length
-  const showWrapUpCta = todayDone >= 1 && !data.reflectionDone
-
   return (
     <div className="flex min-h-svh flex-col bg-surface pb-4">
-      <AppBar title="기록" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
+      <AppBar title="마음 기록" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
       <div className="flex-1 space-y-5 px-4">
         <div className="flex gap-3">
-          <StatTile label="연속 실천" value={data.streak} unit="일" />
-          <StatTile label="누적 완료" value={data.total} unit="개" highlight />
+          <StatTile label="연속 실천" value={data.streak} unit="일" onClick={onOpenStreak} />
+          <StatTile label="성공 미션" value={data.total} unit="개" highlight onClick={onOpenHistory} />
         </div>
 
         {data.todayMissions.length > 0 && (
           <div>
             <p className="mb-2 text-[15px] font-bold text-ink">오늘</p>
-            <div className="space-y-2">
+            <ListBlock>
               {data.todayMissions.map((m) => (
                 <MissionCard
                   key={m.id}
@@ -68,38 +49,31 @@ export default function RecordsHomeScreen({ onOpenSettings, onOpenHistory, onOpe
                   }}
                 />
               ))}
-            </div>
+            </ListBlock>
           </div>
         )}
 
-        <div>
-          <p className="mb-2 text-[15px] font-bold text-ink">이번 주</p>
-          <div className="flex justify-between rounded-2xl bg-surface-alt px-3 py-4">
-            {data.weekDots.map((d) => {
-              const isFuture = new Date(d.date) > new Date(todayISO())
-              return (
-                <div key={d.date} className="flex flex-col items-center gap-1.5">
-                  <span
-                    aria-label={`${d.date}, ${d.count}개 완료`}
-                    className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] ${
-                      isFuture ? 'text-ink-faint' : d.count > 0 ? 'bg-ink text-surface' : 'border border-line-input text-ink-faint'
-                    }`}
-                  >
-                    {isFuture ? '·' : d.count > 0 ? '●' : '○'}
-                  </span>
-                  <span className="text-[11px] text-ink-muted">{WEEKDAY_LABELS[new Date(d.date).getDay()]}</span>
+        {data.retryPreview.length > 0 && (
+          <div>
+            <p className="text-[15px] font-bold text-ink">다시 도전해요</p>
+            <p className="mb-2 mt-0.5 text-[13px] text-ink-muted">지난 미션 다시보기</p>
+            <ListBlock>
+              {data.retryPreview.map((m) => (
+                <div key={m.id} className="flex items-center px-4 py-3">
+                  <p className="min-w-0 flex-1 truncate text-[14px] font-bold text-ink">{m.title}</p>
                 </div>
-              )
-            })}
+              ))}
+            </ListBlock>
+            <button
+              type="button"
+              onClick={onOpenArchive}
+              className="mt-2 flex w-full items-center justify-center gap-1 rounded-full bg-surface-alt py-3 text-[13px] font-semibold text-ink"
+            >
+              더보기
+              <span aria-hidden="true">→</span>
+            </button>
           </div>
-        </div>
-
-        {showWrapUpCta && <PrimaryButton label="오늘 하루 마무리하기" onClick={onOpenDayWrapUp} />}
-
-        <button type="button" onClick={onOpenHistory} className="flex w-full items-center justify-between text-[14px] font-semibold text-ink">
-          전체 기록 보기
-          <span aria-hidden="true">→</span>
-        </button>
+        )}
       </div>
     </div>
   )

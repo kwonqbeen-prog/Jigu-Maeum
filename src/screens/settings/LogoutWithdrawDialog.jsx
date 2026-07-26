@@ -62,7 +62,7 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
             disabled={!canWithdraw || processing}
             onClick={handleWithdraw}
             className={`flex h-[52px] w-full items-center justify-center rounded-full text-[15px] font-bold ${
-              !canWithdraw || processing ? 'bg-disabled text-disabled-ink' : 'bg-danger text-white'
+              !canWithdraw || processing ? 'bg-disabled text-disabled-ink' : 'bg-danger-soft text-danger'
             }`}
           >
             {processing ? '탈퇴 처리 중...' : '탈퇴하기'}

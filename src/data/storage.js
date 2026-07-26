@@ -276,16 +276,27 @@ export async function getReflection(date) {
   return data
 }
 
-export async function upsertReflection(date, content) {
+export async function upsertReflection(date, content, mood = null) {
   const userId = await getUserId()
   const { data, error } = await supabase
     .from('reflections')
     .upsert(
-      { user_id: userId, date, content, updated_at: new Date().toISOString() },
+      { user_id: userId, date, content, mood, updated_at: new Date().toISOString() },
       { onConflict: 'user_id,date' },
     )
     .select()
     .single()
+  if (error) throw error
+  return data
+}
+
+export async function getRecentReflections(days) {
+  const userId = await getUserId()
+  const { data, error } = await supabase
+    .from('reflections')
+    .select('*')
+    .eq('user_id', userId)
+    .gte('date', daysAgoISO(days))
   if (error) throw error
   return data
 }
@@ -408,14 +419,4 @@ export async function deleteAllUserData() {
     const { error } = await supabase.from(table).delete().eq('user_id', userId)
     if (error) throw error
   }
-}
-
-export function getWeekDots(missions) {
-  const days = []
-  for (let i = 6; i >= 0; i -= 1) {
-    const dateISO = daysAgoISO(i)
-    const count = missions.filter((m) => m.is_completed && m.completed_at?.slice(0, 10) === dateISO).length
-    days.push({ date: dateISO, count })
-  }
-  return days
 }
