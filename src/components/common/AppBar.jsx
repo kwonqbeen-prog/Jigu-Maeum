@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import Icon from '../Icon'
 
 // C-01 AppBar — 높이 56, 스크롤 시 하단 1px 구분선 표시
@@ -43,7 +43,7 @@ export default function AppBar({ title, leading = 'none', onLeadingClick, action
           </button>
         )}
       </div>
-      <h1 className={`flex-1 truncate text-center font-bold text-ink ${isLarge ? 'text-[21px]' : 'text-[15px]'}`}>
+      <h1 className={`flex-1 truncate text-center font-medium text-ink ${isLarge ? 'text-[21px]' : 'text-[15px]'}`}>
         {title}
       </h1>
       <div className="flex w-11 items-center justify-end gap-1">

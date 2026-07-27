@@ -1,4 +1,4 @@
-import Icon from '../Icon'
+﻿import Icon from '../Icon'
 
 // C-04 ChoiceChip — 최소 높이 44, 선택 시 배경+테두리+체크 아이콘 (색만으로 구분 금지)
 export default function ChoiceChip({ label, hint, selected, disabled, onClick, role = 'radio' }) {
@@ -24,7 +24,7 @@ export default function ChoiceChip({ label, hint, selected, disabled, onClick, r
         {selected && <Icon name="check" className="text-[14px] text-surface" />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[15px] font-semibold text-ink">{label}</span>
+        <span className="block text-[15px] font-medium text-ink">{label}</span>
         {hint && <span className="mt-0.5 block text-[13px] leading-snug text-ink-muted">{hint}</span>}
       </span>
     </button>

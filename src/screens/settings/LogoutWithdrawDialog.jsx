@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import ConfirmDialog from '../../components/common/ConfirmDialog'
 import AppBar from '../../components/common/AppBar'
 import TextField from '../../components/common/TextField'
@@ -46,14 +46,14 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
     <div className="fixed inset-0 z-50 flex flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="" leading="close" onLeadingClick={onClose} />
       <div className="flex-1 px-6 pb-6">
-        <h1 className="text-[20px] font-bold text-ink">정말 탈퇴하실까요?</h1>
+        <h1 className="text-[20px] font-medium text-ink">정말 탈퇴하실까요?</h1>
         <ul className="mt-4 list-disc space-y-1 pl-5 text-[13px] text-ink-muted">
           <li>미션 기록</li>
           <li>체크인 기록</li>
           <li>회고</li>
           <li>지구 성장 단계</li>
         </ul>
-        <p className="mt-3 text-[13px] font-semibold text-ink">지운 기록은 되돌릴 수 없어요.</p>
+        <p className="mt-3 text-[13px] font-medium text-ink">지운 기록은 되돌릴 수 없어요.</p>
 
         <div className="mt-6">
           <TextField
@@ -75,7 +75,7 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
             type="button"
             disabled={!canWithdraw || processing}
             onClick={handleWithdraw}
-            className={`flex h-[52px] w-full items-center justify-center rounded-full text-[15px] font-bold ${
+            className={`flex h-[52px] w-full items-center justify-center rounded-full text-[15px] font-medium ${
               !canWithdraw || processing ? 'bg-disabled text-disabled-ink' : 'bg-danger-soft text-danger'
             }`}
           >

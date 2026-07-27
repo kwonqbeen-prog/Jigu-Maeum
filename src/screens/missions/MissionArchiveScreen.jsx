@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import SegmentedControl from '../../components/common/SegmentedControl'
 import EmptyState from '../../components/common/EmptyState'
@@ -72,7 +72,7 @@ export default function MissionArchiveScreen({ onBack, onStartCheckin }) {
                       type="button"
                       disabled={alreadyToday}
                       onClick={() => handleRetry(m)}
-                      className={`shrink-0 rounded-full px-3 py-2 text-[12px] font-bold ${
+                      className={`shrink-0 rounded-full px-3 py-2 text-[12px] font-medium ${
                         alreadyToday ? 'bg-disabled text-disabled-ink' : 'bg-ink text-surface'
                       }`}
                     >

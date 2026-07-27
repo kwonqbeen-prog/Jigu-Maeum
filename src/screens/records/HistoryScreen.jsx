@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import SegmentedControl from '../../components/common/SegmentedControl'
 import EmptyState from '../../components/common/EmptyState'
@@ -58,7 +58,7 @@ export default function HistoryScreen({ onBack, onStartCheckin }) {
             const doneCount = rows.filter((m) => m.is_completed).length
             return (
               <div key={date}>
-                <p className="text-[13px] font-bold text-ink-muted">
+                <p className="text-[13px] font-medium text-ink-muted">
                   {date} · {doneCount}개 마침
                 </p>
                 <div className="mt-2">

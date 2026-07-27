@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import DayDetailSheet from '../../components/common/DayDetailSheet'
 import { getAllMissions, getRecentReflections, getStreakDays, toggleMissionComplete, toggleMissionLike, todayISO } from '../../data/storage'
@@ -60,7 +60,7 @@ export default function StreakCalendarScreen({ onBack }) {
       <div className="flex-1 px-4 py-4">
         <div className="grid grid-cols-7 gap-1.5">
           {WEEKDAY_LABELS.map((w) => (
-            <div key={w} className="pb-1 text-center text-[11px] font-semibold text-ink-faint">
+            <div key={w} className="pb-1 text-center text-[11px] font-medium text-ink-faint">
               {w}
             </div>
           ))}
@@ -73,7 +73,7 @@ export default function StreakCalendarScreen({ onBack }) {
                 key={dateISO}
                 type="button"
                 onClick={() => setSelectedDate(dateISO)}
-                className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-2xl border-[1.5px] bg-surface-alt text-[13px] font-semibold text-ink ${
+                className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-2xl border-[1.5px] bg-surface-alt text-[13px] font-medium text-ink ${
                   isToday ? 'border-accent' : 'border-transparent'
                 }`}
               >

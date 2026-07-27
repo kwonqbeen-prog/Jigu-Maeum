@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import StepProgress from '../../components/common/StepProgress'
 import ChipGroup from '../../components/common/ChipGroup'
@@ -140,7 +140,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
     return (
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-6">
         <div className="w-full max-w-xs rounded-2xl bg-surface-alt p-5">
-          <h2 className="text-[16px] font-bold text-ink">오늘은 이미 미션을 받으셨어요</h2>
+          <h2 className="text-[16px] font-medium text-ink">오늘은 이미 미션을 받으셨어요</h2>
           <div className="mt-5 space-y-2">
             <PrimaryButton label="오늘 미션 보기" onClick={onGoToMissions} />
             <GhostButton label="다시 체크인하기" onClick={handleDiscardDraft} className="w-full" />
@@ -154,7 +154,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
     return (
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-6">
         <div className="w-full max-w-xs rounded-2xl bg-surface-alt p-5">
-          <h2 className="text-[16px] font-bold text-ink">오늘 쓰다 만 기록이 있어요</h2>
+          <h2 className="text-[16px] font-medium text-ink">오늘 쓰다 만 기록이 있어요</h2>
           <p className="mt-2 text-[13px] text-ink-muted">{checkin.step ?? 1}단계까지 골라두셨어요. 이어서 할까요?</p>
           <div className="mt-5 space-y-2">
             <PrimaryButton label="이어서 하기" onClick={handleResumeDraft} />
@@ -188,7 +188,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   if (phase === 'gen-error') {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-surface px-6 text-center lg:mx-auto lg:max-w-[480px]">
-        <p className="text-[15px] font-semibold text-ink">지금 미션을 만들지 못했어요</p>
+        <p className="text-[15px] font-medium text-ink">지금 미션을 만들지 못했어요</p>
         <div className="w-full max-w-xs space-y-2">
           <PrimaryButton label="다시 시도" onClick={() => startGeneration(checkin)} />
           <GhostButton
@@ -212,7 +212,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
     return (
       <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
         <AppBar title="" leading="close" onLeadingClick={() => setShowConfirmClose(true)} />
-        <h1 className="mt-2 text-[20px] font-bold leading-snug text-ink">
+        <h1 className="mt-2 text-[20px] font-medium leading-snug text-ink">
           {profile?.displayName ? `${profile.displayName}님, ` : ''}오늘은 이렇게 해보면 어떨까요?
         </h1>
         <div className="mt-4 space-y-2">
@@ -226,7 +226,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
           ))}
         </div>
         <div className="mt-4 rounded-2xl bg-surface-alt p-4">
-          <p className="text-[13px] font-bold text-ink-muted">왜 이 미션인가요</p>
+          <p className="text-[13px] font-medium text-ink-muted">왜 이 미션인가요</p>
           <p className="mt-1.5 text-[14px] leading-relaxed text-ink">{genResult.bundleMessage}</p>
         </div>
         <div className="mt-6 space-y-2">
@@ -309,7 +309,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
           <StepProgress current={step} total={4} />
         </div>
       </div>
-      <h1 className="mt-6 text-[24px] font-bold leading-snug text-ink">{stepConfig.headline}</h1>
+      <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">{stepConfig.headline}</h1>
       <p className="mt-2 text-[13px] text-ink-muted">{stepConfig.sub}</p>
       <div className="mt-6 flex-1 overflow-y-auto">{stepConfig.body}</div>
       <div className="flex items-center justify-between pt-6">

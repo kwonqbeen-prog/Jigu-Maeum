@@ -1,4 +1,4 @@
-import Icon from '../Icon'
+﻿import Icon from '../Icon'
 
 // C-06 PrimaryButton — 폭 100%(부모 기준), 높이 52, loading 시 라벨 유지 + 스피너.
 // className으로 lg:max-w-*+lg:mx-auto를 넘기면 넓은 데스크탑 컨테이너 안에서도
@@ -9,7 +9,7 @@ export default function PrimaryButton({ label, onClick, loading = false, disable
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`flex h-[52px] w-full items-center justify-center gap-2 rounded-full text-[15px] font-bold transition ${
+      className={`flex h-[52px] w-full items-center justify-center gap-2 rounded-full text-[15px] font-medium transition ${
         disabled || loading ? 'bg-disabled text-disabled-ink' : 'bg-ink text-surface active:opacity-90'
       } ${className}`}
     >

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import StepProgress from '../../components/common/StepProgress'
 import PrimaryButton from '../../components/common/PrimaryButton'
 import ThemePreviewThumb from '../../components/ThemePreviewThumb'
@@ -24,7 +24,7 @@ export default function ThemeModeScreen({ onNext }) {
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
       <StepProgress current={1} total={4} />
-      <h1 className="mt-6 text-[24px] font-bold leading-snug text-ink">어떤 화면이 편하세요?</h1>
+      <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">어떤 화면이 편하세요?</h1>
       <p className="mt-2 text-[13px] text-ink-muted">나중에 설정에서 바꿀 수 있어요.</p>
 
       <div role="radiogroup" aria-label="화면 모드" className="mt-6 grid grid-cols-2 gap-3">
@@ -42,7 +42,7 @@ export default function ThemeModeScreen({ onNext }) {
               }`}
             >
               <ThemePreviewThumb variant={choice.value} />
-              <span className="text-[13px] font-semibold text-ink">{choice.label}</span>
+              <span className="text-[13px] font-medium text-ink">{choice.label}</span>
               {choice.note && <span className="text-center text-[11px] leading-tight text-ink-muted">{choice.note}</span>}
             </button>
           )

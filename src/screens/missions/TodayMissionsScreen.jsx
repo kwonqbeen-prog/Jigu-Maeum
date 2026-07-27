@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import MissionCard from '../../components/common/MissionCard'
 import ListBlock from '../../components/common/ListBlock'
@@ -92,7 +92,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
           />
         ) : (
           <>
-            <div className="flex items-center justify-between text-[13px] font-semibold text-ink-muted">
+            <div className="flex items-center justify-between text-[13px] font-medium text-ink-muted">
               <span>
                 오늘 {completed.length} / {missions.length}
               </span>
@@ -106,7 +106,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
 
             {allDone && (
               <div className="rounded-2xl bg-surface-alt px-4 py-3">
-                <p className="flex items-center gap-2 text-[14px] font-bold text-ink">
+                <p className="flex items-center gap-2 text-[14px] font-medium text-ink">
                   <Icon name="celebration" /> 오늘 미션을 다 마쳤어요
                 </p>
               </div>
@@ -146,7 +146,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
             )}
 
             <div>
-              <p className="mb-1 text-[15px] font-bold text-ink">마음 일기</p>
+              <p className="mb-1 text-[15px] font-medium text-ink">마음 일기</p>
               <textarea
                 value={journalContent}
                 onChange={(e) => setJournalContent(e.target.value)}
@@ -165,7 +165,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
             </div>
 
             <div>
-              <p className="mb-2 text-[15px] font-bold text-ink">미션 후 기분이 어땠나요?</p>
+              <p className="mb-2 text-[15px] font-medium text-ink">미션 후 기분이 어땠나요?</p>
               <div className="flex gap-2">
                 {MOOD_OPTIONS.map((opt) => {
                   const active = mood === opt.value
@@ -175,7 +175,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
                       type="button"
                       aria-pressed={active}
                       onClick={() => setMood(opt.value)}
-                      className={`flex flex-1 flex-col items-center gap-1.5 rounded-2xl border-[1.5px] py-3 text-[12px] font-semibold transition ${
+                      className={`flex flex-1 flex-col items-center gap-1.5 rounded-2xl border-[1.5px] py-3 text-[12px] font-medium transition ${
                         active ? 'border-accent bg-accent-soft text-ink' : 'border-transparent bg-surface-alt text-ink-muted'
                       }`}
                     >
@@ -190,7 +190,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
             <button
               type="button"
               onClick={onOpenArchive}
-              className="w-full rounded-full bg-surface-alt py-3 text-[14px] font-bold text-ink"
+              className="w-full rounded-full bg-surface-alt py-3 text-[14px] font-medium text-ink"
             >
               미션 보관함 둘러보기
             </button>

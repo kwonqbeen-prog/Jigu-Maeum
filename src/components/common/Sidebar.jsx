@@ -1,4 +1,4 @@
-import Icon from '../Icon'
+﻿import Icon from '../Icon'
 
 const NAV_ITEMS = [
   { key: 'planet', label: '마음 지구', icon: 'public' },
@@ -13,7 +13,7 @@ export default function Sidebar({ active, badges = {}, onChange, onOpenSettings 
     <nav className="hidden shrink-0 border-r border-line bg-surface-alt lg:sticky lg:top-0 lg:flex lg:h-svh lg:w-60 lg:flex-col lg:gap-1 lg:px-3 lg:py-6">
       <div className="mb-6 flex items-center gap-2 px-3">
         <span className="mind-planet__orb h-8 w-8 rounded-full" data-planet-stage="1" aria-hidden="true" />
-        <span className="text-[15px] font-bold text-ink">지구 마음</span>
+        <span className="text-[15px] font-medium text-ink">지구 마음</span>
       </div>
 
       {NAV_ITEMS.map((item) => {
@@ -26,7 +26,7 @@ export default function Sidebar({ active, badges = {}, onChange, onOpenSettings 
             onClick={() => onChange(item.key)}
             aria-current={isActive ? 'page' : undefined}
             data-tour={`sidebar-${item.key}`}
-            className={`relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition ${
+            className={`relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition ${
               isActive ? 'bg-surface text-ink' : 'text-ink-faint'
             }`}
           >
@@ -34,7 +34,7 @@ export default function Sidebar({ active, badges = {}, onChange, onOpenSettings 
               <Icon name={item.icon} filled={isActive} className={isActive ? 'text-ink' : 'text-ink-faint'} />
               {badge ? (
                 <span
-                  className="absolute -right-1.5 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white"
+                  className="absolute -right-1.5 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-medium text-white"
                   aria-hidden="true"
                 >
                   {badge === true ? '' : badge}
@@ -49,7 +49,7 @@ export default function Sidebar({ active, badges = {}, onChange, onOpenSettings 
       <button
         type="button"
         onClick={onOpenSettings}
-        className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-ink-faint"
+        className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium text-ink-faint"
       >
         <Icon name="settings" />
         설정

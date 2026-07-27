@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import ChipGroup from '../../components/common/ChipGroup'
 import PrimaryButton from '../../components/common/PrimaryButton'
@@ -42,15 +42,15 @@ export default function ProfileEditScreen({ profile, onBack, onSave }) {
       <AppBar title="나의 프로필" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-6 px-4 py-4">
         <section>
-          <p className="mb-2 text-[13px] font-bold text-ink-muted">마음이 무거울 때, 보통 어떻게 하세요?</p>
+          <p className="mb-2 text-[13px] font-medium text-ink-muted">마음이 무거울 때, 보통 어떻게 하세요?</p>
           <ChipGroup items={COPING_STYLES} mode="single" value={copingStyle} onChange={setCopingStyle} />
         </section>
         <section>
-          <p className="mb-2 text-[13px] font-bold text-ink-muted">다른 사람과 함께하는 활동은 어떠세요?</p>
+          <p className="mb-2 text-[13px] font-medium text-ink-muted">다른 사람과 함께하는 활동은 어떠세요?</p>
           <ChipGroup items={SOCIAL_PREFERENCES} mode="single" value={socialPreference} onChange={setSocialPreference} />
         </section>
         <section>
-          <p className="mb-2 text-[13px] font-bold text-ink-muted">어떤 쪽이 더 마음이 가세요? (1~3개)</p>
+          <p className="mb-2 text-[13px] font-medium text-ink-muted">어떤 쪽이 더 마음이 가세요? (1~3개)</p>
           <ChipGroup
             items={INTERESTS}
             mode="multi"
@@ -64,7 +64,7 @@ export default function ProfileEditScreen({ profile, onBack, onSave }) {
         </section>
 
         <section>
-          <p className="mb-2 text-[13px] font-bold text-ink-muted">나에 대해 기억하고 있는 것</p>
+          <p className="mb-2 text-[13px] font-medium text-ink-muted">나에 대해 기억하고 있는 것</p>
           <p className="mb-2 text-[12px] text-ink-muted">대화에서 알게 된 내용이에요. 지우면 다음 미션부터 참고하지 않아요.</p>
           {memories === null ? null : memories.length === 0 ? (
             <p className="text-[13px] text-ink-faint">아직 기억하고 있는 게 없어요</p>

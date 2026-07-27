@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import TextField from '../../components/common/TextField'
 import { useToast } from '../../contexts/ToastContext'
@@ -36,14 +36,14 @@ export default function AccountScreen({ auth, onBack, onChangePassword }) {
           maxLength={12}
           counter={`${nickname.length}/12`}
           rightSlot={
-            <button type="button" onClick={handleBlur} className="text-[13px] font-bold text-ink shrink-0">
+            <button type="button" onClick={handleBlur} className="text-[13px] font-medium text-ink shrink-0">
               저장
             </button>
           }
         />
 
         {!isKakao && (
-          <button type="button" onClick={onChangePassword} className="w-full rounded-xl bg-surface-alt px-4 py-3 text-left text-[14px] font-semibold text-ink">
+          <button type="button" onClick={onChangePassword} className="w-full rounded-xl bg-surface-alt px-4 py-3 text-left text-[14px] font-medium text-ink">
             비밀번호 변경
           </button>
         )}

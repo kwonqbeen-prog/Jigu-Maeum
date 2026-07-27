@@ -1,4 +1,4 @@
-import BottomSheet from '../../components/common/BottomSheet'
+﻿import BottomSheet from '../../components/common/BottomSheet'
 import Icon from '../../components/Icon'
 import { getPlanetStage, STAGE_THRESHOLDS } from '../../components/common/PlanetOrb'
 import { ACHIEVEMENTS } from '../../data/constants'
@@ -10,7 +10,7 @@ export default function AchievementsSheet({ totalCompleted, unlockedCodes, onClo
 
   return (
     <BottomSheet title="마음 지구" onClose={onClose} className="pastel-wash">
-      <p className="text-[14px] font-semibold text-ink">
+      <p className="text-[14px] font-medium text-ink">
         {current.stage}단계 · {current.name}
       </p>
       {nextThreshold && (
@@ -25,7 +25,7 @@ export default function AchievementsSheet({ totalCompleted, unlockedCodes, onClo
               <div className={`flex h-12 w-12 items-center justify-center rounded-full ${done ? 'bg-ink' : 'bg-surface-sunken'}`}>
                 <Icon name="star" filled={done} className={done ? 'text-[20px] text-surface' : 'text-[20px] text-ink-faint'} />
               </div>
-              <p className="text-[12px] font-bold text-ink">{a.name}</p>
+              <p className="text-[12px] font-medium text-ink">{a.name}</p>
               <p className="text-[11px] text-ink-muted">{done ? '달성' : `아직 · ${a.condition}`}</p>
             </div>
           )

@@ -1,4 +1,4 @@
-import AppBar from '../../components/common/AppBar'
+﻿import AppBar from '../../components/common/AppBar'
 import ThemePreviewThumb from '../../components/ThemePreviewThumb'
 import PrimaryButton from '../../components/common/PrimaryButton'
 import { useTheme, THEME_OPTIONS, COLORBLIND_OPTIONS, FONT_SCALE_STEPS } from '../../contexts/ThemeContext'
@@ -15,7 +15,7 @@ function ToggleRow({ label, description, checked, onChange }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl bg-surface-alt p-3">
       <div className="min-w-0">
-        <p className="text-[14px] font-semibold text-ink">{label}</p>
+        <p className="text-[14px] font-medium text-ink">{label}</p>
         {description && <p className="mt-0.5 text-[12px] text-ink-muted">{description}</p>}
       </div>
       <button
@@ -49,15 +49,15 @@ export default function DisplayAccessibilityScreen({ onBack }) {
       <AppBar title="화면 및 접근성" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-6 px-4 py-4">
         <div className="rounded-2xl bg-surface-alt p-4">
-          <p className="text-[15px] font-bold text-ink">미리보기</p>
+          <p className="text-[15px] font-medium text-ink">미리보기</p>
           <p className="mt-1 text-[13px] text-ink-muted">본문 텍스트가 이렇게 보여요.</p>
-          <button type="button" className="cta-neutral mt-2 rounded-full px-4 py-2 text-[13px] font-bold">
+          <button type="button" className="cta-neutral mt-2 rounded-full px-4 py-2 text-[13px] font-medium">
             버튼 샘플
           </button>
         </div>
 
         <section>
-          <p className="mb-2 text-[13px] font-bold text-ink-muted">화면 모드</p>
+          <p className="mb-2 text-[13px] font-medium text-ink-muted">화면 모드</p>
           <div role="radiogroup" aria-label="화면 모드" className="grid grid-cols-2 gap-2">
             {THEME_OPTIONS.map((value) => {
               const checked = settings.theme === value
@@ -71,7 +71,7 @@ export default function DisplayAccessibilityScreen({ onBack }) {
                   className={`flex items-center gap-2 rounded-xl p-2.5 ${checked ? 'bg-accent-soft border-[1.5px] border-accent' : 'bg-surface-alt border-[1.5px] border-transparent'}`}
                 >
                   <ThemePreviewThumb variant={value} />
-                  <span className="text-[13px] font-semibold text-ink">{THEME_LABELS[value]}</span>
+                  <span className="text-[13px] font-medium text-ink">{THEME_LABELS[value]}</span>
                 </button>
               )
             })}
@@ -79,9 +79,9 @@ export default function DisplayAccessibilityScreen({ onBack }) {
         </section>
 
         <section className="space-y-2">
-          <p className="text-[13px] font-bold text-ink-muted">보정</p>
+          <p className="text-[13px] font-medium text-ink-muted">보정</p>
           <div className="rounded-xl bg-surface-alt p-3">
-            <label htmlFor="colorblind" className="block text-[14px] font-semibold text-ink">
+            <label htmlFor="colorblind" className="block text-[14px] font-medium text-ink">
               색약 보정
             </label>
             <select
@@ -100,8 +100,8 @@ export default function DisplayAccessibilityScreen({ onBack }) {
 
           <div className="rounded-xl bg-surface-alt p-3">
             <div className="flex items-center justify-between">
-              <span className="text-[14px] font-semibold text-ink">글자 크기</span>
-              <span className="text-[13px] font-semibold text-ink-muted">{Math.round(FONT_SCALE_STEPS[stepIndex] * 100)}%</span>
+              <span className="text-[14px] font-medium text-ink">글자 크기</span>
+              <span className="text-[13px] font-medium text-ink-muted">{Math.round(FONT_SCALE_STEPS[stepIndex] * 100)}%</span>
             </div>
             <input
               type="range"

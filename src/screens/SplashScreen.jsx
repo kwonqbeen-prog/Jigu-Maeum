@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import Icon from '../components/Icon'
 import PrimaryButton from '../components/common/PrimaryButton'
 
@@ -16,7 +16,7 @@ export default function SplashScreen({ error, onRetry }) {
     <div className="pastel-wash flex min-h-svh flex-col items-center justify-center gap-4 bg-surface px-6 text-center">
       <div className="mind-planet__orb h-20 w-20 rounded-full" data-planet-stage="1" aria-hidden="true" />
       <div>
-        <p className="text-[20px] font-bold text-ink">지구 마음</p>
+        <p className="text-[20px] font-medium text-ink">지구 마음</p>
         <p className="mt-1 text-[13px] text-ink-muted">마음을 돌보다, 지구를 돌보다</p>
       </div>
       {error ? (

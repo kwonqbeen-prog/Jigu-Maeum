@@ -1,4 +1,4 @@
-import Icon from '../Icon'
+﻿import Icon from '../Icon'
 
 // 미션 타입(carbon/nature/social)별 아이콘 배지 — 배경 그라데이션은 index.css의
 // .mission-type-icon[data-mission-type] 참고
@@ -27,7 +27,7 @@ export default function MissionCard({ mission, onOpen, onToggle, showLike = fals
         </span>
       )}
       <button type="button" onClick={() => onOpen(mission)} className="min-w-0 flex-1 text-left">
-        <p className={`line-clamp-2 text-[15px] font-bold ${completed ? 'text-ink-muted' : 'text-ink'}`}>
+        <p className={`line-clamp-2 text-[15px] font-medium ${completed ? 'text-ink-muted' : 'text-ink'}`}>
           {mission.title}
         </p>
         <p className="mt-0.5 truncate text-[13px] text-ink-muted">

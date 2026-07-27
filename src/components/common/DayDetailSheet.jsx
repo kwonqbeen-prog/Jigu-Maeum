@@ -1,4 +1,4 @@
-import BottomSheet from './BottomSheet'
+﻿import BottomSheet from './BottomSheet'
 import MissionCard from './MissionCard'
 import ListBlock from './ListBlock'
 
@@ -10,7 +10,7 @@ function formatDateLabel(dateISO) {
 export default function DayDetailSheet({ dateISO, missions, journal, onClose, onToggle, onToggleLike }) {
   return (
     <BottomSheet title={formatDateLabel(dateISO)} onClose={onClose}>
-      <p className="text-[13px] font-bold text-ink-muted">해당 날짜에 완료한 미션</p>
+      <p className="text-[13px] font-medium text-ink-muted">해당 날짜에 완료한 미션</p>
       <div className="mt-2">
         {missions.length > 0 ? (
           <ListBlock>
@@ -23,7 +23,7 @@ export default function DayDetailSheet({ dateISO, missions, journal, onClose, on
         )}
       </div>
 
-      <p className="mt-5 text-[13px] font-bold text-ink-muted">마음 일기</p>
+      <p className="mt-5 text-[13px] font-medium text-ink-muted">마음 일기</p>
       <div className="mt-2 rounded-2xl bg-surface-alt px-4 py-3 text-[13px] leading-relaxed text-ink">
         {journal || <span className="text-ink-faint">작성한 마음 일기가 없어요.</span>}
       </div>

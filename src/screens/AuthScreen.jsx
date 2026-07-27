@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Icon from '../components/Icon'
 import TextField from '../components/common/TextField'
 import PrimaryButton from '../components/common/PrimaryButton'
@@ -54,14 +54,14 @@ export default function AuthScreen({ auth, onForgotPassword, onSignupSuccess }) 
       <div className="w-full max-w-xs">
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="mind-planet__orb h-14 w-14 rounded-full" data-planet-stage="1" aria-hidden="true" />
-          <p className="text-[20px] font-bold text-ink">지구 마음</p>
+          <p className="text-[20px] font-medium text-ink">지구 마음</p>
           <p className="text-[13px] text-ink-muted">마음을 돌보다, 지구를 돌보다</p>
         </div>
 
         <button
           type="button"
           onClick={auth.signInWithKakao}
-          className="mt-8 flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#FEE500] text-[15px] font-bold text-[#191919]"
+          className="mt-8 flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#FEE500] text-[15px] font-medium text-[#191919]"
         >
           카카오로 시작하기
         </button>
@@ -137,7 +137,7 @@ export default function AuthScreen({ auth, onForgotPassword, onSignupSuccess }) 
           />
         </form>
 
-        <div className="mt-4 flex items-center justify-between text-[13px] font-semibold text-ink-muted">
+        <div className="mt-4 flex items-center justify-between text-[13px] font-medium text-ink-muted">
           <button type="button" onClick={onForgotPassword}>
             비밀번호를 잊었어요
           </button>

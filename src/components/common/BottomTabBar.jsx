@@ -1,4 +1,4 @@
-import Icon from '../Icon'
+﻿import Icon from '../Icon'
 
 const TABS = [
   { key: 'planet', label: '마음 지구', icon: 'public' },
@@ -29,7 +29,7 @@ export default function BottomTabBar({ active, badges = {}, onChange }) {
               <Icon name={tab.icon} filled={isActive} className={isActive ? 'text-ink' : 'text-ink-faint'} />
               {badge ? (
                 <span
-                  className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white"
+                  className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-medium text-white"
                   aria-hidden="true"
                 >
                   {badge === true ? '' : badge}

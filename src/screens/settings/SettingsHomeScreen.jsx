@@ -1,4 +1,4 @@
-import AppBar from '../../components/common/AppBar'
+﻿import AppBar from '../../components/common/AppBar'
 import Icon from '../../components/Icon'
 
 function Row({ label, onClick, muted = false }) {
@@ -8,7 +8,7 @@ function Row({ label, onClick, muted = false }) {
       onClick={onClick}
       className="flex w-full items-center justify-between rounded-xl bg-surface-alt px-4 py-3.5 text-left"
     >
-      <span className={`text-[14px] font-semibold ${muted ? 'text-ink-muted' : 'text-ink'}`}>{label}</span>
+      <span className={`text-[14px] font-medium ${muted ? 'text-ink-muted' : 'text-ink'}`}>{label}</span>
       <Icon name="chevron_right" className="text-ink-faint" />
     </button>
   )
@@ -21,17 +21,17 @@ export default function SettingsHomeScreen({ onBack, onOpenDisplay, onOpenAccoun
       <AppBar title="설정" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-6 px-4 py-4">
         <section className="space-y-2">
-          <p className="px-1 text-[12px] font-bold text-ink-faint">화면</p>
+          <p className="px-1 text-[12px] font-medium text-ink-faint">화면</p>
           <Row label="화면 및 접근성" onClick={onOpenDisplay} />
         </section>
         <section className="space-y-2">
-          <p className="px-1 text-[12px] font-bold text-ink-faint">나</p>
+          <p className="px-1 text-[12px] font-medium text-ink-faint">나</p>
           <Row label="계정 정보" onClick={onOpenAccount} />
           <Row label="나의 프로필" onClick={onOpenProfile} />
           <Row label="안내 다시 보기" onClick={onOpenCoachmark} />
         </section>
         <section className="space-y-2">
-          <p className="px-1 text-[12px] font-bold text-ink-faint">안내</p>
+          <p className="px-1 text-[12px] font-medium text-ink-faint">안내</p>
           <Row label="도움 받을 곳" onClick={() => onOpenSupport('help')} />
           <Row label="서비스 안내" onClick={() => onOpenSupport('about')} />
         </section>

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useRef, useState } from 'react'
+﻿import { createContext, useCallback, useContext, useRef, useState } from 'react'
 import Icon from '../components/Icon'
 
 const ToastContext = createContext(null)
@@ -18,7 +18,7 @@ export function ToastProvider({ children }) {
       {children}
       {toast && (
         <div className="pointer-events-none fixed inset-x-0 bottom-16 z-50 flex justify-center px-4" aria-live="polite">
-          <div className="flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[13px] font-semibold text-surface shadow-lg">
+          <div className="flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[13px] font-medium text-surface shadow-lg">
             {toast.tone === 'danger' && <Icon name="error" className="text-[16px]" />}
             {toast.message}
           </div>

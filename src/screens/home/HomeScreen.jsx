@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import PlanetOrb, { getPlanetStage } from '../../components/common/PlanetOrb'
 import PrimaryButton from '../../components/common/PrimaryButton'
@@ -161,7 +161,7 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
 
         {data.todayCheckinExists && data.todayMissions.length > 0 && (
           <button type="button" onClick={onGoMissions} className="mt-4 w-full py-1 text-left">
-            <div className="flex items-center justify-between text-[13px] font-bold text-ink">
+            <div className="flex items-center justify-between text-[13px] font-medium text-ink">
               <span>오늘의 미션</span>
               <span>
                 {data.todayMissions.length - remaining.length} / {data.todayMissions.length}
@@ -201,8 +201,8 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
                   isToday ? 'border-accent' : 'border-transparent'
                 } bg-surface-alt`}
               >
-                <span className="text-[10px] font-semibold text-ink-faint">{dow}</span>
-                <span className="text-[13px] font-bold text-ink">{day}</span>
+                <span className="text-[10px] font-medium text-ink-faint">{dow}</span>
+                <span className="text-[13px] font-medium text-ink">{day}</span>
                 <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(date) ? 'day-dot--active' : 'bg-transparent'}`} />
               </button>
             )

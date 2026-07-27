@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import AppBar from '../components/common/AppBar'
 import TextField from '../components/common/TextField'
 import PrimaryButton from '../components/common/PrimaryButton'
@@ -24,7 +24,7 @@ export default function ResetPasswordScreen({ auth, onBack }) {
       <div className="flex flex-1 flex-col px-6 py-6">
         {done ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-            <p className="text-[15px] font-semibold text-ink">
+            <p className="text-[15px] font-medium text-ink">
               메일함을 확인해 주세요. 5분 안에 오지 않으면 스팸함도 확인해 보세요.
             </p>
             <PrimaryButton label="로그인으로 돌아가기" onClick={onBack} />

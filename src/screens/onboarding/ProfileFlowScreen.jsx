@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import StepProgress from '../../components/common/StepProgress'
 import ChipGroup from '../../components/common/ChipGroup'
@@ -75,7 +75,7 @@ export default function ProfileFlowScreen({ onNext, onBack }) {
       <AppBar title="" leading="back" onLeadingClick={handleBack} />
       <div className="flex flex-1 flex-col px-6 pb-6">
         <StepProgress current={3} total={4} />
-        <h1 className="mt-6 text-[24px] font-bold leading-snug text-ink">{step.headline}</h1>
+        <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">{step.headline}</h1>
         {step.sub && <p className="mt-2 text-[13px] text-ink-muted">{step.sub}</p>}
         <div className="mt-6 flex-1 overflow-y-auto">{step.body}</div>
         <div className="pt-6">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import StatTile from '../../components/common/StatTile'
 import MissionCard from '../../components/common/MissionCard'
@@ -36,7 +36,7 @@ export default function RecordsHomeScreen({ isActive = true, onOpenSettings, onO
 
         {data.retryPreview.length > 0 && (
           <div>
-            <p className="text-[15px] font-bold text-ink">다시 도전해요</p>
+            <p className="text-[15px] font-medium text-ink">다시 도전해요</p>
             <p className="mb-2 mt-0.5 text-[13px] text-ink-muted">지난 미션 다시보기</p>
             <ListBlock>
               {data.retryPreview.map((m) => (
@@ -54,7 +54,7 @@ export default function RecordsHomeScreen({ isActive = true, onOpenSettings, onO
             <button
               type="button"
               onClick={onOpenArchive}
-              className="mt-2 flex w-full items-center justify-center gap-1 rounded-full bg-surface-alt py-3 text-[13px] font-semibold text-ink"
+              className="mt-2 flex w-full items-center justify-center gap-1 rounded-full bg-surface-alt py-3 text-[13px] font-medium text-ink"
             >
               더보기
               <span aria-hidden="true">→</span>
