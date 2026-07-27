@@ -1,4 +1,5 @@
 import Icon from '../Icon'
+import SparkleStar from './SparkleStar'
 
 // 화면설계서 §6 S-20 — 누적 완료 수 → 5단계 임계값 [결정필요 → Q6, 문서 기본값 그대로 적용]
 export const STAGE_THRESHOLDS = [
@@ -45,14 +46,29 @@ export default function PlanetOrb({ totalCompleted = 0, decorations = [], size =
   return (
     <div className="relative flex h-full items-center justify-center overflow-hidden" aria-hidden={size !== 'large' ? undefined : false}>
       {size === 'large' &&
-        STARS.map((star, i) => (
-          <span
-            key={i}
-            className={`mind-planet__star mind-planet__star--${star.shape} absolute`}
-            style={{ top: star.top, left: star.left, width: star.size, height: star.size }}
-            aria-hidden="true"
-          />
-        ))}
+        STARS.map((star, i) =>
+          star.shape === 'sparkle' ? (
+            <SparkleStar
+              key={i}
+              className="absolute"
+              style={{
+                top: star.top,
+                left: star.left,
+                width: star.size,
+                height: star.size,
+                color: 'var(--color-highlight)',
+                opacity: 'var(--star-opacity)',
+              }}
+            />
+          ) : (
+            <span
+              key={i}
+              className="mind-planet__star mind-planet__star--dot absolute"
+              style={{ top: star.top, left: star.left, width: star.size, height: star.size }}
+              aria-hidden="true"
+            />
+          ),
+        )}
       <button
         type="button"
         onClick={onClick}

@@ -6,7 +6,6 @@ import PrimaryButton from '../../components/common/PrimaryButton'
 const SLIDES = [
   {
     wash: 'radial-gradient(circle at 30% 15%, #d3e7fb 0%, transparent 45%), radial-gradient(circle at 75% 30%, #e4d9f7 0%, transparent 50%), radial-gradient(circle at 30% 80%, #ffdce8 0%, transparent 50%)',
-    star: { top: '9%', left: '50%' },
     headline: ['기후 위기 속에서', '마음이 무거운가요?'],
     body: ['지구 마음은 기후 불안을 겪는', '사람들을 위해 만들어진', '감정 케어 서비스예요.'],
   },
@@ -81,14 +80,6 @@ export default function ServiceIntroCarouselScreen({ onComplete }) {
       className="landing-wash pre-auth-light relative flex min-h-svh flex-col overflow-hidden bg-surface"
       style={{ '--gradient-landing-wash': slide.wash }}
     >
-      {slide.star && (
-        <span
-          className="mind-planet__star mind-planet__star--sparkle absolute"
-          style={{ top: slide.star.top, left: slide.star.left, width: 10, height: 10, opacity: 0.3 }}
-          aria-hidden="true"
-        />
-      )}
-
       <div
         className="flex flex-1 touch-pan-y select-none"
         onPointerDown={handlePointerDown}

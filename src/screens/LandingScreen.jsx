@@ -1,29 +1,26 @@
 import PrimaryButton from '../components/common/PrimaryButton'
+import SparkleStar from '../components/common/SparkleStar'
 
 // S-00b · 랜딩 — 세션 없음이 확인된 뒤 보여지는 가입하기/로그인 진입 화면.
 // 로그인 전 화면이라 항상 라이트 고정(.pre-auth-light 참고)
 export default function LandingScreen({ onSignup, onLogin }) {
   return (
     <div className="landing-wash pre-auth-light relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-surface px-6 text-center">
-      <span
-        className="mind-planet__star mind-planet__star--sparkle absolute"
-        style={{ top: '13%', right: '16%', width: 10, height: 10 }}
-        aria-hidden="true"
+      <SparkleStar
+        className="absolute"
+        style={{ top: '13%', right: '16%', width: 30, height: 30, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
       />
-      <span
-        className="mind-planet__star mind-planet__star--sparkle absolute"
-        style={{ top: '30%', left: '12%', width: 7, height: 7 }}
-        aria-hidden="true"
+      <SparkleStar
+        className="absolute"
+        style={{ top: '30%', left: '12%', width: 21, height: 21, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
       />
-      <span
-        className="mind-planet__star mind-planet__star--sparkle absolute"
-        style={{ bottom: '26%', right: '20%', width: 6, height: 6 }}
-        aria-hidden="true"
+      <SparkleStar
+        className="absolute"
+        style={{ bottom: '26%', right: '20%', width: 18, height: 18, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
       />
-      <span
-        className="mind-planet__star mind-planet__star--sparkle absolute"
-        style={{ bottom: '14%', left: '18%', width: 8, height: 8 }}
-        aria-hidden="true"
+      <SparkleStar
+        className="absolute"
+        style={{ bottom: '14%', left: '18%', width: 24, height: 24, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
       />
 
       <div className="mind-planet__orb h-16 w-16 rounded-full" data-planet-stage="1" aria-hidden="true" />

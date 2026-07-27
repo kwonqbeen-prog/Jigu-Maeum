@@ -115,15 +115,20 @@
   --gradient-type-nature: linear-gradient(135deg, #dffbef, #a6e8d4);
   --gradient-type-social: linear-gradient(135deg, #fff4d1, #ffdce8);
 
-  /* 감성 레이어: 랜딩/서비스소개 캐러셀 전용 — 오브 4색 중 옐로우를 뺀 스카이블루·라벤더·
-     핑크만 사용, .pastel-wash보다 채도를 진하게 뒀다. 로그인 전 화면(Splash/Landing/
-     캐러셀)은 아직 테마를 알 수 없어 항상 라이트로 고정하기로 했으므로(.pre-auth-light
-     참고) 다크/고대비 오버라이드를 따로 두지 않는다 — :root 값 하나만 항상 쓰인다.
-     캐러셀 슬라이드별 배리에이션은 이 커스텀 프로퍼티를 슬라이드 컨테이너에서 인라인으로
-     지역 override해서 만든다(아래 .landing-wash 참고) */
-  --gradient-landing-wash: radial-gradient(circle at 30% 15%, #d3e7fb 0%, transparent 45%),
-    radial-gradient(circle at 75% 30%, #e4d9f7 0%, transparent 50%),
-    radial-gradient(circle at 30% 80%, #ffdce8 0%, transparent 50%);
+  /* 감성 레이어: 랜딩 전용 — 오브 4색(라이트옐로우/라이트핑크/라벤더/스카이블루) 전부
+     사용하는 5개 원 블렌드(`landing_screen_gradient_concept.html` 디자인 컨셉 그대로).
+     로그인 전 화면(Splash/Landing)은 아직 테마를 알 수 없어 항상 라이트로 고정하기로
+     했으므로(.pre-auth-light 참고) 다크/고대비 오버라이드를 따로 두지 않는다 — :root 값
+     하나만 항상 쓰인다. 마지막 항목(#fffdf5)은 배경 원이 안 덮는 빈 자리를 채우는 베이스
+     색이며, background 단축 속성으로만 소비되는 값이라 background-image 전용 프로퍼티에
+     쓰면 안 된다(.landing-wash::before 참고). 캐러셀 슬라이드별 배경은 이 값을 참고하지
+     않고 슬라이드 컨테이너에서 각자 지역 override한다 */
+  --gradient-landing-wash: radial-gradient(circle at 30% 15%, #fff4d1 0%, transparent 40%),
+    radial-gradient(circle at 75% 25%, #ffdce8 0%, transparent 45%),
+    radial-gradient(circle at 20% 55%, #e4d9f7 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #d3e7fb 0%, transparent 45%),
+    radial-gradient(circle at 50% 90%, #ffdce8 0%, transparent 50%),
+    #fffdf5;
 }
 
 /* 로그인 전 화면(SplashScreen/LandingScreen/ServiceIntroCarouselScreen) 전용 색상 고정.
@@ -161,7 +166,9 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: var(--gradient-landing-wash);
+  /* background 단축 속성 — --gradient-landing-wash가 마지막에 베이스 색(#fffdf5)까지
+     포함하므로 background-image가 아니라 이걸 써야 background-color로도 반영된다 */
+  background: var(--gradient-landing-wash);
 }
 
 [data-theme='dark'] {
@@ -424,9 +431,8 @@ body {
 .mind-planet__star--dot {
   border-radius: 50%;
 }
-.mind-planet__star--sparkle {
-  clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
-}
+/* 사각별(sparkle) 모양은 더 이상 clip-path 폴리곤이 아니라 SparkleStar.jsx의 곡선 SVG로
+   그린다 — 표창처럼 모서리가 뾰족했던 문제를 해결하기 위해 교체됨(2026-07-27) */
 
 /* 마음 지구 홈 날짜 슬라이더의 "그날 기록 있음" 표시 점 — 테마 불문 고정 파스텔
    그라데이션(디자인 확정값, 오브 팔레트 중 핑크→스카이블루 조합) */
