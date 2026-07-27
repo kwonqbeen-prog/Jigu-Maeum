@@ -6,7 +6,7 @@ import InlineBanner from '../components/common/InlineBanner'
 import SparkleStar from '../components/common/SparkleStar'
 
 // S-01 · 로그인 · 회원가입 (명세 1.1, 1.2)
-export default function AuthScreen({ auth, initialMode = 'login', onForgotPassword, onSignupSuccess }) {
+export default function AuthScreen({ auth, initialMode = 'login', onForgotPassword }) {
   const [mode, setMode] = useState(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -39,7 +39,6 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
       const ok = await auth.signUpWithEmail(email, password)
       if (ok) {
         setSignupDone(true)
-        onSignupSuccess?.()
       }
     }
     setSubmitting(false)

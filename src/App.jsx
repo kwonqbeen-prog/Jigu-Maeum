@@ -34,7 +34,7 @@ import { markOnboardingCompleted, markCoachmarkSeen, getTodayIncompleteMissionCo
 
 const RECORDS_LAST_SEEN_KEY = 'climatemood:records-last-seen-at'
 
-function AuthenticatedApp({ auth, justSignedUp }) {
+function AuthenticatedApp({ auth }) {
   const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile, save: saveProfile } = useProfile(auth.user.id)
   const [screen, setScreen] = useState('splash')
   const [activeTab, setActiveTab] = useState('planet')
@@ -132,14 +132,19 @@ function AuthenticatedApp({ auth, justSignedUp }) {
     window.scrollTo(0, scrollPositionsRef.current[activeTab] ?? 0)
   }, [screen, activeTab])
 
+  // justSignedUp(가입 직후 여부) 같은 세션 한정 신호에 기대지 않는다 — 카카오 로그인은
+  // AuthScreen의 signUpWithEmail 콜백 경로를 안 타서 그 신호가 절대 true가 될 수 없고,
+  // 이메일 가입도 온보딩 도중 새로고침되면 신호가 사라지는 문제가 있었다(실제 재현 확인).
+  // 대신 실제로 영속되는 데이터만으로 판단한다: displayName이 없으면(가입 방식과 무관하게)
+  // 온보딩을 처음부터(웰컴) 다시 시작 — 어차피 온보딩 완료 전까지는 몇 번을 새로고침해도
+  // 안전하게 같은 결론에 도달한다. displayName은 있는데 onboarding_completed_at만 없으면
+  // 닉네임까지는 끝냈다는 뜻이므로 프로필 단계부터 재개한다.
   useEffect(() => {
     if (profileLoading || profileError || bootstrappedRef.current) return
     bootstrappedRef.current = true
     const displayName = auth.user?.user_metadata?.display_name
-    if (justSignedUp) {
+    if (!displayName) {
       setScreen('onb-welcome')
-    } else if (!displayName) {
-      setScreen('onb-nickname')
     } else if (!profile?.onboarding_completed_at) {
       setScreen('onb-profile')
     } else {
@@ -167,11 +172,18 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   }
 
   if (screen === 'onb-theme') {
-    return <ThemeModeScreen onNext={() => setScreen('onb-nickname')} />
+    return <ThemeModeScreen onNext={() => setScreen('onb-nickname')} onBack={() => setScreen('onb-welcome')} />
   }
 
   if (screen === 'onb-nickname') {
-    return <NicknameScreen auth={auth} onNext={() => setScreen('onb-profile')} showStepProgress={true} />
+    return (
+      <NicknameScreen
+        auth={auth}
+        onNext={() => setScreen('onb-profile')}
+        onBack={() => setScreen('onb-theme')}
+        showStepProgress={true}
+      />
+    )
   }
 
   if (screen === 'onb-profile') {
@@ -387,7 +399,6 @@ function AuthenticatedApp({ auth, justSignedUp }) {
 }
 
 function AppInner({ auth }) {
-  const justSignedUpRef = useRef(false)
   // 'landing' | 'carousel' | 'auth-login' | 'auth-signup' | 'reset-password'
   const [preAuthScreen, setPreAuthScreen] = useState('landing')
   const wasLoadingRef = useRef(true)
@@ -434,9 +445,6 @@ function AppInner({ auth }) {
           auth={auth}
           initialMode={preAuthScreen === 'auth-signup' ? 'signup' : 'login'}
           onForgotPassword={() => setPreAuthScreen('reset-password')}
-          onSignupSuccess={() => {
-            justSignedUpRef.current = true
-          }}
         />
       )
     } else {
@@ -450,7 +458,7 @@ function AppInner({ auth }) {
     return <div className="pre-auth-light">{content}</div>
   }
 
-  return <AuthenticatedApp auth={auth} key={auth.user.id} justSignedUp={justSignedUpRef.current} />
+  return <AuthenticatedApp auth={auth} key={auth.user.id} />
 }
 
 function App() {

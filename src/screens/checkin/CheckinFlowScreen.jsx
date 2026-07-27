@@ -210,41 +210,43 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   if (phase === 'result') {
     const retryLeft = MAX_RETRY - (checkin.retry_count ?? 0)
     return (
-      <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
-        <AppBar title="" leading="close" onLeadingClick={() => setShowConfirmClose(true)} />
-        <h1 className="mt-2 text-[20px] font-medium leading-snug text-ink">
-          {profile?.displayName ? `${profile.displayName}님, ` : ''}오늘은 이렇게 해보면 어떨까요?
-        </h1>
-        <div className="mt-4 space-y-2">
-          {genResult.missions.map((m, i) => (
-            <MissionCard
-              key={i}
-              mission={m}
-              onOpen={() => {}}
-              onToggle={() => {}}
+      <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
+        <div className="flex w-full flex-1 flex-col px-6 py-6 lg:mx-auto lg:max-w-[480px] lg:flex-none lg:py-12">
+          <AppBar title="" leading="close" onLeadingClick={() => setShowConfirmClose(true)} />
+          <h1 className="mt-2 text-[20px] font-medium leading-snug text-ink">
+            {profile?.displayName ? `${profile.displayName}님, ` : ''}오늘은 이렇게 해보면 어떨까요?
+          </h1>
+          <div className="mt-4 space-y-2">
+            {genResult.missions.map((m, i) => (
+              <MissionCard
+                key={i}
+                mission={m}
+                onOpen={() => {}}
+                onToggle={() => {}}
+              />
+            ))}
+          </div>
+          <div className="mt-4 rounded-2xl bg-surface-alt p-4">
+            <p className="text-[13px] font-medium text-ink-muted">왜 이 미션인가요</p>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-ink">{genResult.bundleMessage}</p>
+          </div>
+          <div className="mt-6 space-y-2">
+            <PrimaryButton label="미션함에 담기" onClick={handleSaveMissions} />
+            {retryLeft > 0 ? (
+              <GhostButton label="마음에 안 들면 다시 받기" onClick={handleRetryGenerate} className="w-full" />
+            ) : (
+              <p className="text-center text-[12px] text-ink-faint">오늘은 여기까지 받을 수 있어요</p>
+            )}
+          </div>
+          {showConfirmClose && (
+            <ConfirmDialog
+              title="받은 미션을 저장하지 않고 나갈까요?"
+              confirmLabel="나가기"
+              onConfirm={onClose}
+              onCancel={() => setShowConfirmClose(false)}
             />
-          ))}
-        </div>
-        <div className="mt-4 rounded-2xl bg-surface-alt p-4">
-          <p className="text-[13px] font-medium text-ink-muted">왜 이 미션인가요</p>
-          <p className="mt-1.5 text-[14px] leading-relaxed text-ink">{genResult.bundleMessage}</p>
-        </div>
-        <div className="mt-6 space-y-2">
-          <PrimaryButton label="미션함에 담기" onClick={handleSaveMissions} />
-          {retryLeft > 0 ? (
-            <GhostButton label="마음에 안 들면 다시 받기" onClick={handleRetryGenerate} className="w-full" />
-          ) : (
-            <p className="text-center text-[12px] text-ink-faint">오늘은 여기까지 받을 수 있어요</p>
           )}
         </div>
-        {showConfirmClose && (
-          <ConfirmDialog
-            title="받은 미션을 저장하지 않고 나갈까요?"
-            confirmLabel="나가기"
-            onConfirm={onClose}
-            onCancel={() => setShowConfirmClose(false)}
-          />
-        )}
       </div>
     )
   }
@@ -300,38 +302,40 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   }[step]
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
-      <div className="flex items-center justify-between">
-        <button type="button" aria-label="닫기" onClick={() => setShowConfirmClose(true)} className="flex h-11 w-11 items-center justify-center -ml-2">
-          <Icon name="close" />
-        </button>
-        <div className="flex-1 pl-2">
-          <StepProgress current={step} total={4} />
+    <div className="flex min-h-svh flex-col bg-surface lg:justify-center">
+      <div className="flex w-full flex-1 flex-col px-6 py-6 lg:mx-auto lg:max-w-[480px] lg:flex-none lg:py-12">
+        <div className="flex items-center justify-between">
+          <button type="button" aria-label="닫기" onClick={() => setShowConfirmClose(true)} className="flex h-11 w-11 items-center justify-center -ml-2">
+            <Icon name="close" />
+          </button>
+          <div className="flex-1 pl-2">
+            <StepProgress current={step} total={4} />
+          </div>
         </div>
-      </div>
-      <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">{stepConfig.headline}</h1>
-      <p className="mt-2 text-[13px] text-ink-muted">{stepConfig.sub}</p>
-      <div className="mt-6 flex-1 overflow-y-auto">{stepConfig.body}</div>
-      <div className="flex items-center justify-between pt-6">
-        {step > 1 ? (
-          <GhostButton label="이전" onClick={() => setStep((s) => s - 1)} />
-        ) : (
-          <span />
+        <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">{stepConfig.headline}</h1>
+        <p className="mt-2 text-[13px] text-ink-muted">{stepConfig.sub}</p>
+        <div className="mt-6 flex-1 overflow-y-auto lg:flex-none">{stepConfig.body}</div>
+        <div className="flex items-center justify-between pt-6">
+          {step > 1 ? (
+            <GhostButton label="이전" onClick={() => setStep((s) => s - 1)} />
+          ) : (
+            <span />
+          )}
+          <div className="w-40">
+            <PrimaryButton label={stepConfig.nextLabel ?? '다음'} onClick={stepConfig.onNext} disabled={!stepConfig.valid} />
+          </div>
+        </div>
+        {showConfirmClose && (
+          <ConfirmDialog
+            title="여기까지 저장하고 나갈까요?"
+            body="다음에 이어서 할 수 있어요."
+            confirmLabel="나가기"
+            cancelLabel="계속하기"
+            onConfirm={onClose}
+            onCancel={() => setShowConfirmClose(false)}
+          />
         )}
-        <div className="w-40">
-          <PrimaryButton label={stepConfig.nextLabel ?? '다음'} onClick={stepConfig.onNext} disabled={!stepConfig.valid} />
-        </div>
       </div>
-      {showConfirmClose && (
-        <ConfirmDialog
-          title="여기까지 저장하고 나갈까요?"
-          body="다음에 이어서 할 수 있어요."
-          confirmLabel="나가기"
-          cancelLabel="계속하기"
-          onConfirm={onClose}
-          onCancel={() => setShowConfirmClose(false)}
-        />
-      )}
     </div>
   )
 }

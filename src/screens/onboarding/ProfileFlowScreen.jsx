@@ -71,15 +71,17 @@ export default function ProfileFlowScreen({ onNext, onBack }) {
   }
 
   return (
-    <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
-      <AppBar title="" leading="back" onLeadingClick={handleBack} />
-      <div className="flex flex-1 flex-col px-6 pb-6">
-        <StepProgress current={4} total={5} />
-        <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">{step.headline}</h1>
-        {step.sub && <p className="mt-2 text-[13px] text-ink-muted">{step.sub}</p>}
-        <div className="mt-6 flex-1 overflow-y-auto">{step.body}</div>
-        <div className="pt-6">
-          <PrimaryButton label={step.nextLabel ?? '다음'} onClick={handleNext} disabled={!step.valid} />
+    <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
+      <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[480px] lg:flex-none lg:py-2">
+        <AppBar title="" leading="back" onLeadingClick={handleBack} />
+        <div className="flex flex-1 flex-col px-6 pb-6 lg:flex-none">
+          <StepProgress current={3 + internalStep} total={5} />
+          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">{step.headline}</h1>
+          {step.sub && <p className="mt-2 text-[13px] text-ink-muted">{step.sub}</p>}
+          <div className="mt-6 flex-1 overflow-y-auto">{step.body}</div>
+          <div className="pt-6">
+            <PrimaryButton label={step.nextLabel ?? '다음'} onClick={handleNext} disabled={!step.valid} />
+          </div>
         </div>
       </div>
     </div>
