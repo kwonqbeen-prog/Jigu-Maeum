@@ -3,7 +3,7 @@ import ConfirmDialog from '../../components/common/ConfirmDialog'
 import AppBar from '../../components/common/AppBar'
 import TextField from '../../components/common/TextField'
 import InlineBanner from '../../components/common/InlineBanner'
-import { deleteAllUserData, deleteAccount } from '../../data/storage'
+import { deleteAccount } from '../../data/storage'
 
 // S-64D · 로그아웃 / 회원 탈퇴 (명세 7.4)
 export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
@@ -32,7 +32,6 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
     setProcessing(true)
     setErrorMessage('')
     try {
-      await deleteAllUserData()
       await deleteAccount()
       await auth.signOut()
       onClose()

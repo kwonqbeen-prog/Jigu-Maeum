@@ -448,27 +448,26 @@ export function getAllTypesCompleted(missions) {
   return ['carbon', 'nature', 'social'].every((t) => types.has(t))
 }
 
-// S-64D 회원 탈퇴 — 사용자 소유 데이터를 전부 지운다.
-export async function deleteAllUserData() {
-  const userId = await getUserId()
-  const tables = ['missions', 'checkins', 'reflections', 'achievements', 'user_memories', 'user_profiles']
-  for (const table of tables) {
-    const { error } = await supabase.from(table).delete().eq('user_id', userId)
-    if (error) throw error
-  }
-}
-
-// S-64D 회원 탈퇴 — auth.users 계정 자체는 서비스 롤 권한이 필요해 클라이언트에서
-// 직접 지울 수 없다. deleteAllUserData()로 데이터를 먼저 지운 뒤 이 함수로
-// delete-account Edge Function을 호출해 실제 계정을 삭제한다.
+// S-64D 회원 탈퇴 — 사용자 소유 데이터 삭제 + auth.users 계정 삭제(서비스 롤 권한이
+// 필요해 클라이언트에서 직접 지울 수 없음)를 delete-account Edge Function이 한 번에
+// 처리한다(supabase/functions/delete-account/index.ts 참고). 예전엔 클라이언트가
+// 데이터부터 지우고 이 함수로 계정만 지웠는데, 계정 삭제 단계가 실패하면 데이터는
+// 이미 사라졌는데 계정만 남는 상태가 됐었다 — 이제 둘 다 서버 쪽에서 원자적으로
+// 처리되어 실패해도 재시도가 안전하다.
 export async function deleteAccount() {
   const { data, error } = await supabase.functions.invoke('delete-account')
   if (error) {
-    const detail = await error.context
-      ?.clone()
-      .json()
-      .then((body) => body?.error)
-      .catch(() => null)
+    // error.context는 HTTP 응답이 왔을 때(FunctionsHttpError)만 clone 가능한 Response다.
+    // CORS 차단이나 네트워크 실패(FunctionsFetchError) 때는 context가 Response가 아니라서
+    // .clone()이 없어 여기서 또 다른 에러로 죽는 문제가 있었다 — 함수 형태부터 확인한다
+    const detail =
+      typeof error.context?.clone === 'function'
+        ? await error.context
+            .clone()
+            .json()
+            .then((body) => body?.error)
+            .catch(() => null)
+        : null
     throw new Error(`회원 탈퇴 처리 실패: ${detail ?? error.message}`)
   }
   if (data?.error) throw new Error(data.error)
