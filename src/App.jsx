@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import Icon from './components/Icon'
 import BottomTabBar from './components/common/BottomTabBar'
 import SplashScreen from './screens/SplashScreen'
+import LandingScreen from './screens/LandingScreen'
 import AuthScreen from './screens/AuthScreen'
 import ResetPasswordScreen from './screens/ResetPasswordScreen'
+import ServiceIntroCarouselScreen from './screens/onboarding/ServiceIntroCarouselScreen'
 import ThemeModeScreen from './screens/onboarding/ThemeModeScreen'
 import NicknameScreen from './screens/onboarding/NicknameScreen'
 import ProfileFlowScreen from './screens/onboarding/ProfileFlowScreen'
@@ -185,6 +186,8 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   }
 
   if (screen === 'onb-safety') {
+    // TODO(온보딩 재구성 작업): 가입 전 ServiceIntroCarouselScreen 4번 슬라이드가 이제
+    // 같은 안전 고지를 담당하므로, 온보딩 재구성 시 이 스텝은 제거 대상(작업지시서 §5, §7)
     return (
       <SafetyNoticeScreen
         onPreviewSupport={() => setScreen('onb-safety-support')}
@@ -375,29 +378,66 @@ function AuthenticatedApp({ auth, justSignedUp }) {
 
 function AppInner({ auth }) {
   const justSignedUpRef = useRef(false)
-  const [screen, setScreen] = useState('auth')
+  // 'landing' | 'carousel' | 'auth-login' | 'auth-signup' | 'reset-password'
+  const [preAuthScreen, setPreAuthScreen] = useState('landing')
+  const wasLoadingRef = useRef(true)
+  const [sessionRestored, setSessionRestored] = useState(false)
+  const [welcomeDone, setWelcomeDone] = useState(false)
+
+  // 세션 확인(auth.loading)이 막 끝났는데 이미 로그인된 상태라면 "돌아오신 걸 환영해요"를
+  // 잠깐 보여줄 대상으로 표시한다 — 로그인 폼을 직접 제출한 경우(항상 loading이 false인
+  // 상태에서 일어남)는 이 조건에 안 걸려서 환영 문구 없이 바로 이어진다
+  useEffect(() => {
+    if (wasLoadingRef.current && !auth.loading && auth.user) {
+      setSessionRestored(true)
+    }
+    wasLoadingRef.current = auth.loading
+  }, [auth.loading, auth.user])
+
+  useEffect(() => {
+    if (!sessionRestored) return undefined
+    const timer = setTimeout(() => setWelcomeDone(true), 900)
+    return () => clearTimeout(timer)
+  }, [sessionRestored])
 
   if (auth.loading) {
-    return (
-      <div className="flex min-h-svh items-center justify-center bg-surface">
-        <Icon name="progress_activity" className="animate-spin text-3xl text-ink-faint" />
-      </div>
-    )
+    return <SplashScreen />
+  }
+
+  if (auth.user && sessionRestored && !welcomeDone) {
+    return <SplashScreen welcome displayName={auth.user.user_metadata?.display_name} />
   }
 
   if (!auth.user) {
-    if (screen === 'reset-password') {
-      return <ResetPasswordScreen auth={auth} onBack={() => setScreen('auth')} />
+    // AuthScreen/ResetPasswordScreen은 내부를 건드리지 않고 그대로 재사용하므로(작업지시서
+    // §7), 이 시점의 실제 data-theme가 dark/고대비여도 항상 라이트로 보이도록 바깥에서
+    // .pre-auth-light로 감싼다 — LandingScreen/ServiceIntroCarouselScreen은 자체적으로도
+    // 이 클래스를 갖고 있어 중복되지만 무해하다
+    let content
+    if (preAuthScreen === 'reset-password') {
+      content = <ResetPasswordScreen auth={auth} onBack={() => setPreAuthScreen('auth-login')} />
+    } else if (preAuthScreen === 'carousel') {
+      content = <ServiceIntroCarouselScreen onComplete={() => setPreAuthScreen('auth-signup')} />
+    } else if (preAuthScreen === 'auth-login' || preAuthScreen === 'auth-signup') {
+      content = (
+        <AuthScreen
+          auth={auth}
+          initialMode={preAuthScreen === 'auth-signup' ? 'signup' : 'login'}
+          onForgotPassword={() => setPreAuthScreen('reset-password')}
+          onSignupSuccess={() => {
+            justSignedUpRef.current = true
+          }}
+        />
+      )
+    } else {
+      content = (
+        <LandingScreen
+          onSignup={() => setPreAuthScreen('carousel')}
+          onLogin={() => setPreAuthScreen('auth-login')}
+        />
+      )
     }
-    return (
-      <AuthScreen
-        auth={auth}
-        onForgotPassword={() => setScreen('reset-password')}
-        onSignupSuccess={() => {
-          justSignedUpRef.current = true
-        }}
-      />
-    )
+    return <div className="pre-auth-light">{content}</div>
   }
 
   return <AuthenticatedApp auth={auth} key={auth.user.id} justSignedUp={justSignedUpRef.current} />

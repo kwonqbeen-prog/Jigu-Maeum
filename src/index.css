@@ -114,6 +114,54 @@
   --gradient-type-carbon: linear-gradient(135deg, #d3e7fb, #e4d9f7);
   --gradient-type-nature: linear-gradient(135deg, #dffbef, #a6e8d4);
   --gradient-type-social: linear-gradient(135deg, #fff4d1, #ffdce8);
+
+  /* 감성 레이어: 랜딩/서비스소개 캐러셀 전용 — 오브 4색 중 옐로우를 뺀 스카이블루·라벤더·
+     핑크만 사용, .pastel-wash보다 채도를 진하게 뒀다. 로그인 전 화면(Splash/Landing/
+     캐러셀)은 아직 테마를 알 수 없어 항상 라이트로 고정하기로 했으므로(.pre-auth-light
+     참고) 다크/고대비 오버라이드를 따로 두지 않는다 — :root 값 하나만 항상 쓰인다.
+     캐러셀 슬라이드별 배리에이션은 이 커스텀 프로퍼티를 슬라이드 컨테이너에서 인라인으로
+     지역 override해서 만든다(아래 .landing-wash 참고) */
+  --gradient-landing-wash: radial-gradient(circle at 30% 15%, #d3e7fb 0%, transparent 45%),
+    radial-gradient(circle at 75% 30%, #e4d9f7 0%, transparent 50%),
+    radial-gradient(circle at 30% 80%, #ffdce8 0%, transparent 50%);
+}
+
+/* 로그인 전 화면(SplashScreen/LandingScreen/ServiceIntroCarouselScreen) 전용 색상 고정.
+   로그인 전에는 사용자의 실제 테마를 아직 알 수 없고(마지막 세션의 로컬 설정이 dark/
+   고대비였어도 로그인 전 화면은 무관하게 항상 라이트로 보여야 함), data-theme는 세션과
+   무관하게 앱 마운트 시점에 이미 로컬 설정값으로 세팅돼 있으므로, 이 화면들 루트에
+   .pre-auth-light를 얹어 색상 토큰을 라이트 값으로 지역 재선언한다. 하위에서는
+   text-ink/bg-surface 등 기존 시맨틱 클래스를 평소처럼 그대로 쓰면 이 재선언 값을
+   상속받아 실제 data-theme와 무관하게 라이트로 렌더링된다 */
+.pre-auth-light {
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8f9fa;
+  --color-surface-sunken: #eef0f2;
+  --color-ink: #26282b;
+  --color-ink-muted: #767b82;
+  --color-ink-faint: #b0b3b8;
+  --color-line: #e4e6e9;
+  --color-line-input: #c7cacf;
+  --color-highlight: #5b5f66;
+  --color-danger: #be123c;
+  --star-opacity: 0.6;
+  --gradient-planet-1: radial-gradient(circle at 35% 30%, #ffffff 0%, #fff4d1 60%, #fff4d1 100%);
+}
+
+/* .pastel-wash와 동일한 위치 지정 패턴(뒤로만 깔리는 ::before 오버레이) — 다른
+   그라데이션 변수를 쓴다. 캐러셀은 슬라이드마다 이 요소에 --gradient-landing-wash를
+   인라인으로 지역 override해서 배경만 바꾼다 */
+.landing-wash {
+  position: relative;
+  z-index: 0;
+}
+.landing-wash::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--gradient-landing-wash);
 }
 
 [data-theme='dark'] {

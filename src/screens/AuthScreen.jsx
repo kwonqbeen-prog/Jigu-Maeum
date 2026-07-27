@@ -5,8 +5,8 @@ import PrimaryButton from '../components/common/PrimaryButton'
 import InlineBanner from '../components/common/InlineBanner'
 
 // S-01 · 로그인 · 회원가입 (명세 1.1, 1.2)
-export default function AuthScreen({ auth, onForgotPassword, onSignupSuccess }) {
-  const [mode, setMode] = useState('login')
+export default function AuthScreen({ auth, initialMode = 'login', onForgotPassword, onSignupSuccess }) {
+  const [mode, setMode] = useState(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
