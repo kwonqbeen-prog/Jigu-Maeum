@@ -302,6 +302,44 @@ export async function getRecentReflections(days) {
 }
 
 // ============================================================
+// 하단 탭 배지
+// ============================================================
+
+// 미션 탭 배지 — 오늘 미완료 미션 개수
+export async function getTodayIncompleteMissionCount() {
+  const userId = await getUserId()
+  const { count, error } = await supabase
+    .from('missions')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('created_date', todayISO())
+    .eq('is_completed', false)
+  if (error) throw error
+  return count ?? 0
+}
+
+// 기록 탭 배지 — 마지막으로 기록 탭을 본 시각 이후 새로 생긴 완료 미션/회고가 있는지
+export async function hasNewRecordsSince(isoTimestamp) {
+  const userId = await getUserId()
+  const [missionRes, reflectionRes] = await Promise.all([
+    supabase
+      .from('missions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('is_completed', true)
+      .gt('completed_at', isoTimestamp),
+    supabase
+      .from('reflections')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .gt('updated_at', isoTimestamp),
+  ])
+  if (missionRes.error) throw missionRes.error
+  if (reflectionRes.error) throw reflectionRes.error
+  return (missionRes.count ?? 0) > 0 || (reflectionRes.count ?? 0) > 0
+}
+
+// ============================================================
 // achievements (명세 5.2)
 // ============================================================
 

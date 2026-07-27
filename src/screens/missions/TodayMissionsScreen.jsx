@@ -18,7 +18,7 @@ const MOOD_OPTIONS = [
 const AUTOSAVE_DEBOUNCE_MS = 600
 
 // S-40 · 오늘의 미션 (탭2, 명세 4.4, 4.5, 6.1)
-export default function TodayMissionsScreen({ isActive = true, onOpenSettings, onStartCheckin, onOpenArchive }) {
+export default function TodayMissionsScreen({ isActive = true, onOpenSettings, onStartCheckin, onOpenArchive, onMissionsChanged }) {
   const [missions, setMissions] = useState(null)
   const [selected, setSelected] = useState(null)
   const [journalContent, setJournalContent] = useState('')
@@ -70,6 +70,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
   const handleToggle = async (mission) => {
     await toggleMissionComplete(mission)
     refresh()
+    onMissionsChanged?.()
   }
   const handleToggleLike = async (mission) => {
     await toggleMissionLike(mission)

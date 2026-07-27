@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Icon from './components/Icon'
 import BottomTabBar from './components/common/BottomTabBar'
 import SplashScreen from './screens/SplashScreen'
@@ -26,7 +26,9 @@ import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider, useToast } from './contexts/ToastContext'
-import { markOnboardingCompleted } from './data/storage'
+import { markOnboardingCompleted, getTodayIncompleteMissionCount, hasNewRecordsSince } from './data/storage'
+
+const RECORDS_LAST_SEEN_KEY = 'climatemood:records-last-seen-at'
 
 function AuthenticatedApp({ auth, justSignedUp }) {
   const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile, save: saveProfile } = useProfile(auth.user.id)
@@ -38,11 +40,46 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   const scrollPositionsRef = useRef({ planet: 0, missions: 0, records: 0 })
   const activeTabRef = useRef(activeTab)
   activeTabRef.current = activeTab
+  const recordsLastSeenRef = useRef(localStorage.getItem(RECORDS_LAST_SEEN_KEY) ?? new Date(0).toISOString())
+  const [incompleteMissionCount, setIncompleteMissionCount] = useState(0)
+  const [hasNewRecords, setHasNewRecords] = useState(false)
   const showToast = useToast()
 
   useEffect(() => {
     setMountedTabs((prev) => (prev.has(activeTab) ? prev : new Set(prev).add(activeTab)))
   }, [activeTab])
+
+  const refreshMissionsBadge = useCallback(async () => {
+    try {
+      setIncompleteMissionCount(await getTodayIncompleteMissionCount())
+    } catch {
+      // 배지 계산 실패는 핵심 기능이 아니므로 조용히 무시한다
+    }
+  }, [])
+
+  const refreshRecordsBadge = useCallback(async () => {
+    try {
+      setHasNewRecords(await hasNewRecordsSince(recordsLastSeenRef.current))
+    } catch {
+      // 배지 계산 실패는 핵심 기능이 아니므로 조용히 무시한다
+    }
+  }, [])
+
+  // 기록 탭을 열면 "새 기록 있음" 배지를 즉시 지우고, 이후 기준 시각을 갱신한다
+  useEffect(() => {
+    if (activeTab !== 'records') return
+    setHasNewRecords(false)
+    const now = new Date().toISOString()
+    recordsLastSeenRef.current = now
+    localStorage.setItem(RECORDS_LAST_SEEN_KEY, now)
+  }, [activeTab])
+
+  // main 화면에 들어올 때(탭 전환 포함)마다 두 배지를 최신 상태로 맞춘다
+  useEffect(() => {
+    if (screen !== 'main') return
+    refreshMissionsBadge()
+    refreshRecordsBadge()
+  }, [screen, activeTab, refreshMissionsBadge, refreshRecordsBadge])
 
   // 탭 전환 시 스크롤 위치를 탭별로 기억해 복원한다 — 전체 페이지가 하나의
   // window 스크롤을 공유하므로, 활성 탭이 바뀔 때마다 해당 탭이 마지막으로
@@ -266,6 +303,10 @@ function AuthenticatedApp({ auth, justSignedUp }) {
               onOpenSettings={() => setScreen('settings-home')}
               onStartCheckin={() => setScreen('checkin')}
               onOpenArchive={() => setScreen('archive')}
+              onMissionsChanged={() => {
+                refreshMissionsBadge()
+                refreshRecordsBadge()
+              }}
             />
           </div>
         )}
@@ -281,7 +322,14 @@ function AuthenticatedApp({ auth, justSignedUp }) {
           </div>
         )}
       </div>
-      <BottomTabBar active={activeTab} onChange={setActiveTab} />
+      <BottomTabBar
+        active={activeTab}
+        onChange={setActiveTab}
+        badges={{
+          missions: incompleteMissionCount > 0 ? incompleteMissionCount : undefined,
+          records: hasNewRecords ? true : undefined,
+        }}
+      />
     </div>
   )
 }
