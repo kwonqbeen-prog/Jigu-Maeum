@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import AppBar from '../../components/common/AppBar'
 import SegmentedControl from '../../components/common/SegmentedControl'
 import EmptyState from '../../components/common/EmptyState'
+import MissionCard from '../../components/common/MissionCard'
+import ListBlock from '../../components/common/ListBlock'
 import { getArchiveMissions, getTodayMissions, retryMission } from '../../data/storage'
 import { useToast } from '../../contexts/ToastContext'
 
@@ -56,29 +58,31 @@ export default function MissionArchiveScreen({ onBack, onStartCheckin }) {
             onAction={onStartCheckin}
           />
         ) : (
-          <div className="space-y-2">
+          <ListBlock>
             {list.map((m) => {
               const alreadyToday = todayTitles.includes(m.title)
               return (
-                <div key={m.id} className="flex items-center justify-between rounded-2xl bg-surface-alt px-4 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-[14px] font-bold text-ink">{m.title}</p>
-                    <p className="text-[12px] text-ink-muted">{m.created_date}</p>
-                  </div>
-                  <button
-                    type="button"
-                    disabled={alreadyToday}
-                    onClick={() => handleRetry(m)}
-                    className={`shrink-0 rounded-full px-3 py-2 text-[12px] font-bold ${
-                      alreadyToday ? 'bg-disabled text-disabled-ink' : 'bg-ink text-surface'
-                    }`}
-                  >
-                    {justAdded === m.title ? '담김' : alreadyToday ? '오늘 담겨 있어요' : '다시 도전'}
-                  </button>
-                </div>
+                <MissionCard
+                  key={m.id}
+                  mission={m}
+                  onOpen={() => {}}
+                  subtitle={m.created_date}
+                  trailing={
+                    <button
+                      type="button"
+                      disabled={alreadyToday}
+                      onClick={() => handleRetry(m)}
+                      className={`shrink-0 rounded-full px-3 py-2 text-[12px] font-bold ${
+                        alreadyToday ? 'bg-disabled text-disabled-ink' : 'bg-ink text-surface'
+                      }`}
+                    >
+                      {justAdded === m.title ? '담김' : alreadyToday ? '오늘 담겨 있어요' : '다시 도전'}
+                    </button>
+                  }
+                />
               )
             })}
-          </div>
+          </ListBlock>
         )}
       </div>
     </div>

@@ -78,7 +78,7 @@ export default function StreakCalendarScreen({ onBack }) {
                 }`}
               >
                 {d}
-                <span className={`h-1 w-1 rounded-full ${hasDataOn(dateISO) ? 'bg-highlight' : 'bg-transparent'}`} />
+                <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(dateISO) ? 'day-dot--active' : 'bg-transparent'}`} />
               </button>
             )
           })}

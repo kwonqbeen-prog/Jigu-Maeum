@@ -52,7 +52,7 @@ export default function TodayMissionsScreen({ onOpenSettings, onStartCheckin, on
   if (missions === null) {
     return (
       <div className="flex min-h-svh flex-col bg-surface">
-        <AppBar title="미션" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
+        <AppBar title="미션" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
         <div className="space-y-2 px-4 py-4">
           {[0, 1, 2].map((i) => (
             <div key={i} className="h-16 animate-pulse rounded-2xl bg-surface-alt" />
@@ -77,7 +77,7 @@ export default function TodayMissionsScreen({ onOpenSettings, onStartCheckin, on
 
   return (
     <div className="flex min-h-svh flex-col bg-surface pb-4">
-      <AppBar title="미션" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
+      <AppBar title="미션" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
       <div className="flex-1 space-y-5 px-4">
         {missions.length === 0 ? (
           <EmptyState

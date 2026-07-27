@@ -99,7 +99,7 @@ export default function HomeScreen({ onStartCheckin, onGoMissions, onOpenSetting
   if (!data) {
     return (
       <div className="flex min-h-svh flex-col bg-surface">
-        <AppBar title="지구 마음" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
+        <AppBar title="마음 지구" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
         <div className="flex-1" />
       </div>
     )
@@ -145,7 +145,7 @@ export default function HomeScreen({ onStartCheckin, onGoMissions, onOpenSetting
 
   return (
     <div className="flex min-h-svh flex-col bg-surface">
-      <AppBar title="지구 마음" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
+      <AppBar title="마음 지구" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
       <div className="flex-1 px-4 pb-4">
         <div className="h-[40dvh]">
           <PlanetOrb totalCompleted={data.totalCompleted} decorations={decorations} onClick={() => setAchievementsOpen(true)} />
@@ -155,11 +155,7 @@ export default function HomeScreen({ onStartCheckin, onGoMissions, onOpenSetting
         </p>
 
         {data.todayCheckinExists && data.todayMissions.length > 0 && (
-          <button
-            type="button"
-            onClick={onGoMissions}
-            className="mt-4 w-full rounded-2xl bg-surface-alt px-4 py-3 text-left"
-          >
+          <button type="button" onClick={onGoMissions} className="mt-4 w-full py-1 text-left">
             <div className="flex items-center justify-between text-[13px] font-bold text-ink">
               <span>오늘의 미션</span>
               <span>
@@ -202,7 +198,7 @@ export default function HomeScreen({ onStartCheckin, onGoMissions, onOpenSetting
               >
                 <span className="text-[10px] font-semibold text-ink-faint">{dow}</span>
                 <span className="text-[13px] font-bold text-ink">{day}</span>
-                <span className={`h-1 w-1 rounded-full ${hasDataOn(date) ? 'bg-highlight' : 'bg-transparent'}`} />
+                <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(date) ? 'day-dot--active' : 'bg-transparent'}`} />
               </button>
             )
           })}

@@ -107,6 +107,13 @@
     rgba(211, 231, 251, 0.12) 80%,
     transparent 100%
   );
+
+  /* 감성 레이어: MissionCard 좌측 미션 타입(탄소/자연/사회) 아이콘 배지. 오브와 같은
+     파스텔 팔레트를 재사용 — 탄소=스카이블루→라벤더, 사회=라이트옐로우→핑크는 오브의
+     4색과 동일한 hex, 자연만 팔레트에 없던 그린민트→틸을 같은 톤(라이트니스 90% 안팎)으로 추가 */
+  --gradient-type-carbon: linear-gradient(135deg, #d3e7fb, #e4d9f7);
+  --gradient-type-nature: linear-gradient(135deg, #dffbef, #a6e8d4);
+  --gradient-type-social: linear-gradient(135deg, #fff4d1, #ffdce8);
 }
 
 [data-theme='dark'] {
@@ -165,6 +172,13 @@
     rgba(211, 231, 251, 0.06) 80%,
     transparent 100%
   );
+
+  /* 미션 타입 배지도 오브와 같은 방식(파스텔을 어두운 앵커와 섞어 톤다운) — 탄소/사회는
+     오브 다크 팔레트의 4단계 그라데이션에서 이미 쓰던 톤다운 엔드포인트를 그대로 재사용
+     (라이트가 스카이블루→라벤더/라이트옐로우→핑크로 바뀌어 페어링도 맞춰 교체) */
+  --gradient-type-carbon: linear-gradient(135deg, #557690, #6f6685);
+  --gradient-type-nature: linear-gradient(135deg, #4a6f5c, #3d6d63);
+  --gradient-type-social: linear-gradient(135deg, #8a7a5c, #8a6a76);
 }
 
 /*
@@ -216,6 +230,13 @@
 
   /* 파스텔 워시는 대비 손실 위험이 있어 고대비 모드에서는 아예 끔 (AAA 원칙 유지) */
   --gradient-pastel-wash: none;
+
+  /* 미션 타입 배지도 마음 지구 오브와 동일 원칙 — 고대비 모드는 카테고리 색상 구분 없이
+     명도만 씀. background-image를 꺼서 .mission-type-icon의 background-color(surface-alt)
+     단색으로 폴백된다 */
+  --gradient-type-carbon: none;
+  --gradient-type-nature: none;
+  --gradient-type-social: none;
 }
 
 /*
@@ -357,6 +378,27 @@ body {
 }
 .mind-planet__star--sparkle {
   clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+}
+
+/* 마음 지구 홈 날짜 슬라이더의 "그날 기록 있음" 표시 점 — 테마 불문 고정 파스텔
+   그라데이션(디자인 확정값, 오브 팔레트 중 핑크→스카이블루 조합) */
+.day-dot--active {
+  background-image: linear-gradient(135deg, #ffdce8, #d3e7fb);
+}
+
+/* MissionCard 좌측 미션 타입(탄소/자연/사회) 아이콘 배지. background-color는 고대비 모드
+   폴백(--gradient-type-*가 none일 때 보이는 단색), background-image가 그 위에 얹힌다 */
+.mission-type-icon {
+  background-color: var(--color-surface-alt);
+}
+.mission-type-icon[data-mission-type='carbon'] {
+  background-image: var(--gradient-type-carbon);
+}
+.mission-type-icon[data-mission-type='nature'] {
+  background-image: var(--gradient-type-nature);
+}
+.mission-type-icon[data-mission-type='social'] {
+  background-image: var(--gradient-type-social);
 }
 
 /* 온보딩/스플래시/데이랩업/업적 시트/체크인 완료 화면 전용 은은한 파스텔 워시.
