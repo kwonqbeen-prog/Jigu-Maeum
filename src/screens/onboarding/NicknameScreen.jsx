@@ -22,7 +22,7 @@ export default function NicknameScreen({ auth, onNext, showStepProgress = true }
 
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
-      {showStepProgress && <StepProgress current={2} total={4} />}
+      {showStepProgress && <StepProgress current={3} total={5} />}
       <form onSubmit={handleSubmit} className="mt-6 flex flex-1 flex-col">
         <h1 className="text-[24px] font-medium leading-snug text-ink">뭐라고 부르면 될까요?</h1>
         <div className="mt-6">

@@ -5,10 +5,11 @@ import LandingScreen from './screens/LandingScreen'
 import AuthScreen from './screens/AuthScreen'
 import ResetPasswordScreen from './screens/ResetPasswordScreen'
 import ServiceIntroCarouselScreen from './screens/onboarding/ServiceIntroCarouselScreen'
+import WelcomeScreen from './screens/onboarding/WelcomeScreen'
 import ThemeModeScreen from './screens/onboarding/ThemeModeScreen'
 import NicknameScreen from './screens/onboarding/NicknameScreen'
 import ProfileFlowScreen from './screens/onboarding/ProfileFlowScreen'
-import SafetyNoticeScreen from './screens/onboarding/SafetyNoticeScreen'
+import CompletionScreen from './screens/onboarding/CompletionScreen'
 import SupportScreen from './screens/SupportScreen'
 import HomeScreen from './screens/home/HomeScreen'
 import TodayMissionsScreen from './screens/missions/TodayMissionsScreen'
@@ -136,7 +137,7 @@ function AuthenticatedApp({ auth, justSignedUp }) {
     bootstrappedRef.current = true
     const displayName = auth.user?.user_metadata?.display_name
     if (justSignedUp) {
-      setScreen('onb-theme')
+      setScreen('onb-welcome')
     } else if (!displayName) {
       setScreen('onb-nickname')
     } else if (!profile?.onboarding_completed_at) {
@@ -161,12 +162,16 @@ function AuthenticatedApp({ auth, justSignedUp }) {
     return <SplashScreen />
   }
 
+  if (screen === 'onb-welcome') {
+    return <WelcomeScreen onNext={() => setScreen('onb-theme')} />
+  }
+
   if (screen === 'onb-theme') {
     return <ThemeModeScreen onNext={() => setScreen('onb-nickname')} />
   }
 
   if (screen === 'onb-nickname') {
-    return <NicknameScreen auth={auth} onNext={() => setScreen('onb-profile')} showStepProgress={false} />
+    return <NicknameScreen auth={auth} onNext={() => setScreen('onb-profile')} showStepProgress={true} />
   }
 
   if (screen === 'onb-profile') {
@@ -176,7 +181,7 @@ function AuthenticatedApp({ auth, justSignedUp }) {
         onNext={async (data) => {
           try {
             await saveProfile(data)
-            setScreen('onb-safety')
+            setScreen('onb-complete')
           } catch {
             showToast('저장하지 못했어요. 다시 시도해 주세요')
           }
@@ -185,15 +190,24 @@ function AuthenticatedApp({ auth, justSignedUp }) {
     )
   }
 
-  if (screen === 'onb-safety') {
-    // TODO(온보딩 재구성 작업): 가입 전 ServiceIntroCarouselScreen 4번 슬라이드가 이제
-    // 같은 안전 고지를 담당하므로, 온보딩 재구성 시 이 스텝은 제거 대상(작업지시서 §5, §7)
+  if (screen === 'onb-complete') {
     return (
-      <SafetyNoticeScreen
-        onPreviewSupport={() => setScreen('onb-safety-support')}
-        onConfirm={async () => {
+      <CompletionScreen
+        onStartTour={async () => {
           try {
             await markOnboardingCompleted()
+            await refreshProfile()
+            goHome()
+            setTourRun(true) // 홈 도착 후 코치마크 즉시 시작
+          } catch {
+            showToast('저장하지 못했어요. 다시 시도해 주세요')
+          }
+        }}
+        onSkipTour={async () => {
+          try {
+            await markOnboardingCompleted()
+            // 코치마크를 이미 본 것으로 표시해 autoTourTriggeredRef 자동 실행을 막는다
+            await markCoachmarkSeen()
             await refreshProfile()
             goHome()
           } catch {
@@ -202,10 +216,6 @@ function AuthenticatedApp({ auth, justSignedUp }) {
         }}
       />
     )
-  }
-
-  if (screen === 'onb-safety-support') {
-    return <SupportScreen readOnly onBack={() => setScreen('onb-safety')} />
   }
 
   if (screen === 'checkin') {
