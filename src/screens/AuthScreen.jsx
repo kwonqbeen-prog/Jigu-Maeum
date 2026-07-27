@@ -4,6 +4,7 @@ import TextField from '../components/common/TextField'
 import PrimaryButton from '../components/common/PrimaryButton'
 import InlineBanner from '../components/common/InlineBanner'
 import SparkleStar from '../components/common/SparkleStar'
+import logo from '../assets/planet-mascot/logo.svg'
 
 // S-01 · 로그인 · 회원가입 (명세 1.1, 1.2)
 export default function AuthScreen({ auth, initialMode = 'login', onForgotPassword }) {
@@ -62,7 +63,7 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
 
       <div className="relative w-full max-w-xs">
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="mind-planet__orb h-14 w-14 rounded-full" data-planet-stage="1" aria-hidden="true" />
+          <img src={logo} alt="" aria-hidden="true" className="h-14 w-14" />
           <p className="text-[20px] font-medium text-ink">지구 마음</p>
           <p className="text-[13px] text-ink-muted">마음을 돌보다, 지구를 돌보다</p>
         </div>

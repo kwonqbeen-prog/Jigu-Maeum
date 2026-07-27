@@ -1,5 +1,6 @@
 import PrimaryButton from '../components/common/PrimaryButton'
 import SparkleStar from '../components/common/SparkleStar'
+import logo from '../assets/planet-mascot/logo.svg'
 
 // S-00b · 랜딩 — 세션 없음이 확인된 뒤 보여지는 가입하기/로그인 진입 화면.
 // 로그인 전 화면이라 항상 라이트 고정(.pre-auth-light 참고)
@@ -23,7 +24,7 @@ export default function LandingScreen({ onSignup, onLogin }) {
         style={{ bottom: '14%', left: '18%', width: 24, height: 24, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
       />
 
-      <div className="mind-planet__orb h-16 w-16 rounded-full" data-planet-stage="1" aria-hidden="true" />
+      <img src={logo} alt="" aria-hidden="true" className="h-16 w-16" />
       <p className="mt-3 text-[20px] font-medium text-ink">지구 마음</p>
       <p className="mt-1 text-[13px] text-ink-muted">마음을 돌보다, 지구를 돌보다</p>
 

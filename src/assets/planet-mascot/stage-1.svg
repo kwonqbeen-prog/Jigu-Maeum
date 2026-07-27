@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-48 -48 608 608" width="1024" height="1024"><defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-48 -48 608 608" width="600" height="600"><defs>
 <clipPath id="ball"><circle cx="256" cy="256" r="176"></circle></clipPath>
 <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="13"></feGaussianBlur></filter>
 <filter id="halo" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="34"></feGaussianBlur></filter>
 <radialGradient id="ballShade" cx="38%" cy="30%" r="78%"><stop offset="0%" stop-color="#ffffff" stop-opacity=".45"></stop><stop offset="55%" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="100%" stop-color="#1b2a55" stop-opacity=".30"></stop></radialGradient></defs>
-<g filter="url(#halo)" opacity="0.5"><circle cx="256" cy="256" r="196" fill="#8ed3f2"></circle><circle cx="316" cy="196" r="96" fill="#f5a4c8" opacity=".8"></circle></g>
-<circle cx="256" cy="256" r="176" fill="#3AC7FF"></circle>
-<g clip-path="url(#ball)" filter="url(#soft)"><circle cx="362" cy="142" r="140" fill="#f5a4c8"></circle><circle cx="132" cy="380" r="84" fill="#f5a4c8"></circle><circle cx="400" cy="330" r="80" fill="#f5a4c8"></circle></g>
+<g filter="url(#halo)" opacity="0.28"><circle cx="256" cy="256" r="196" fill="#CFE9F5"></circle><circle cx="316" cy="196" r="96" fill="#F3E2E9" opacity=".8"></circle></g>
+<circle cx="256" cy="256" r="176" fill="#D8EEF7"></circle>
+<g clip-path="url(#ball)" filter="url(#soft)"><circle cx="362" cy="142" r="140" fill="#F3E2E9"></circle><circle cx="132" cy="380" r="84" fill="#F3E2E9"></circle><circle cx="400" cy="330" r="80" fill="#F3E2E9"></circle></g>
 <circle cx="256" cy="256" r="176" fill="url(#ballShade)"></circle><ellipse cx="217" cy="230" rx="15" ry="20" fill="#14131a"></ellipse><ellipse cx="283" cy="230" rx="15" ry="20" fill="#14131a"></ellipse></svg>
