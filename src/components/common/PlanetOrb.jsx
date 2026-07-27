@@ -45,10 +45,14 @@ const BLOB_LAYOUT = [
   { top: '26%', left: '56%', width: '34%', height: '30%' },
 ]
 
-// 단계별 대륙 색상·블롭 개수·목표 opacity — 지시서 §1 색상표 그대로. 1단계는 대륙 없음
+// 단계별 대륙 색상·블롭 개수·목표 opacity — 지시서 §1 색상표 기준. 1단계는 원래 대륙
+// 없음이었으나, "완전히 하얗게만 보여서 지구 같지 않다"는 피드백으로 옅은 블롭을 추가함.
+// 이후 "블롭 개수를 5단계 모두 3개로 통일해달라"는 요청으로 1~3단계도 블롭 3개(opacities
+// 3개)로 맞추고, 값은 4·5단계에서 이미 쓰던 감소 패턴을 그대로 이어서 채움
 const CONTINENT_CONFIG = {
-  2: { color: 'var(--mind-planet-continent-2)', opacities: [0.7] },
-  3: { color: 'var(--mind-planet-continent-3)', opacities: [0.75, 0.7] },
+  1: { color: 'var(--mind-planet-continent-1)', opacities: [0.6, 0.55, 0.5] },
+  2: { color: 'var(--mind-planet-continent-2)', opacities: [0.7, 0.65, 0.6] },
+  3: { color: 'var(--mind-planet-continent-3)', opacities: [0.75, 0.7, 0.65] },
   4: { color: 'var(--mind-planet-continent-4)', opacities: [0.8, 0.75, 0.75] },
   5: { color: 'var(--mind-planet-continent-5)', opacities: [0.85, 0.8, 0.8] },
 }

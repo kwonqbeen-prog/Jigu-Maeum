@@ -100,6 +100,7 @@
   --mind-planet-ocean-4: #82ccef;
   --mind-planet-ocean-5: radial-gradient(circle at 35% 30%, #a9e2f8 0%, #6fc4ef 55%, #4aa8d9 100%);
 
+  --mind-planet-continent-1: #fbdce8;
   --mind-planet-continent-2: #fbdce8;
   --mind-planet-continent-3: #f7b3cf;
   --mind-planet-continent-4: #f98fb9;
@@ -225,6 +226,7 @@
   --mind-planet-ocean-4: #1c5b78;
   --mind-planet-ocean-5: radial-gradient(circle at 35% 30%, #2f7fa3 0%, #1c5b78 55%, #123a4d 100%);
 
+  --mind-planet-continent-1: #4a2c38;
   --mind-planet-continent-2: #4a2c38;
   --mind-planet-continent-3: #6e3550;
   --mind-planet-continent-4: #99406b;
@@ -570,8 +572,18 @@ body {
 /* 대륙 블롭 — 좌→중앙→우로 흘러갔다 사라지는 것을 반복해 옆에서 본 자전 느낌을 준다
    (블롭 자체를 rotate()하는 방식은 평면 팽이처럼 보여 폐기됨). 색상은 stage별로
    PlanetOrb.jsx가 인라인 style(--continent-color)로 넣고, 목표 opacity도 블롭마다
-   달라서(색상표 §1 참고) --continent-peak-opacity로 파라미터화해 하나의 keyframes를
-   모든 블롭이 공유한다 */
+   달라서(색상표 §1 참고) --continent-peak-opacity로 파라미터화한다.
+   blob1·3은 진폭이 큰 drift-a, blob2는 진폭이 작은 drift-b를 써서 세 블롭이 완전히
+   같은 궤적으로 움직이지 않도록 함(planet_orb_v3_side_rotation.html 참고, 더 유기적으로
+   보임 — 참고 데모는 이 차이를 고정 px로 표현했지만, 여기선 기존처럼 블롭 자기 자신의
+   너비 기준 %를 유지해 오브 크기와 무관하게 스케일되게 함).
+   가장자리에 닿기 전에 좁아지며 사라지는 것처럼 보인다는 피드백으로 이동 거리(translateX)를
+   키워 실제로 .mind-planet__surface의 원형 마스크(overflow:hidden)에 잘리도록 함(퍼센트는
+   블롭 자기 자신의 미변형 크기 기준으로 계산되므로 scaleX와 별개로 항상 같은 거리만큼
+   이동한다). scaleX는 완전히 없애면 블롭끼리 이동 중 겹치는 면적이 늘어 간격이 붙어
+   보인다는 후속 피드백으로 다시 추가하되, 예전(0.25/0.3)만큼 심하게 줄이지 않고
+   0.7/0.75 정도로 완만하게만 좁혀 간격은 확보하면서 가장자리에서도 여전히 눈에 띄게
+   잘리도록 절충함 */
 .mind-planet__continents {
   position: absolute;
   inset: 0;
@@ -582,17 +594,18 @@ body {
   border-radius: 50%;
   filter: blur(9px);
   background-color: var(--continent-color);
-  animation: mind-planet-drift 9s ease-in-out infinite;
+  animation: mind-planet-drift-a 9s ease-in-out infinite;
 }
 .mind-planet__continent:nth-child(2) {
+  animation-name: mind-planet-drift-b;
   animation-delay: -3s;
 }
 .mind-planet__continent:nth-child(3) {
   animation-delay: -6s;
 }
-@keyframes mind-planet-drift {
+@keyframes mind-planet-drift-a {
   0% {
-    transform: translateX(-60%) scaleX(0.25);
+    transform: translateX(-90%) scaleX(0.7);
     opacity: 0;
   }
   18% {
@@ -606,7 +619,27 @@ body {
     opacity: calc(var(--continent-peak-opacity) * 0.94);
   }
   100% {
-    transform: translateX(60%) scaleX(0.25);
+    transform: translateX(90%) scaleX(0.7);
+    opacity: 0;
+  }
+}
+@keyframes mind-planet-drift-b {
+  0% {
+    transform: translateX(-75%) scaleX(0.75);
+    opacity: 0;
+  }
+  18% {
+    opacity: calc(var(--continent-peak-opacity) * 0.94);
+  }
+  50% {
+    transform: translateX(0%) scaleX(1);
+    opacity: var(--continent-peak-opacity);
+  }
+  82% {
+    opacity: calc(var(--continent-peak-opacity) * 0.94);
+  }
+  100% {
+    transform: translateX(75%) scaleX(0.75);
     opacity: 0;
   }
 }
@@ -621,7 +654,10 @@ body {
 
 /* 눈 — 입 없이 눈만, 1단계부터 항상 표시되는 캐릭터 요소. 색은 #1c1d1f 고정이며
    단계별 명도+채도 램프(위 바다/대륙 레이어)와 완전히 분리된 레이어라 영향을 받지 않는다.
-   기본은 세로로 긴 타원, smile 상태는 같은 자리에 위로 볼록한 아치(SVG path)로 바뀐다 */
+   기본(둥근 눈)·smile(위로 볼록한 아치) 두 상태를 각각 눈 2개를 담은 SVG 레이어
+   하나씩(::before/::after)으로 그리고, opacity 크로스페이드로 전환한다
+   (planet_orb_v3_side_rotation.html 참고 — 배경 자체를 스위치하면 크로스페이드가
+   안 돼서, 두 레이어를 항상 같이 두고 opacity만 넘기는 구조로 변경) */
 .mind-planet__eyes {
   position: absolute;
   inset: 0;
@@ -632,25 +668,26 @@ body {
 .mind-planet__eyes::after {
   content: '';
   position: absolute;
-  top: 40%;
-  width: 10%;
-  height: 15%;
-  background-color: #1c1d1f;
-  border-radius: 50%;
-}
-.mind-planet__eyes::before {
-  left: 38%;
-}
-.mind-planet__eyes::after {
-  left: 62%;
-}
-.mind-planet__eyes--smile::before,
-.mind-planet__eyes--smile::after {
-  background-color: transparent;
-  border-radius: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath d='M0,4 Q6,-6 12,4' stroke='%231c1d1f' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  inset: 0;
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  transition: opacity 0.25s ease;
 }
-/* 기본↔웃는 눈은 background-image 자체를 스위치하는 방식이라 원래도 트랜지션 없이
-   즉시 바뀐다 — data-motion='reduced' 전용 규칙이 따로 필요 없다 */
+.mind-planet__eyes::before {
+  opacity: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='38.5' cy='39' rx='3.5' ry='5' fill='%231c1d1f'/%3E%3Cellipse cx='65.5' cy='39' rx='3.5' ry='5' fill='%231c1d1f'/%3E%3C/svg%3E");
+}
+.mind-planet__eyes::after {
+  opacity: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%231c1d1f' stroke-width='2.4' stroke-linecap='round' fill='none'%3E%3Cpath d='M35,38 Q38.5,28 42,38'/%3E%3Cpath d='M62,38 Q65.5,28 69,38'/%3E%3C/g%3E%3C/svg%3E");
+}
+.mind-planet__eyes--smile::before {
+  opacity: 0;
+}
+.mind-planet__eyes--smile::after {
+  opacity: 1;
+}
+[data-motion='reduced'] .mind-planet__eyes::before,
+[data-motion='reduced'] .mind-planet__eyes::after {
+  transition: none;
+}
