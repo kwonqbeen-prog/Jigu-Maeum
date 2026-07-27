@@ -3,6 +3,7 @@ import Icon from '../components/Icon'
 import TextField from '../components/common/TextField'
 import PrimaryButton from '../components/common/PrimaryButton'
 import InlineBanner from '../components/common/InlineBanner'
+import SparkleStar from '../components/common/SparkleStar'
 
 // S-01 · 로그인 · 회원가입 (명세 1.1, 1.2)
 export default function AuthScreen({ auth, initialMode = 'login', onForgotPassword, onSignupSuccess }) {
@@ -50,8 +51,17 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-surface px-6 py-10">
-      <div className="w-full max-w-xs">
+    <div className="landing-wash pre-auth-light relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-surface px-6 py-10">
+      <SparkleStar
+        className="absolute"
+        style={{ top: '9%', right: '14%', width: 20, height: 20, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
+      />
+      <SparkleStar
+        className="absolute"
+        style={{ bottom: '10%', left: '12%', width: 16, height: 16, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
+      />
+
+      <div className="relative w-full max-w-xs">
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="mind-planet__orb h-14 w-14 rounded-full" data-planet-stage="1" aria-hidden="true" />
           <p className="text-[20px] font-medium text-ink">지구 마음</p>
