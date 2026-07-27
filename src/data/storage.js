@@ -454,8 +454,12 @@ export function getAllTypesCompleted(missions) {
 // 데이터부터 지우고 이 함수로 계정만 지웠는데, 계정 삭제 단계가 실패하면 데이터는
 // 이미 사라졌는데 계정만 남는 상태가 됐었다 — 이제 둘 다 서버 쪽에서 원자적으로
 // 처리되어 실패해도 재시도가 안전하다.
+// 실제 Supabase 대시보드에 배포된 Edge Function의 URL 슬러그가 (대시보드에 표시되는
+// 이름 "delete-account"와 달리) "clever-processor"라서 이 이름으로 호출해야 한다 —
+// Supabase가 함수 생성 시 자동으로 붙여준 슬러그가 그대로 남아있는 것으로 보인다.
+// 대시보드에서 슬러그 자체를 "delete-account"로 바꿀 수 있다면 이 이름도 같이 맞출 것.
 export async function deleteAccount() {
-  const { data, error } = await supabase.functions.invoke('delete-account')
+  const { data, error } = await supabase.functions.invoke('clever-processor')
   if (error) {
     // error.context는 HTTP 응답이 왔을 때(FunctionsHttpError)만 clone 가능한 Response다.
     // CORS 차단이나 네트워크 실패(FunctionsFetchError) 때는 context가 Response가 아니라서

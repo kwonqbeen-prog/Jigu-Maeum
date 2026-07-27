@@ -8,13 +8,20 @@
 // 배포 방법: (Supabase CLI 로그인이 안 되는 환경이면) 대시보드 Edge Functions >
 // delete-account > Via Editor에 이 파일 내용을 그대로 붙여넣고 Deploy.
 //
+// ⚠️ 실제 배포된 함수의 URL 슬러그가 대시보드 표시 이름("delete-account")과 다르게
+// "clever-processor"로 남아있는 상태다(2026-07-27 확인, Supabase가 함수 생성 시
+// 자동으로 붙여준 이름이 그대로 유지된 것으로 보임) — 그래서 src/data/storage.js의
+// deleteAccount()는 'delete-account'가 아니라 'clever-processor'로 invoke한다.
+// 대시보드에서 슬러그를 "delete-account"로 바꿀 수 있으면 storage.js도 같이 맞출 것.
+//
 // 호출 순서(클라이언트): 이 함수 하나만 호출 → 성공하면 auth.signOut()만 하면 됨
 // (src/data/storage.js의 deleteAccount() 참고).
 //
-// 기본적으로 Supabase는 이 함수 호출 시 Authorization 헤더의 사용자 JWT를
-// 검증합니다(로그인하지 않은 사용자는 호출 불가). 대시보드의
-// Edge Functions > delete-account > "Enforce JWT Verification" 옵션이 켜져
-// 있는지 확인하세요 (기본값 on).
+// 기본적으로 Supabase는 이 함수 호출 시 Authorization 헤더의 사용자 JWT를 게이트웨이
+// 단에서 먼저 검증할 수 있습니다 — 이 함수는 코드 안에서 이미 직접 JWT를 검증하므로
+// (callerClient.auth.getUser()), 대시보드의 Edge Functions > delete-account > Settings에서
+// "Verify JWT with legacy secret"(예전 이름: Enforce JWT Verification) 토글은 Supabase
+// 공식 권장대로 OFF로 둘 것(2026-07-27에 OFF로 전환함, 위 슬러그 문제와 별개로 안전한 설정).
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
