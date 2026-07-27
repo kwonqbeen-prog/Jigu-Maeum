@@ -9,7 +9,7 @@ import MissionDetailSheet from './MissionDetailSheet'
 import { getTodayMissions, toggleMissionComplete, toggleMissionLike, getReflection, upsertReflection, todayISO } from '../../data/storage'
 
 const MOOD_OPTIONS = [
-  { value: 'bad', label: '별로예요', icon: 'sentiment_frustrated' },
+  { value: 'bad', label: '그냥 그래요', icon: 'sentiment_neutral' },
   { value: 'ok', label: '괜찮아요', icon: 'sentiment_calm' },
   { value: 'great', label: '최고예요', icon: 'sentiment_excited' },
 ]
@@ -80,7 +80,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
   return (
     <div className="flex min-h-svh flex-col bg-surface pb-4">
       <AppBar title="미션" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
-      <div className="flex-1 space-y-5 px-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
+      <div className="flex flex-1 flex-col justify-center space-y-5 px-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
         {missions.length === 0 ? (
           <EmptyState
             title="아직 오늘 미션이 없어요"

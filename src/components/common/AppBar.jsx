@@ -18,7 +18,7 @@ export default function AppBar({ title, leading = 'none', onLeadingClick, action
   return (
     <header
       className={`sticky top-0 z-20 flex items-center justify-between bg-surface px-4 transition-shadow ${
-        isLarge ? 'pb-3 pt-[34px]' : 'h-14'
+        isLarge ? 'pb-3 pt-[34px] lg:pt-6' : 'h-14'
       } ${scrolled ? 'shadow-[0_1px_0_var(--color-line)]' : ''}`}
     >
       <div className="flex w-11 items-center">

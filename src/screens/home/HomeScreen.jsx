@@ -167,67 +167,77 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
         variant="large"
         actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings, dataTour: 'settings-icon' }]}
       />
-      <div className="flex-1 px-4 pb-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
-        <div className="h-[40dvh] lg:h-64" data-tour="planet-orb">
-          <PlanetOrb
-            totalCompleted={data.totalCompleted}
-            decorations={decorations}
-            expression={expression}
-            onClick={() => setAchievementsOpen(true)}
-          />
-        </div>
-        <p className="text-center text-[12px] font-medium text-ink-muted">
-          {stage}단계 · {name}
-        </p>
-
-        {data.todayCheckinExists && data.todayMissions.length > 0 && (
-          <button type="button" onClick={onGoMissions} className="mt-4 w-full py-1 text-left">
-            <div className="flex items-center justify-between text-[13px] font-medium text-ink">
-              <span>오늘의 미션</span>
-              <span>
-                {data.todayMissions.length - remaining.length} / {data.todayMissions.length}
-              </span>
-            </div>
-            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">
-              <div
-                className="h-full bg-ink"
-                style={{
-                  width: `${((data.todayMissions.length - remaining.length) / data.todayMissions.length) * 100}%`,
-                }}
-              />
-            </div>
-          </button>
-        )}
-
-        <div className="mt-4 flex justify-center" data-tour="home-cta">
-          <PrimaryButton label={cta.label} onClick={cta.onClick} className="lg:max-w-xs" />
+      <div className="flex flex-1 flex-col px-4 pb-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
+        {/* 마음 지구는 화면(AppBar 제외 영역) 높이 중앙에 오도록, 아래 고정 블록과 겹치지
+            않게 이 영역이 남은 공간을 모두 차지하고 그 안에서만 스스로 중앙 정렬한다.
+            min-h-0이 없으면 이 flex-1 영역이 아래 오브 박스의 내재 크기만큼 최소 높이를
+            강제로 확보하려 해서, 짧은 데스크탑 창에서 전체 페이지가 늘어나며 스크롤이
+            생기는 문제가 있었음 — min-h-0으로 남는 공간만큼만 쓰고 부족하면 오브 자체가
+            줄어들도록 함(clamp 하한 덕분에 완전히 찌그러지진 않음) */}
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1">
+          <div className="h-[clamp(11rem,32dvh,16rem)]" data-tour="planet-orb">
+            <PlanetOrb
+              totalCompleted={data.totalCompleted}
+              decorations={decorations}
+              expression={expression}
+              onClick={() => setAchievementsOpen(true)}
+            />
+          </div>
+          <p className="text-center text-[12px] font-medium text-ink-muted">
+            {stage}단계 · {name}
+          </p>
         </div>
 
-        <div
-          ref={sliderRef}
-          onPointerDown={handlePointerDown}
-          className="mt-4 flex cursor-grab select-none gap-2 overflow-x-auto pb-1 lg:justify-center"
-          style={{ scrollbarWidth: 'none' }}
-        >
-          {dates.map((date) => {
-            const isToday = date === todayISO()
-            const dow = WEEKDAY_LABELS[new Date(date).getDay()]
-            const day = new Date(date).getDate()
-            return (
-              <button
-                key={date}
-                type="button"
-                onClick={() => handleChipClick(date)}
-                className={`flex w-11 shrink-0 flex-col items-center gap-0.5 rounded-2xl border-[1.5px] py-2 ${
-                  isToday ? 'border-accent' : 'border-transparent'
-                } bg-surface-alt`}
-              >
-                <span className="text-[10px] font-medium text-ink-faint">{dow}</span>
-                <span className="text-[13px] font-medium text-ink">{day}</span>
-                <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(date) ? 'day-dot--active' : 'bg-transparent'}`} />
-              </button>
-            )
-          })}
+        <div className="shrink-0">
+          {data.todayCheckinExists && data.todayMissions.length > 0 && (
+            <button type="button" onClick={onGoMissions} className="w-full py-1 text-left">
+              <div className="flex items-center justify-between text-[13px] font-medium text-ink">
+                <span>오늘의 미션</span>
+                <span>
+                  {data.todayMissions.length - remaining.length} / {data.todayMissions.length}
+                </span>
+              </div>
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">
+                <div
+                  className="h-full bg-ink"
+                  style={{
+                    width: `${((data.todayMissions.length - remaining.length) / data.todayMissions.length) * 100}%`,
+                  }}
+                />
+              </div>
+            </button>
+          )}
+
+          <div className="mt-4 flex justify-center" data-tour="home-cta">
+            <PrimaryButton label={cta.label} onClick={cta.onClick} className="lg:max-w-xs" />
+          </div>
+
+          <div
+            ref={sliderRef}
+            onPointerDown={handlePointerDown}
+            className="mt-4 flex cursor-grab select-none gap-2 overflow-x-auto pb-1 lg:justify-center"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {dates.map((date) => {
+              const isToday = date === todayISO()
+              const dow = WEEKDAY_LABELS[new Date(date).getDay()]
+              const day = new Date(date).getDate()
+              return (
+                <button
+                  key={date}
+                  type="button"
+                  onClick={() => handleChipClick(date)}
+                  className={`flex w-11 shrink-0 flex-col items-center gap-0.5 rounded-2xl border-[1.5px] py-2 ${
+                    isToday ? 'border-accent' : 'border-transparent'
+                  } bg-surface-alt`}
+                >
+                  <span className="text-[10px] font-medium text-ink-faint">{dow}</span>
+                  <span className="text-[13px] font-medium text-ink">{day}</span>
+                  <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(date) ? 'day-dot--active' : 'bg-transparent'}`} />
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 

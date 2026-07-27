@@ -17,7 +17,7 @@ export default function MissionCard({ mission, onOpen, onToggle, showLike = fals
   const typeMeta = MISSION_TYPE_META[mission.type]
 
   return (
-    <div className="flex w-full items-center gap-3 px-4 py-3">
+    <div className="flex w-full items-center gap-3 px-4 py-3 lg:py-4">
       {typeMeta && (
         <span
           className="mission-type-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
