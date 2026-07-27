@@ -2,12 +2,14 @@ import { useState } from 'react'
 import ConfirmDialog from '../../components/common/ConfirmDialog'
 import AppBar from '../../components/common/AppBar'
 import TextField from '../../components/common/TextField'
-import { deleteAllUserData } from '../../data/storage'
+import InlineBanner from '../../components/common/InlineBanner'
+import { deleteAllUserData, deleteAccount } from '../../data/storage'
 
 // S-64D · 로그아웃 / 회원 탈퇴 (명세 7.4)
 export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
   const [confirmText, setConfirmText] = useState('')
   const [processing, setProcessing] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const displayName = auth.user?.user_metadata?.display_name ?? ''
 
   if (mode === 'logout') {
@@ -28,10 +30,16 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
 
   const handleWithdraw = async () => {
     setProcessing(true)
-    await deleteAllUserData()
-    await auth.signOut()
-    setProcessing(false)
-    onClose()
+    setErrorMessage('')
+    try {
+      await deleteAllUserData()
+      await deleteAccount()
+      await auth.signOut()
+      onClose()
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : '탈퇴 처리 중 오류가 발생했습니다.')
+      setProcessing(false)
+    }
   }
 
   return (
@@ -55,6 +63,12 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
             onChange={setConfirmText}
           />
         </div>
+
+        {errorMessage && (
+          <div className="mt-6">
+            <InlineBanner message={errorMessage} tone="danger" />
+          </div>
+        )}
 
         <div className="mt-8">
           <button

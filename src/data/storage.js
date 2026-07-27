@@ -410,8 +410,7 @@ export function getAllTypesCompleted(missions) {
   return ['carbon', 'nature', 'social'].every((t) => types.has(t))
 }
 
-// S-64D 회원 탈퇴 — auth.users 삭제는 서비스 롤 권한이 필요해 Edge Function 없이는
-// 클라이언트에서 불가능하다. 여기서는 사용자 소유 데이터를 전부 지우고 로그아웃까지만 처리한다.
+// S-64D 회원 탈퇴 — 사용자 소유 데이터를 전부 지운다.
 export async function deleteAllUserData() {
   const userId = await getUserId()
   const tables = ['missions', 'checkins', 'reflections', 'achievements', 'user_memories', 'user_profiles']
@@ -419,4 +418,20 @@ export async function deleteAllUserData() {
     const { error } = await supabase.from(table).delete().eq('user_id', userId)
     if (error) throw error
   }
+}
+
+// S-64D 회원 탈퇴 — auth.users 계정 자체는 서비스 롤 권한이 필요해 클라이언트에서
+// 직접 지울 수 없다. deleteAllUserData()로 데이터를 먼저 지운 뒤 이 함수로
+// delete-account Edge Function을 호출해 실제 계정을 삭제한다.
+export async function deleteAccount() {
+  const { data, error } = await supabase.functions.invoke('delete-account')
+  if (error) {
+    const detail = await error.context
+      ?.clone()
+      .json()
+      .then((body) => body?.error)
+      .catch(() => null)
+    throw new Error(`회원 탈퇴 처리 실패: ${detail ?? error.message}`)
+  }
+  if (data?.error) throw new Error(data.error)
 }
