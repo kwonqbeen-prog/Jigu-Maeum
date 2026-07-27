@@ -38,10 +38,27 @@ const STARS = [
   { top: '90%', left: '80%', size: 5, shape: 'dot' },
 ]
 
+// 대륙 블롭 3개의 위치·크기(% 단위, 오브 크기와 무관하게 스케일됨) — 지시서 §2
+const BLOB_LAYOUT = [
+  { top: '10%', left: '6%', width: '52%', height: '44%' },
+  { top: '44%', left: '38%', width: '46%', height: '38%' },
+  { top: '26%', left: '56%', width: '34%', height: '30%' },
+]
+
+// 단계별 대륙 색상·블롭 개수·목표 opacity — 지시서 §1 색상표 그대로. 1단계는 대륙 없음
+const CONTINENT_CONFIG = {
+  2: { color: 'var(--mind-planet-continent-2)', opacities: [0.7] },
+  3: { color: 'var(--mind-planet-continent-3)', opacities: [0.75, 0.7] },
+  4: { color: 'var(--mind-planet-continent-4)', opacities: [0.8, 0.75, 0.75] },
+  5: { color: 'var(--mind-planet-continent-5)', opacities: [0.85, 0.8, 0.8] },
+}
+
 // C-09 PlanetOrb — 장식 요소(업적)는 동시 최대 3개
-export default function PlanetOrb({ totalCompleted = 0, decorations = [], size = 'large', onClick }) {
+export default function PlanetOrb({ totalCompleted = 0, decorations = [], size = 'large', expression = 'default', onClick }) {
   const { stage, name } = getPlanetStage(totalCompleted)
   const sizeClass = size === 'large' ? 'h-56 w-56 sm:h-64 sm:w-64' : 'h-24 w-24'
+  const showDetail = size === 'large' // 대륙/눈은 large 사이즈에서만 — STARS와 동일한 기존 관례
+  const continentConfig = CONTINENT_CONFIG[stage]
 
   return (
     <div className="relative flex h-full items-center justify-center overflow-hidden" aria-hidden={size !== 'large' ? undefined : false}>
@@ -77,7 +94,26 @@ export default function PlanetOrb({ totalCompleted = 0, decorations = [], size =
         aria-label={`마음 지구 ${stage}단계 ${name}, 누적 완료 ${totalCompleted}개`}
         className="relative flex items-center justify-center"
       >
-        <div className={`mind-planet__orb rounded-full ${sizeClass}`} data-planet-stage={String(stage)} />
+        <div className={`mind-planet__orb rounded-full ${sizeClass}`} data-planet-stage={String(stage)}>
+          <div className="mind-planet__surface">
+            {showDetail && continentConfig && (
+              <div className="mind-planet__continents" aria-hidden="true">
+                {continentConfig.opacities.map((opacity, i) => (
+                  <span
+                    key={i}
+                    className="mind-planet__continent"
+                    style={{
+                      ...BLOB_LAYOUT[i],
+                      '--continent-color': continentConfig.color,
+                      '--continent-peak-opacity': opacity,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {showDetail && <div className={`mind-planet__eyes mind-planet__eyes--${expression}`} aria-hidden="true" />}
+        </div>
         {decorations.slice(0, 3).map((deco, i) => (
           <span
             key={deco.code ?? i}

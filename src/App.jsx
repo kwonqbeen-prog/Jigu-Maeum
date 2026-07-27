@@ -49,6 +49,7 @@ function AuthenticatedApp({ auth }) {
   const [hasNewRecords, setHasNewRecords] = useState(false)
   const [tourRun, setTourRun] = useState(false)
   const [coachmarkReplayRequested, setCoachmarkReplayRequested] = useState(false)
+  const [justOnboarded, setJustOnboarded] = useState(false)
   const autoTourTriggeredRef = useRef(false)
   const showToast = useToast()
 
@@ -209,6 +210,7 @@ function AuthenticatedApp({ auth }) {
           try {
             await markOnboardingCompleted()
             await refreshProfile()
+            setJustOnboarded(true) // 홈 도착 시 마음 지구 오브가 웃는 눈으로 한 번 반겨준다
             goHome()
             setTourRun(true) // 홈 도착 후 코치마크 즉시 시작
           } catch {
@@ -221,6 +223,7 @@ function AuthenticatedApp({ auth }) {
             // 코치마크를 이미 본 것으로 표시해 autoTourTriggeredRef 자동 실행을 막는다
             await markCoachmarkSeen()
             await refreshProfile()
+            setJustOnboarded(true)
             goHome()
           } catch {
             showToast('저장하지 못했어요. 다시 시도해 주세요')
@@ -358,6 +361,7 @@ function AuthenticatedApp({ auth }) {
             <div className={activeTab === 'planet' ? undefined : 'hidden'}>
               <HomeScreen
                 isActive={activeTab === 'planet'}
+                justOnboarded={justOnboarded}
                 onStartCheckin={() => setScreen('checkin')}
                 onGoMissions={() => setActiveTab('missions')}
                 onOpenSettings={() => setScreen('settings-home')}

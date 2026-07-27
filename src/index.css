@@ -48,6 +48,13 @@
   - 카카오 로그인 버튼(#FEE500)은 카카오 브랜드 규정 색이라 무관하게 그대로 둘 것
   - --color-success와 --color-focus-ring은 var(--color-accent...)를 참조하므로 accent를
     바꾸면 자동으로 따라옴 — 새로 값을 넣지 말 것
+
+  2026-07-28 PlanetOrb 리디자인(claude-code-task-03-planet-orb-redesign.md)으로
+  --gradient-planet-1~5(단일 그라데이션)를 완전히 폐기하고 --mind-planet-ocean-{1..5}/
+  -continent-{2..5}/-glow-{3..5}(바다/대륙/후광 분리 토큰)로 교체했다. 대륙 블롭·눈
+  캐릭터 레이어가 새로 추가돼 하단 .mind-planet__orb 관련 규칙도 함께 재구성됨(아래
+  해당 블록 주석 참고). 다크/고대비 값은 1차 구현 범위상 임시치이며 정밀 튜닝은 후속
+  세션 예정.
 */
 :root {
   color-scheme: light;
@@ -81,21 +88,26 @@
      잘 보이도록 상향 조정 (기존 0.35는 무채색 시절 값이라 너무 흐렸음) */
   --star-opacity: 0.6;
 
-  /* 감성 레이어: "마음 지구" 5단계 그라데이션 (화면설계서 §6 S-20). 2026-07-26 컬러
-     매핑 문서 §2 기준 파스텔 4색(라이트옐로우/라이트핑크/라벤더/스카이블루) 블렌드로
-     교체 — 1단계는 옅고 좁게, 5단계로 갈수록 4색이 다 섞이며 확산·채도가 커진다 */
-  --gradient-planet-1: radial-gradient(circle at 35% 30%, #ffffff 0%, #fff4d1 60%, #fff4d1 100%);
-  --gradient-planet-2: radial-gradient(circle at 35% 30%, #fffdf5 0%, #fff4d1 40%, #ffdce8 100%);
-  --gradient-planet-3: radial-gradient(circle at 35% 30%, #fff4d1 0%, #ffdce8 40%, #e4d9f7 100%);
-  --gradient-planet-4: radial-gradient(circle at 35% 30%, #fff4d1 0%, #ffdce8 30%, #e4d9f7 60%, #d3e7fb 100%);
-  --gradient-planet-5: radial-gradient(
-    circle at 35% 30%,
-    #fff4d1 0%,
-    #ffdce8 25%,
-    #e4d9f7 50%,
-    #d3e7fb 75%,
-    #fff4d1 100%
-  );
+  /* 감성 레이어: "마음 지구" 오브 5단계 (화면설계서 §6 S-20). 2026-07-28 리디자인으로
+     기존 4색 단일 블렌드(--gradient-planet-1~5)를 폐기하고, 바다(ocean)/대륙(continent)/
+     후광(glow)을 분리한 토큰 세트로 교체 — 표면에 대륙처럼 보이는 블롭을 얹기 위해서다
+     (지시서 claude-code-task-03-planet-orb-redesign.md 기준). 낮은 단계일수록 흰색에
+     가깝고 색이 거의 안 보이며, 단계가 오를수록 채도가 올라가며 대륙이 선명해진다
+     (명도를 낮춰 어둡게 만드는 방향이 아님 — 우울해 보인다는 피드백으로 폐기된 방향) */
+  --mind-planet-ocean-1: #eef4f7;
+  --mind-planet-ocean-2: #d6ecf9;
+  --mind-planet-ocean-3: #a9ddf5;
+  --mind-planet-ocean-4: #82ccef;
+  --mind-planet-ocean-5: radial-gradient(circle at 35% 30%, #a9e2f8 0%, #6fc4ef 55%, #4aa8d9 100%);
+
+  --mind-planet-continent-2: #fbdce8;
+  --mind-planet-continent-3: #f7b3cf;
+  --mind-planet-continent-4: #f98fb9;
+  --mind-planet-continent-5: #ff8fb8;
+
+  --mind-planet-glow-3: 0 0 8px 1px rgba(111, 196, 239, 0.25);
+  --mind-planet-glow-4: 0 0 14px 3px rgba(111, 196, 239, 0.35);
+  --mind-planet-glow-5: 0 0 22px 6px rgba(111, 196, 239, 0.5);
 
   /* 감성 레이어: 온보딩/스플래시/데이랩업/업적 시트/체크인 완료 화면 전용 은은한
      파스텔 워시(.pastel-wash 클래스가 소비). 오브와 같은 4색을 아주 낮은 불투명도로 */
@@ -150,7 +162,7 @@
   --color-highlight: #5b5f66;
   --color-danger: #be123c;
   --star-opacity: 0.6;
-  --gradient-planet-1: radial-gradient(circle at 35% 30%, #ffffff 0%, #fff4d1 60%, #fff4d1 100%);
+  --mind-planet-ocean-1: #eef4f7;
 }
 
 /* .pastel-wash와 동일한 위치 지정 패턴(뒤로만 깔리는 ::before 오버레이) — 다른
@@ -203,20 +215,24 @@
   --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.55);
   --star-opacity: 0.7;
 
-  /* 라이트와 같은 파스텔 4색을 어두운 앵커와 섞어 톤다운(디자인 결정: 다크에서도
-     오브는 그레이스케일이 아니라 파스텔 톤 유지, 그레이스케일은 고대비 전용) */
-  --gradient-planet-1: radial-gradient(circle at 35% 30%, #3a3e44 0%, #2c2e31 65%, #202224 100%);
-  --gradient-planet-2: radial-gradient(circle at 35% 30%, #4a4046 0%, #3a3e44 45%, #26282b 100%);
-  --gradient-planet-3: radial-gradient(circle at 35% 30%, #6b5f50 0%, #6b5560 35%, #56505f 65%, #3d4650 100%);
-  --gradient-planet-4: radial-gradient(circle at 35% 30%, #8a7a5c 0%, #8a6a76 30%, #6f6685 50%, #557690 100%);
-  --gradient-planet-5: radial-gradient(
-    circle at 35% 30%,
-    #b89a68 0%,
-    #b8829a 25%,
-    #9484b8 50%,
-    #6ea0c2 75%,
-    #b89a68 100%
-  );
+  /* 2026-07-28 오브 리디자인(--gradient-planet-* 폐기)으로 다크 테마도 바다/대륙/후광
+     분리 토큰으로 교체. 정확한 값은 1차 구현 범위 밖이라(지시서 §1) 라이트와 같은
+     "옅음→선명함" 명도 램프를 다크 배경 기준으로 임시 재계산만 하고, 색상군은 라이트와
+     동일하게 스카이블루(바다)/핑크(대륙) 계열로 맞췄다 — 정밀 튜닝은 별도 세션에서 진행 */
+  --mind-planet-ocean-1: #262b30;
+  --mind-planet-ocean-2: #253844;
+  --mind-planet-ocean-3: #1f4a5e;
+  --mind-planet-ocean-4: #1c5b78;
+  --mind-planet-ocean-5: radial-gradient(circle at 35% 30%, #2f7fa3 0%, #1c5b78 55%, #123a4d 100%);
+
+  --mind-planet-continent-2: #4a2c38;
+  --mind-planet-continent-3: #6e3550;
+  --mind-planet-continent-4: #99406b;
+  --mind-planet-continent-5: #c94f82;
+
+  --mind-planet-glow-3: 0 0 8px 1px rgba(47, 127, 163, 0.3);
+  --mind-planet-glow-4: 0 0 14px 3px rgba(47, 127, 163, 0.4);
+  --mind-planet-glow-5: 0 0 22px 6px rgba(47, 127, 163, 0.55);
 
   /* 라이트보다 훨씬 낮은 불투명도로 — 다크 배경 위에서 은은하게만 보이도록 */
   --gradient-pastel-wash: radial-gradient(
@@ -277,11 +293,16 @@
   --focus-ring-width: 4px;
   --star-opacity: 0.6;
 
-  --gradient-planet-1: radial-gradient(circle, #262626, #141414);
-  --gradient-planet-2: radial-gradient(circle, #2c2c2c, #171717);
-  --gradient-planet-3: radial-gradient(circle, #333333, #1a1a1a);
-  --gradient-planet-4: radial-gradient(circle, var(--color-ink-faint), #666666);
-  --gradient-planet-5: radial-gradient(circle, var(--color-ink), #cccccc);
+  --mind-planet-ocean-1: radial-gradient(circle, #262626, #141414);
+  --mind-planet-ocean-2: radial-gradient(circle, #2c2c2c, #171717);
+  --mind-planet-ocean-3: radial-gradient(circle, #333333, #1a1a1a);
+  --mind-planet-ocean-4: radial-gradient(circle, var(--color-ink-faint), #666666);
+  --mind-planet-ocean-5: radial-gradient(circle, var(--color-ink), #cccccc);
+  /* 대륙 블롭·후광은 고대비 모드에서 완전히 꺼진다(아래 .mind-planet__continent 억제 규칙
+     참고) — 색상 구분 없이 명도 3단계만 쓰는 기존 원칙을 그대로 유지 */
+  --mind-planet-glow-3: none;
+  --mind-planet-glow-4: none;
+  --mind-planet-glow-5: none;
 
   /* 파스텔 워시는 대비 손실 위험이 있어 고대비 모드에서는 아예 끔 (AAA 원칙 유지) */
   --gradient-pastel-wash: none;
@@ -471,44 +492,37 @@ body {
   background-image: var(--gradient-pastel-wash);
 }
 
-/* "마음 지구" 오브젝트 — data-planet-stage/data-planet-category로 CSS만으로 분기 */
+/* "마음 지구" 오브젝트 — data-planet-stage로 CSS만으로 분기.
+   2026-07-28 리디자인: 기존 단일 그라데이션 + ::before 블러 광채 + 5단계 전체 회전
+   방식을 폐기하고, 바다/대륙/눈을 분리된 레이어로 쌓는 구조로 교체했다
+   (claude-code-task-03-planet-orb-redesign.md). .mind-planet__orb 자신은
+   overflow:hidden을 두지 않는다 — 지시서는 오브 자체에 overflow:hidden을 걸라고
+   했지만, 그렇게 하면 아래 4~5단계 ::after 대기층 링(원 밖으로 번지는 효과, inset:-8%)이
+   같이 잘려버린다. 대신 대륙을 원 안에 마스킹할 새 자식 레이어 .mind-planet__surface를
+   두어 그 레이어에만 overflow:hidden을 걸고, 오브 자신은 기존 링 효과를 그대로 유지한다.
+   .mind-planet__orb에도 바다색 배경을 그대로 남겨두는 이유는, 이 클래스가 PlanetOrb.jsx를
+   거치지 않고 여러 화면(AuthScreen 등)에서 정적 로고로 직접 쓰이기 때문 — 그런 곳엔
+   .mind-planet__surface 자식이 없으므로 오브 자신에 배경이 없으면 색이 아예 안 보인다 */
 .mind-planet__orb {
   position: relative;
-  z-index: 0; /* ::before의 z-index:-1이 오브 자신의 뒤로만 가도록 스태킹 컨텍스트를 여기서 새로 만든다.
-                 없으면 z-index:-1이 이 오브를 넘어 조상 배경 뒤로 밀려나 광채가 완전히 안 보이게 된다 */
-  background-image: var(--gradient-planet-1);
-  transition:
-    background-image 0.3s ease,
-    filter 0.3s ease;
+  z-index: 0;
+  background: var(--mind-planet-ocean-1);
+  transition: background 0.3s ease;
 }
-/* 테두리 바깥으로 은은하게 번지는 광채 — 색상 변수를 따로 두지 않고 오브 자신의
-   현재 그라데이션을 그대로 상속(inherit)해서 확대·블러한다. 그래서 단계/카테고리/
-   테마가 바뀌어도 별도 분기 없이 항상 오브와 같은 색으로 따라온다 */
-.mind-planet__orb::before {
-  content: '';
-  position: absolute;
-  inset: -18%;
-  z-index: -1;
-  border-radius: 50%;
-  background-image: inherit;
-  filter: blur(28px) brightness(1.3) saturate(1.1);
-  opacity: 0.6;
-}
-/* 5단계 성장 (§6 S-20) — 카테고리 구분 없이 밝기 차이로만 표현 (모든 테마 공통, D5) */
 .mind-planet__orb[data-planet-stage='2'] {
-  background-image: var(--gradient-planet-2);
+  background: var(--mind-planet-ocean-2);
 }
 .mind-planet__orb[data-planet-stage='3'] {
-  background-image: var(--gradient-planet-3);
+  background: var(--mind-planet-ocean-3);
 }
 .mind-planet__orb[data-planet-stage='4'] {
-  background-image: var(--gradient-planet-4);
+  background: var(--mind-planet-ocean-4);
 }
 .mind-planet__orb[data-planet-stage='5'] {
-  background-image: var(--gradient-planet-5);
-  animation: mind-planet-spin 14s linear infinite;
+  background: var(--mind-planet-ocean-5);
 }
-/* 4단계부터 대기층(글로우 링) 추가 */
+/* 4단계부터 대기층(글로우 링) 추가 — 기존 효과 그대로 유지, 오브 밖으로 번지므로
+   .mind-planet__orb에 overflow:hidden이 없어야만 보인다 */
 .mind-planet__orb[data-planet-stage='4']::after,
 .mind-planet__orb[data-planet-stage='5']::after {
   content: '';
@@ -518,15 +532,6 @@ body {
   border: 1.5px solid var(--color-ink-faint);
   opacity: 0.35;
   animation: mind-planet-ambient 10s ease-in-out infinite;
-}
-@keyframes mind-planet-spin {
-  from {
-    filter: hue-rotate(0deg) brightness(1);
-  }
-  to {
-    filter: hue-rotate(0deg) brightness(1);
-    transform: rotate(360deg);
-  }
 }
 @keyframes mind-planet-ambient {
   0%,
@@ -539,3 +544,113 @@ body {
     transform: scale(1.03);
   }
 }
+
+/* 대륙을 원 안쪽으로만 마스킹하는 자식 레이어. background: inherit로 부모(.mind-planet__orb)의
+   현재 단계별 바다색을 그대로 물려받아 별도 단계 분기가 필요 없다. box-shadow(후광)는
+   이 레이어 자신의 overflow:hidden에 잘리지 않는다(요소 자신의 box-shadow는 자신의
+   overflow 속성의 영향을 받지 않는다) */
+.mind-planet__surface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: inherit;
+}
+.mind-planet__orb[data-planet-stage='3'] .mind-planet__surface {
+  box-shadow: var(--mind-planet-glow-3);
+}
+.mind-planet__orb[data-planet-stage='4'] .mind-planet__surface {
+  box-shadow: var(--mind-planet-glow-4);
+}
+.mind-planet__orb[data-planet-stage='5'] .mind-planet__surface {
+  box-shadow: var(--mind-planet-glow-5);
+}
+
+/* 대륙 블롭 — 좌→중앙→우로 흘러갔다 사라지는 것을 반복해 옆에서 본 자전 느낌을 준다
+   (블롭 자체를 rotate()하는 방식은 평면 팽이처럼 보여 폐기됨). 색상은 stage별로
+   PlanetOrb.jsx가 인라인 style(--continent-color)로 넣고, 목표 opacity도 블롭마다
+   달라서(색상표 §1 참고) --continent-peak-opacity로 파라미터화해 하나의 keyframes를
+   모든 블롭이 공유한다 */
+.mind-planet__continents {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.mind-planet__continent {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(9px);
+  background-color: var(--continent-color);
+  animation: mind-planet-drift 9s ease-in-out infinite;
+}
+.mind-planet__continent:nth-child(2) {
+  animation-delay: -3s;
+}
+.mind-planet__continent:nth-child(3) {
+  animation-delay: -6s;
+}
+@keyframes mind-planet-drift {
+  0% {
+    transform: translateX(-60%) scaleX(0.25);
+    opacity: 0;
+  }
+  18% {
+    opacity: calc(var(--continent-peak-opacity) * 0.94);
+  }
+  50% {
+    transform: translateX(0%) scaleX(1);
+    opacity: var(--continent-peak-opacity);
+  }
+  82% {
+    opacity: calc(var(--continent-peak-opacity) * 0.94);
+  }
+  100% {
+    transform: translateX(60%) scaleX(0.25);
+    opacity: 0;
+  }
+}
+[data-motion='reduced'] .mind-planet__continent {
+  animation: none;
+}
+/* 고대비 모드는 색상 구분 없이 명도 3단계 원칙만 유지 — 대륙 블롭·후광을 아예 끈다
+   (눈은 그대로 유지) */
+[data-theme='high-contrast'] .mind-planet__continent {
+  display: none;
+}
+
+/* 눈 — 입 없이 눈만, 1단계부터 항상 표시되는 캐릭터 요소. 색은 #1c1d1f 고정이며
+   단계별 명도+채도 램프(위 바다/대륙 레이어)와 완전히 분리된 레이어라 영향을 받지 않는다.
+   기본은 세로로 긴 타원, smile 상태는 같은 자리에 위로 볼록한 아치(SVG path)로 바뀐다 */
+.mind-planet__eyes {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.mind-planet__eyes::before,
+.mind-planet__eyes::after {
+  content: '';
+  position: absolute;
+  top: 40%;
+  width: 10%;
+  height: 15%;
+  background-color: #1c1d1f;
+  border-radius: 50%;
+}
+.mind-planet__eyes::before {
+  left: 38%;
+}
+.mind-planet__eyes::after {
+  left: 62%;
+}
+.mind-planet__eyes--smile::before,
+.mind-planet__eyes--smile::after {
+  background-color: transparent;
+  border-radius: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath d='M0,4 Q6,-6 12,4' stroke='%231c1d1f' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+/* 기본↔웃는 눈은 background-image 자체를 스위치하는 방식이라 원래도 트랜지션 없이
+   즉시 바뀐다 — data-motion='reduced' 전용 규칙이 따로 필요 없다 */

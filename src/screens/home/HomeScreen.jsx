@@ -31,12 +31,27 @@ function last7Dates() {
 }
 
 // S-20 · 마음 지구 (홈, 탭1) — 명세 5.1, 5.2, 6.1
-export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissions, onOpenSettings, onOpenArchive }) {
+export default function HomeScreen({ isActive = true, justOnboarded = false, onStartCheckin, onGoMissions, onOpenSettings, onOpenArchive }) {
   const [data, setData] = useState(null)
   const [achievementsOpen, setAchievementsOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
+  const [expression, setExpression] = useState('default')
   const sliderRef = useRef(null)
   const dragRef = useRef({ dragging: false, moved: false, startX: 0, startScroll: 0 })
+  const welcomeSmileConsumedRef = useRef(false)
+
+  // 마음 지구 오브가 1.5~2초간 "웃는 눈"으로 바뀌었다 되돌아온다 — 온보딩 직후 첫 홈 진입,
+  // 새 업적 달성 두 시점에서만 호출됨(지시서 §4)
+  const flashSmile = useCallback(() => {
+    setExpression('smile')
+    setTimeout(() => setExpression('default'), 1800)
+  }, [])
+
+  useEffect(() => {
+    if (!justOnboarded || welcomeSmileConsumedRef.current) return
+    welcomeSmileConsumedRef.current = true
+    flashSmile()
+  }, [justOnboarded, flashSmile])
 
   const load = useCallback(async () => {
     const [allMissions, todayMissions, todayCheckin, reflections, achievements, reflectionsCount] = await Promise.all([
@@ -55,6 +70,7 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
     const existingCodes = new Set(achievements.map((a) => a.code))
     const newCodes = earnedCodes.filter((c) => !existingCodes.has(c))
     await Promise.all(newCodes.map((code) => unlockAchievement(code)))
+    if (newCodes.length > 0) flashSmile()
 
     setData({
       totalCompleted,
@@ -65,7 +81,7 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
       todayCheckinExists: Boolean(todayCheckin && todayCheckin.status === 'completed'),
       achievements: [...achievements.map((a) => a.code), ...newCodes],
     })
-  }, [])
+  }, [flashSmile])
 
   useEffect(() => {
     if (!isActive) return
@@ -153,7 +169,12 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
       />
       <div className="flex-1 px-4 pb-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
         <div className="h-[40dvh] lg:h-64" data-tour="planet-orb">
-          <PlanetOrb totalCompleted={data.totalCompleted} decorations={decorations} onClick={() => setAchievementsOpen(true)} />
+          <PlanetOrb
+            totalCompleted={data.totalCompleted}
+            decorations={decorations}
+            expression={expression}
+            onClick={() => setAchievementsOpen(true)}
+          />
         </div>
         <p className="text-center text-[12px] font-medium text-ink-muted">
           {stage}단계 · {name}
