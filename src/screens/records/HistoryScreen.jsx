@@ -38,7 +38,7 @@ export default function HistoryScreen({ onBack, onStartCheckin }) {
   const sortedDates = Array.from(groups.keys()).sort((a, b) => (a < b ? 1 : -1))
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-2xl">
       <AppBar title="완료 히스토리" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-4 px-4 py-4">
         <SegmentedControl

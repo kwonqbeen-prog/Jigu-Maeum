@@ -55,7 +55,7 @@ export default function StreakCalendarScreen({ onBack }) {
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-2xl">
       <AppBar title={`연속 실천 ${data.streak}일`} leading="back" onLeadingClick={onBack} />
       <div className="flex-1 px-4 py-4">
         <div className="grid grid-cols-7 gap-1.5">

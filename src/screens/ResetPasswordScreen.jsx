@@ -19,7 +19,7 @@ export default function ResetPasswordScreen({ auth, onBack }) {
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="비밀번호 재설정" leading="back" onLeadingClick={onBack} />
       <div className="flex flex-1 flex-col px-6 py-6">
         {done ? (

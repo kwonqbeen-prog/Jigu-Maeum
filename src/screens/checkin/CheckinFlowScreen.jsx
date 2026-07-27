@@ -178,7 +178,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
 
   if (phase === 'generating') {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-surface px-6 text-center">
+      <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-surface px-6 text-center lg:mx-auto lg:max-w-[480px]">
         <div className="mind-planet__orb h-16 w-16 rounded-full" data-planet-stage="2" aria-hidden="true" />
         <p className="text-[15px] font-medium text-ink-muted">{GENERATING_MESSAGES[msgIndex]}</p>
       </div>
@@ -187,7 +187,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
 
   if (phase === 'gen-error') {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-surface px-6 text-center">
+      <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-surface px-6 text-center lg:mx-auto lg:max-w-[480px]">
         <p className="text-[15px] font-semibold text-ink">지금 미션을 만들지 못했어요</p>
         <div className="w-full max-w-xs space-y-2">
           <PrimaryButton label="다시 시도" onClick={() => startGeneration(checkin)} />
@@ -210,7 +210,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   if (phase === 'result') {
     const retryLeft = MAX_RETRY - (checkin.retry_count ?? 0)
     return (
-      <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6">
+      <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
         <AppBar title="" leading="close" onLeadingClick={() => setShowConfirmClose(true)} />
         <h1 className="mt-2 text-[20px] font-bold leading-snug text-ink">
           {profile?.displayName ? `${profile.displayName}님, ` : ''}오늘은 이렇게 해보면 어떨까요?
@@ -300,7 +300,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   }[step]
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface px-6 py-6">
+    <div className="flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
       <div className="flex items-center justify-between">
         <button type="button" aria-label="닫기" onClick={() => setShowConfirmClose(true)} className="flex h-11 w-11 items-center justify-center -ml-2">
           <Icon name="close" />

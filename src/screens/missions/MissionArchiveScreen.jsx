@@ -38,7 +38,7 @@ export default function MissionArchiveScreen({ onBack, onStartCheckin }) {
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-2xl">
       <AppBar title="미션 보관함" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-4 px-4 py-4">
         <SegmentedControl

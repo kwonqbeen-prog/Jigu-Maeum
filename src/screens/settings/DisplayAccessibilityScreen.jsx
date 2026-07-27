@@ -45,7 +45,7 @@ export default function DisplayAccessibilityScreen({ onBack }) {
   )
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="화면 및 접근성" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-6 px-4 py-4">
         <div className="rounded-2xl bg-surface-alt p-4">

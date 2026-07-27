@@ -14,7 +14,7 @@ export default function SupportScreen({ readOnly = false, onConfirm, onBack }) {
   }, [])
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface" role="dialog" aria-modal="true">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]" role="dialog" aria-modal="true">
       {readOnly && <AppBar title="도움 받을 곳" leading="back" onLeadingClick={onBack} />}
       <div className="flex flex-1 flex-col px-6 py-8">
         {!readOnly && (

@@ -151,8 +151,8 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
         variant="large"
         actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings, dataTour: 'settings-icon' }]}
       />
-      <div className="flex-1 px-4 pb-4">
-        <div className="h-[40dvh]" data-tour="planet-orb">
+      <div className="flex-1 px-4 pb-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
+        <div className="h-[40dvh] lg:h-64" data-tour="planet-orb">
           <PlanetOrb totalCompleted={data.totalCompleted} decorations={decorations} onClick={() => setAchievementsOpen(true)} />
         </div>
         <p className="text-center text-[12px] font-medium text-ink-muted">
@@ -178,14 +178,14 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
           </button>
         )}
 
-        <div className="mt-4" data-tour="home-cta">
-          <PrimaryButton label={cta.label} onClick={cta.onClick} />
+        <div className="mt-4 flex justify-center" data-tour="home-cta">
+          <PrimaryButton label={cta.label} onClick={cta.onClick} className="lg:max-w-xs" />
         </div>
 
         <div
           ref={sliderRef}
           onPointerDown={handlePointerDown}
-          className="mt-4 flex cursor-grab select-none gap-2 overflow-x-auto pb-1"
+          className="mt-4 flex cursor-grab select-none gap-2 overflow-x-auto pb-1 lg:justify-center"
           style={{ scrollbarWidth: 'none' }}
         >
           {dates.map((date) => {

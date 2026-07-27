@@ -27,6 +27,7 @@ import { useProfile } from './hooks/useProfile'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider, useToast } from './contexts/ToastContext'
 import CoachmarkTour from './components/common/CoachmarkTour'
+import Sidebar from './components/common/Sidebar'
 import { markOnboardingCompleted, markCoachmarkSeen, getTodayIncompleteMissionCount, hasNewRecordsSince } from './data/storage'
 
 const RECORDS_LAST_SEEN_KEY = 'climatemood:records-last-seen-at'
@@ -316,54 +317,57 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   // screen === 'main'
   // 탭은 한 번 방문하면 언마운트하지 않고 display:none으로만 숨긴다 —
   // 그래야 탭 내부 상태(스크롤, 입력 중인 값, 열려 있던 시트 등)가 유지된다.
+  // lg(1024px)+ 데스크탑에서는 BottomTabBar 대신 Sidebar가 같은 activeTab 상태를 공유하며
+  // 좌측에 고정 표시된다(sticky) — 문서 스크롤은 그대로 window가 담당하므로 AppBar의
+  // scroll 리스너나 탭별 스크롤 위치 복원 로직은 손댈 필요가 없다.
+  const tabBadges = {
+    missions: incompleteMissionCount > 0 ? incompleteMissionCount : undefined,
+    records: hasNewRecords ? true : undefined,
+  }
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
-      <div className="flex-1">
-        {mountedTabs.has('planet') && (
-          <div className={activeTab === 'planet' ? undefined : 'hidden'}>
-            <HomeScreen
-              isActive={activeTab === 'planet'}
-              onStartCheckin={() => setScreen('checkin')}
-              onGoMissions={() => setActiveTab('missions')}
-              onOpenSettings={() => setScreen('settings-home')}
-              onOpenArchive={() => setScreen('archive')}
-            />
-          </div>
-        )}
-        {mountedTabs.has('missions') && (
-          <div className={activeTab === 'missions' ? undefined : 'hidden'}>
-            <TodayMissionsScreen
-              isActive={activeTab === 'missions'}
-              onOpenSettings={() => setScreen('settings-home')}
-              onStartCheckin={() => setScreen('checkin')}
-              onOpenArchive={() => setScreen('archive')}
-              onMissionsChanged={() => {
-                refreshMissionsBadge()
-                refreshRecordsBadge()
-              }}
-            />
-          </div>
-        )}
-        {mountedTabs.has('records') && (
-          <div className={activeTab === 'records' ? undefined : 'hidden'}>
-            <RecordsHomeScreen
-              isActive={activeTab === 'records'}
-              onOpenSettings={() => setScreen('settings-home')}
-              onOpenHistory={() => setScreen('history')}
-              onOpenStreak={() => setScreen('records-streak')}
-              onOpenArchive={() => setScreen('archive')}
-            />
-          </div>
-        )}
+    <div className="flex min-h-svh flex-col bg-surface lg:flex-row">
+      <Sidebar active={activeTab} onChange={setActiveTab} onOpenSettings={() => setScreen('settings-home')} badges={tabBadges} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex-1">
+          {mountedTabs.has('planet') && (
+            <div className={activeTab === 'planet' ? undefined : 'hidden'}>
+              <HomeScreen
+                isActive={activeTab === 'planet'}
+                onStartCheckin={() => setScreen('checkin')}
+                onGoMissions={() => setActiveTab('missions')}
+                onOpenSettings={() => setScreen('settings-home')}
+                onOpenArchive={() => setScreen('archive')}
+              />
+            </div>
+          )}
+          {mountedTabs.has('missions') && (
+            <div className={activeTab === 'missions' ? undefined : 'hidden'}>
+              <TodayMissionsScreen
+                isActive={activeTab === 'missions'}
+                onOpenSettings={() => setScreen('settings-home')}
+                onStartCheckin={() => setScreen('checkin')}
+                onOpenArchive={() => setScreen('archive')}
+                onMissionsChanged={() => {
+                  refreshMissionsBadge()
+                  refreshRecordsBadge()
+                }}
+              />
+            </div>
+          )}
+          {mountedTabs.has('records') && (
+            <div className={activeTab === 'records' ? undefined : 'hidden'}>
+              <RecordsHomeScreen
+                isActive={activeTab === 'records'}
+                onOpenSettings={() => setScreen('settings-home')}
+                onOpenHistory={() => setScreen('history')}
+                onOpenStreak={() => setScreen('records-streak')}
+                onOpenArchive={() => setScreen('archive')}
+              />
+            </div>
+          )}
+        </div>
+        <BottomTabBar active={activeTab} onChange={setActiveTab} badges={tabBadges} />
       </div>
-      <BottomTabBar
-        active={activeTab}
-        onChange={setActiveTab}
-        badges={{
-          missions: incompleteMissionCount > 0 ? incompleteMissionCount : undefined,
-          records: hasNewRecords ? true : undefined,
-        }}
-      />
       <CoachmarkTour run={tourRun} onFinish={handleTourFinish} />
     </div>
   )

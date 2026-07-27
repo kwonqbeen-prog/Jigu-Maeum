@@ -1,39 +1,46 @@
 import { Joyride, STATUS } from 'react-joyride'
 
 // S-64C · 온보딩 코치마크 투어 — 최초 가입 시 자동 실행, 설정 > 안내 다시 보기로 재실행
-const STEPS = [
-  {
-    target: '[data-tour="planet-orb"]',
-    title: '마음 지구',
-    content: '매일 체크인할수록 마음 지구가 자라나요. 지금까지의 실천을 한눈에 볼 수 있어요.',
-    disableBeacon: true,
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="home-cta"]',
-    title: '오늘의 마음 체크인',
-    content: '지금 마음 상태를 알려주시면 딱 맞는 미션을 추천해드려요.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="tab-missions"]',
-    title: '미션',
-    content: '체크인 후 받은 오늘의 미션은 이 탭에서 확인하고 완료 처리할 수 있어요.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="tab-records"]',
-    title: '마음 기록',
-    content: '완료한 미션과 회고, 연속 실천 기록은 여기서 모아볼 수 있어요.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="settings-icon"]',
-    title: '설정',
-    content: '이 안내는 설정 > 안내 다시 보기에서 언제든 다시 볼 수 있어요.',
-    placement: 'bottom',
-  },
-]
+//
+// lg(1024px)+ 데스크탑에서는 BottomTabBar 대신 Sidebar가 렌더링되므로, 탭 관련 두 스텝은
+// 뷰포트에 따라 서로 다른 data-tour 타깃(모바일 탭바 vs 데스크탑 사이드바)을 가리켜야 한다.
+// 둘 다 같은 data-tour 값을 쓰면 querySelector가 숨겨진(hidden) 쪽을 집어 위치가 깨질 수 있다.
+function buildSteps() {
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches
+  return [
+    {
+      target: '[data-tour="planet-orb"]',
+      title: '마음 지구',
+      content: '매일 체크인할수록 마음 지구가 자라나요. 지금까지의 실천을 한눈에 볼 수 있어요.',
+      disableBeacon: true,
+      placement: 'bottom',
+    },
+    {
+      target: '[data-tour="home-cta"]',
+      title: '오늘의 마음 체크인',
+      content: '지금 마음 상태를 알려주시면 딱 맞는 미션을 추천해드려요.',
+      placement: 'bottom',
+    },
+    {
+      target: isDesktop ? '[data-tour="sidebar-missions"]' : '[data-tour="tab-missions"]',
+      title: '미션',
+      content: '체크인 후 받은 오늘의 미션은 이 탭에서 확인하고 완료 처리할 수 있어요.',
+      placement: isDesktop ? 'right' : 'top',
+    },
+    {
+      target: isDesktop ? '[data-tour="sidebar-records"]' : '[data-tour="tab-records"]',
+      title: '마음 기록',
+      content: '완료한 미션과 회고, 연속 실천 기록은 여기서 모아볼 수 있어요.',
+      placement: isDesktop ? 'right' : 'top',
+    },
+    {
+      target: '[data-tour="settings-icon"]',
+      title: '설정',
+      content: '이 안내는 설정 > 안내 다시 보기에서 언제든 다시 볼 수 있어요.',
+      placement: 'bottom',
+    },
+  ]
+}
 
 export default function CoachmarkTour({ run, onFinish }) {
   const handleCallback = (data) => {
@@ -45,7 +52,7 @@ export default function CoachmarkTour({ run, onFinish }) {
   return (
     <Joyride
       run={run}
-      steps={STEPS}
+      steps={buildSteps()}
       continuous
       showProgress
       showSkipButton

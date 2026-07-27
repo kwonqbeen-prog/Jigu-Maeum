@@ -5,7 +5,7 @@ import GhostButton from '../../components/common/GhostButton'
 // S-13 · 온보딩 4 · 안전 고지 (명세 8.3)
 export default function SafetyNoticeScreen({ onConfirm, onPreviewSupport }) {
   return (
-    <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6">
+    <div className="pastel-wash flex min-h-svh flex-col bg-surface px-6 py-6 lg:mx-auto lg:max-w-[480px]">
       <StepProgress current={4} total={4} />
       <div className="mt-6 flex-1">
         <h1 className="text-[24px] font-bold leading-snug text-ink">시작하기 전에 한 가지만요</h1>

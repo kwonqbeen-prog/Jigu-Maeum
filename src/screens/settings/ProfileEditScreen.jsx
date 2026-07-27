@@ -38,7 +38,7 @@ export default function ProfileEditScreen({ profile, onBack, onSave }) {
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="나의 프로필" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-6 px-4 py-4">
         <section>

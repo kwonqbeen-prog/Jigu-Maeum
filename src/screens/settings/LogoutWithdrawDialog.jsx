@@ -43,7 +43,7 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-surface">
+    <div className="fixed inset-0 z-50 flex flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="" leading="close" onLeadingClick={onClose} />
       <div className="flex-1 px-6 pb-6">
         <h1 className="text-[20px] font-bold text-ink">정말 탈퇴하실까요?</h1>

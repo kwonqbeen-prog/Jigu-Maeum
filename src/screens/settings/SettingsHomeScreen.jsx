@@ -17,7 +17,7 @@ function Row({ label, onClick, muted = false }) {
 // S-60 · 설정 홈 (명세 7.x, 8.3)
 export default function SettingsHomeScreen({ onBack, onOpenDisplay, onOpenAccount, onOpenProfile, onOpenCoachmark, onOpenSupport, onOpenLogoutWithdraw }) {
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="설정" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-6 px-4 py-4">
         <section className="space-y-2">

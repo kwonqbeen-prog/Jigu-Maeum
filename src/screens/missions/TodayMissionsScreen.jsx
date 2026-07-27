@@ -80,7 +80,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
   return (
     <div className="flex min-h-svh flex-col bg-surface pb-4">
       <AppBar title="미션" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
-      <div className="flex-1 space-y-5 px-4">
+      <div className="flex-1 space-y-5 px-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
         {missions.length === 0 ? (
           <EmptyState
             title="아직 오늘 미션이 없어요"

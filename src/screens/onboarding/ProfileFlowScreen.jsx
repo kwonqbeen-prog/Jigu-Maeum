@@ -71,7 +71,7 @@ export default function ProfileFlowScreen({ onNext, onBack }) {
   }
 
   return (
-    <div className="pastel-wash flex min-h-svh flex-col bg-surface">
+    <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="" leading="back" onLeadingClick={handleBack} />
       <div className="flex flex-1 flex-col px-6 pb-6">
         <StepProgress current={3} total={4} />

@@ -28,7 +28,7 @@ export default function RecordsHomeScreen({ isActive = true, onOpenSettings, onO
   return (
     <div className="flex min-h-svh flex-col bg-surface pb-4">
       <AppBar title="마음 기록" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
-      <div className="flex-1 space-y-5 px-4">
+      <div className="flex-1 space-y-5 px-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
         <div className="flex gap-3">
           <StatTile label="연속 실천" value={data.streak} unit="일" onClick={onOpenStreak} />
           <StatTile label="성공 미션" value={data.total} unit="개" highlight onClick={onOpenHistory} />

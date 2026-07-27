@@ -10,7 +10,7 @@ const TABS = [
 export default function BottomTabBar({ active, badges = {}, onChange }) {
   return (
     <nav
-      className="sticky bottom-0 z-20 flex border-t border-transparent bg-surface-alt pb-[env(safe-area-inset-bottom)]"
+      className="sticky bottom-0 z-20 flex border-t border-transparent bg-surface-alt pb-[env(safe-area-inset-bottom)] lg:hidden"
       style={{ boxShadow: '0 -1px 0 var(--color-line)' }}
     >
       {TABS.map((tab) => {
