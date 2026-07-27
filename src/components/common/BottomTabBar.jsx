@@ -22,6 +22,7 @@ export default function BottomTabBar({ active, badges = {}, onChange }) {
             type="button"
             onClick={() => onChange(tab.key)}
             aria-current={isActive ? 'page' : undefined}
+            data-tour={`tab-${tab.key}`}
             className="relative flex h-14 flex-1 flex-col items-center justify-center gap-0.5"
           >
             <span className="relative">

@@ -26,7 +26,8 @@ import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider, useToast } from './contexts/ToastContext'
-import { markOnboardingCompleted, getTodayIncompleteMissionCount, hasNewRecordsSince } from './data/storage'
+import CoachmarkTour from './components/common/CoachmarkTour'
+import { markOnboardingCompleted, markCoachmarkSeen, getTodayIncompleteMissionCount, hasNewRecordsSince } from './data/storage'
 
 const RECORDS_LAST_SEEN_KEY = 'climatemood:records-last-seen-at'
 
@@ -43,7 +44,37 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   const recordsLastSeenRef = useRef(localStorage.getItem(RECORDS_LAST_SEEN_KEY) ?? new Date(0).toISOString())
   const [incompleteMissionCount, setIncompleteMissionCount] = useState(0)
   const [hasNewRecords, setHasNewRecords] = useState(false)
+  const [tourRun, setTourRun] = useState(false)
+  const [coachmarkReplayRequested, setCoachmarkReplayRequested] = useState(false)
+  const autoTourTriggeredRef = useRef(false)
   const showToast = useToast()
+
+  // 최초 가입 후 홈 탭에 도착하면 코치마크 투어를 자동으로 한 번 띄운다
+  useEffect(() => {
+    if (autoTourTriggeredRef.current) return
+    if (screen !== 'main' || activeTab !== 'planet') return
+    if (!profile || profile.coachmark_seen_at) return
+    autoTourTriggeredRef.current = true
+    setTourRun(true)
+  }, [screen, activeTab, profile])
+
+  // 설정 > 안내 다시 보기 — 홈 탭으로 돌아온 뒤(대상 요소가 화면에 있어야 함) 투어를 시작한다
+  useEffect(() => {
+    if (!coachmarkReplayRequested) return
+    if (screen !== 'main' || activeTab !== 'planet') return
+    setCoachmarkReplayRequested(false)
+    setTourRun(true)
+  }, [coachmarkReplayRequested, screen, activeTab])
+
+  const handleTourFinish = async () => {
+    setTourRun(false)
+    try {
+      await markCoachmarkSeen()
+      await refreshProfile()
+    } catch {
+      // 안내 완료 표시 실패는 무시 — 설정에서 언제든 다시 볼 수 있다
+    }
+  }
 
   useEffect(() => {
     setMountedTabs((prev) => (prev.has(activeTab) ? prev : new Set(prev).add(activeTab)))
@@ -226,7 +257,10 @@ function AuthenticatedApp({ auth, justSignedUp }) {
           onOpenDisplay={() => setScreen('settings-display')}
           onOpenAccount={() => setScreen('settings-account')}
           onOpenProfile={() => setScreen('settings-profile')}
-          onOpenCoachmark={() => showToast('안내 다시 보기는 준비 중이에요')}
+          onOpenCoachmark={() => {
+            setCoachmarkReplayRequested(true)
+            goHome()
+          }}
           onOpenSupport={(kind) => setScreen(kind === 'help' ? 'settings-support' : 'settings-about')}
           onOpenLogoutWithdraw={(mode) => setLogoutWithdrawMode(mode)}
         />
@@ -330,6 +364,7 @@ function AuthenticatedApp({ auth, justSignedUp }) {
           records: hasNewRecords ? true : undefined,
         }}
       />
+      <CoachmarkTour run={tourRun} onFinish={handleTourFinish} />
     </div>
   )
 }

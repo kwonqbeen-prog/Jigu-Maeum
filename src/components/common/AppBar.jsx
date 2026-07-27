@@ -53,6 +53,7 @@ export default function AppBar({ title, leading = 'none', onLeadingClick, action
             type="button"
             onClick={action.onClick}
             aria-label={action.label}
+            data-tour={action.dataTour}
             className="flex h-11 w-11 items-center justify-center -mr-2"
           >
             <Icon name={action.icon} className={isLarge ? 'text-[24px]' : undefined} />

@@ -146,9 +146,13 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
 
   return (
     <div className="flex min-h-svh flex-col bg-surface">
-      <AppBar title="마음 지구" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
+      <AppBar
+        title="마음 지구"
+        variant="large"
+        actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings, dataTour: 'settings-icon' }]}
+      />
       <div className="flex-1 px-4 pb-4">
-        <div className="h-[40dvh]">
+        <div className="h-[40dvh]" data-tour="planet-orb">
           <PlanetOrb totalCompleted={data.totalCompleted} decorations={decorations} onClick={() => setAchievementsOpen(true)} />
         </div>
         <p className="text-center text-[12px] font-medium text-ink-muted">
@@ -174,7 +178,7 @@ export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissio
           </button>
         )}
 
-        <div className="mt-4">
+        <div className="mt-4" data-tour="home-cta">
           <PrimaryButton label={cta.label} onClick={cta.onClick} />
         </div>
 
