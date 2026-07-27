@@ -1,9 +1,9 @@
 ﻿import Icon from '../Icon'
 
 const NAV_ITEMS = [
-  { key: 'planet', label: '마음 지구', icon: 'public' },
-  { key: 'missions', label: '미션', icon: 'check_circle' },
-  { key: 'records', label: '마음 기록', icon: 'calendar_month' },
+  { key: 'planet', label: '마음 지구', icon: 'orbit' },
+  { key: 'missions', label: '미션', icon: 'rocket' },
+  { key: 'records', label: '마음 기록', icon: 'calendar_today' },
 ]
 
 // 데스크탑(lg 1024px+) 전용 사이드바 — BottomTabBar와 같은 탭 상태를 공유하는 데스크탑 내비게이션.

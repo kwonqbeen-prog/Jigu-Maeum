@@ -1,9 +1,9 @@
 ﻿import Icon from '../Icon'
 
 const TABS = [
-  { key: 'planet', label: '마음 지구', icon: 'public' },
-  { key: 'missions', label: '미션', icon: 'check_circle' },
-  { key: 'records', label: '마음 기록', icon: 'calendar_month' },
+  { key: 'planet', label: '마음 지구', icon: 'orbit' },
+  { key: 'missions', label: '미션', icon: 'rocket' },
+  { key: 'records', label: '마음 기록', icon: 'calendar_today' },
 ]
 
 // C-02 BottomTabBar — 높이 56 + safe-area
