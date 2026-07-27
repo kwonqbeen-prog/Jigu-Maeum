@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Icon from './components/Icon'
 import BottomTabBar from './components/common/BottomTabBar'
 import SplashScreen from './screens/SplashScreen'
@@ -32,9 +32,34 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile, save: saveProfile } = useProfile(auth.user.id)
   const [screen, setScreen] = useState('splash')
   const [activeTab, setActiveTab] = useState('planet')
+  const [mountedTabs, setMountedTabs] = useState(() => new Set(['planet']))
   const [logoutWithdrawMode, setLogoutWithdrawMode] = useState(null)
   const bootstrappedRef = useRef(false)
+  const scrollPositionsRef = useRef({ planet: 0, missions: 0, records: 0 })
+  const activeTabRef = useRef(activeTab)
+  activeTabRef.current = activeTab
   const showToast = useToast()
+
+  useEffect(() => {
+    setMountedTabs((prev) => (prev.has(activeTab) ? prev : new Set(prev).add(activeTab)))
+  }, [activeTab])
+
+  // 탭 전환 시 스크롤 위치를 탭별로 기억해 복원한다 — 전체 페이지가 하나의
+  // window 스크롤을 공유하므로, 활성 탭이 바뀔 때마다 해당 탭이 마지막으로
+  // 있던 위치로 되돌려준다.
+  useEffect(() => {
+    if (screen !== 'main') return undefined
+    const onScroll = () => {
+      scrollPositionsRef.current[activeTabRef.current] = window.scrollY
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [screen])
+
+  useLayoutEffect(() => {
+    if (screen !== 'main') return
+    window.scrollTo(0, scrollPositionsRef.current[activeTab] ?? 0)
+  }, [screen, activeTab])
 
   useEffect(() => {
     if (profileLoading || profileError || bootstrappedRef.current) return
@@ -218,31 +243,42 @@ function AuthenticatedApp({ auth, justSignedUp }) {
   }
 
   // screen === 'main'
+  // 탭은 한 번 방문하면 언마운트하지 않고 display:none으로만 숨긴다 —
+  // 그래야 탭 내부 상태(스크롤, 입력 중인 값, 열려 있던 시트 등)가 유지된다.
   return (
     <div className="flex min-h-svh flex-col bg-surface">
       <div className="flex-1">
-        {activeTab === 'planet' && (
-          <HomeScreen
-            onStartCheckin={() => setScreen('checkin')}
-            onGoMissions={() => setActiveTab('missions')}
-            onOpenSettings={() => setScreen('settings-home')}
-            onOpenArchive={() => setScreen('archive')}
-          />
+        {mountedTabs.has('planet') && (
+          <div className={activeTab === 'planet' ? undefined : 'hidden'}>
+            <HomeScreen
+              isActive={activeTab === 'planet'}
+              onStartCheckin={() => setScreen('checkin')}
+              onGoMissions={() => setActiveTab('missions')}
+              onOpenSettings={() => setScreen('settings-home')}
+              onOpenArchive={() => setScreen('archive')}
+            />
+          </div>
         )}
-        {activeTab === 'missions' && (
-          <TodayMissionsScreen
-            onOpenSettings={() => setScreen('settings-home')}
-            onStartCheckin={() => setScreen('checkin')}
-            onOpenArchive={() => setScreen('archive')}
-          />
+        {mountedTabs.has('missions') && (
+          <div className={activeTab === 'missions' ? undefined : 'hidden'}>
+            <TodayMissionsScreen
+              isActive={activeTab === 'missions'}
+              onOpenSettings={() => setScreen('settings-home')}
+              onStartCheckin={() => setScreen('checkin')}
+              onOpenArchive={() => setScreen('archive')}
+            />
+          </div>
         )}
-        {activeTab === 'records' && (
-          <RecordsHomeScreen
-            onOpenSettings={() => setScreen('settings-home')}
-            onOpenHistory={() => setScreen('history')}
-            onOpenStreak={() => setScreen('records-streak')}
-            onOpenArchive={() => setScreen('archive')}
-          />
+        {mountedTabs.has('records') && (
+          <div className={activeTab === 'records' ? undefined : 'hidden'}>
+            <RecordsHomeScreen
+              isActive={activeTab === 'records'}
+              onOpenSettings={() => setScreen('settings-home')}
+              onOpenHistory={() => setScreen('history')}
+              onOpenStreak={() => setScreen('records-streak')}
+              onOpenArchive={() => setScreen('archive')}
+            />
+          </div>
         )}
       </div>
       <BottomTabBar active={activeTab} onChange={setActiveTab} />

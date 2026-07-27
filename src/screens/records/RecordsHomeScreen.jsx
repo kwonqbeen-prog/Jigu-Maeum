@@ -6,7 +6,7 @@ import ListBlock from '../../components/common/ListBlock'
 import { getAllMissions, getArchiveMissions, getStreakDays, getTotalCompletedCount, toggleMissionComplete } from '../../data/storage'
 
 // S-50 · 기록 홈 (탭3) — 명세 6.1, 6.2, 6.3
-export default function RecordsHomeScreen({ onOpenSettings, onOpenHistory, onOpenStreak, onOpenArchive }) {
+export default function RecordsHomeScreen({ isActive = true, onOpenSettings, onOpenHistory, onOpenStreak, onOpenArchive }) {
   const [data, setData] = useState(null)
 
   const refresh = async () => {
@@ -19,8 +19,9 @@ export default function RecordsHomeScreen({ onOpenSettings, onOpenHistory, onOpe
   }
 
   useEffect(() => {
+    if (!isActive) return
     refresh()
-  }, [])
+  }, [isActive])
 
   if (!data) return null
 

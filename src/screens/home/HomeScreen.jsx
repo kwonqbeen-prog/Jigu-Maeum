@@ -31,7 +31,7 @@ function last7Dates() {
 }
 
 // S-20 · 마음 지구 (홈, 탭1) — 명세 5.1, 5.2, 6.1
-export default function HomeScreen({ onStartCheckin, onGoMissions, onOpenSettings, onOpenArchive }) {
+export default function HomeScreen({ isActive = true, onStartCheckin, onGoMissions, onOpenSettings, onOpenArchive }) {
   const [data, setData] = useState(null)
   const [achievementsOpen, setAchievementsOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
@@ -68,6 +68,7 @@ export default function HomeScreen({ onStartCheckin, onGoMissions, onOpenSetting
   }, [])
 
   useEffect(() => {
+    if (!isActive) return
     let cancelled = false
     load().then(() => {
       if (cancelled) return
@@ -75,7 +76,7 @@ export default function HomeScreen({ onStartCheckin, onGoMissions, onOpenSetting
     return () => {
       cancelled = true
     }
-  }, [load])
+  }, [load, isActive])
 
   useEffect(() => {
     const onMove = (e) => {
