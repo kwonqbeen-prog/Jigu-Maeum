@@ -240,34 +240,14 @@
   --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.55);
   --star-opacity: 0.7;
 
-  /* 2026-07-28 오브 리디자인(--gradient-planet-* 폐기)으로 다크 테마도 바다/대륙/후광
-     분리 토큰으로 교체. 정확한 값은 1차 구현 범위 밖이라(지시서 §1) 라이트와 같은
-     "옅음→선명함" 명도 램프를 다크 배경 기준으로 임시 재계산만 하고, 색상군은 라이트와
-     동일하게 스카이블루(바다)/핑크(대륙) 계열로 맞췄다 — 정밀 튜닝은 별도 세션에서 진행 */
-  --mind-planet-ocean-0: #363c42;
-  --mind-planet-ocean-1: #262b30;
-  --mind-planet-ocean-2: #253844;
-  --mind-planet-ocean-3: #1f4a5e;
-  --mind-planet-ocean-4: #1c5b78;
-  --mind-planet-ocean-5: radial-gradient(circle at 35% 30%, #2f7fa3 0%, #1c5b78 55%, #123a4d 100%);
-
-  --mind-planet-continent-1: #4a2c38;
-  --mind-planet-continent-2: #4a2c38;
-  --mind-planet-continent-3: #6e3550;
-  --mind-planet-continent-4: #99406b;
-  --mind-planet-continent-5: #c94f82;
-
-  --mind-planet-glow-0: 0 0 8px 2px rgba(47, 127, 163, 0.24);
-  --mind-planet-glow-1: 0 0 10px 2px rgba(47, 127, 163, 0.28);
-  --mind-planet-glow-2: 0 0 12px 3px rgba(47, 127, 163, 0.32);
-  --mind-planet-glow-3: 0 0 15px 3px rgba(47, 127, 163, 0.38);
-  --mind-planet-glow-4: 0 0 19px 4px rgba(47, 127, 163, 0.46);
-  --mind-planet-glow-5: 0 0 24px 6px rgba(47, 127, 163, 0.6);
-
-  /* 다크는 바다색이 전 단계에서 어둡게 유지되므로(가장 밝은 5단계도 #2f7fa3 정도) 흰색
-     고정 하나로 전 단계 대비 4.5:1 이상(실측 4.5~14.3:1) 확보. 라이트처럼 단계별로
-     반전할 필요가 없다 */
-  --mind-planet-eye: #ffffff;
+  /* 2026-07-29: 다크 전용 바다/대륙/후광/눈 색 오버라이드를 전부 제거함 — 사용자가
+     "5단계가 돼도 다크에서 잘 안 보인다"고 지적, 다크 톤다운 대신 라이트와 완전히
+     동일한 :root 값(흰색에서 선명한 파스텔 블루로 채도가 올라가는 램프)을 그대로 쓰기로
+     결정. --mind-planet-ocean, --mind-planet-continent, --mind-planet-glow,
+     --mind-planet-eye 를 여기서 재선언하지 않으면 :root 선언값이 그대로 적용된다
+     (data-theme는 documentElement에 실려 :root와 동일 요소를 가리키므로, 상속이 아니라
+     이 블록에 규칙이 없으면 :root 규칙이 그대로 이긴다). 다시 다크에서만 톤을 낮추고
+     싶어지면 이 자리에 위 네 토큰을 다시 선언할 것 */
 
   /* 라이트보다 훨씬 낮은 불투명도로 — 다크 배경 위에서 은은하게만 보이도록 */
   --gradient-pastel-wash: radial-gradient(

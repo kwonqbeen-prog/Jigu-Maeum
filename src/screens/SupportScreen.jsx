@@ -24,6 +24,11 @@ export default function SupportScreen({ readOnly = false, onConfirm, onBack }) {
         )}
         {!readOnly && <p className="mt-2 text-[13px] text-ink-muted">언제든 이야기 나눌 수 있는 곳들이에요.</p>}
 
+        <p className={`text-[13px] leading-relaxed text-ink-muted ${readOnly ? '' : 'mt-4'}`}>
+          지구 마음은 마음 건강을 위한 보조 도구로, 전문적인 진단·치료·처방을 대신할 수 없어요. 정신 건강에 어려움이
+          있다면 전문가나 의료 기관에 연락해 도움을 받으세요.
+        </p>
+
         <div className="mt-6 space-y-2">
           {SUPPORT_CHANNELS.map((channel) => (
             <div key={channel.number} className="flex items-center justify-between rounded-2xl bg-surface-alt px-4 py-3">
@@ -40,10 +45,6 @@ export default function SupportScreen({ readOnly = false, onConfirm, onBack }) {
             </div>
           ))}
         </div>
-
-        <p className="mt-6 text-[13px] leading-relaxed text-ink-muted">
-          지구 마음은 전문적인 심리 상담·진단·치료를 대신하지 않아요.
-        </p>
 
         {!readOnly && (
           <div className="mt-auto pt-8">

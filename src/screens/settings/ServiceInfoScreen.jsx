@@ -1,4 +1,5 @@
 import AppBar from '../../components/common/AppBar'
+import logo from '../../assets/planet-mascot/logo.svg'
 
 function Section({ label, children }) {
   return (
@@ -9,19 +10,23 @@ function Section({ label, children }) {
   )
 }
 
-// S-60 "서비스 안내" — 기획의도·기술·스토리·향후 계획을 담은 About 화면
+// S-60 "서비스 안내" — 기획의도·기술·향후 계획을 담은 About 화면
 export default function ServiceInfoScreen({ onBack }) {
   return (
     <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-[480px]">
       <AppBar title="서비스 안내" leading="back" onLeadingClick={onBack} />
       <div className="flex-1 space-y-6 px-4 py-6">
+        <div className="flex justify-center">
+          <img src={logo} alt="" aria-hidden="true" className="h-16 w-16" />
+        </div>
+
         <div className="px-2">
           <p className="text-[15px] font-medium text-ink">
             지구 마음은 기후 위기로 인한 불안과 무력감을, 매일 주어지는 일상 속 작은 실천으로 돌보는 서비스예요.
           </p>
         </div>
 
-        <Section label="왜 만들었어요">
+        <Section label="왜 만들게 되었나요?">
           <p>
             기후 뉴스를 볼 때마다 불안하거나, 무기력하거나, 나만 뭔가 잘못하고 있는 것 같은 죄책감이 든 적 있으신가요?
             혼자 명상 앱을 켜보거나 실천 방법을 찾아봐도, 기후 위기라는 원인 자체는 그대로 있으니 마음이 쉽게 나아지지
@@ -34,7 +39,7 @@ export default function ServiceInfoScreen({ onBack }) {
           </p>
         </Section>
 
-        <Section label="어떻게 작동해요">
+        <Section label="어떻게 써야 하나요?">
           <p>
             매일 미션 만들기에서 알려주신 감정과 오늘의 의욕, 그동안의 실천 이력을 바탕으로 AI(Upstage Solar)가 지금
             당신에게 맞는 미션을 새로 만들어드려요. 오늘 의욕이 얼마나 있는지에 따라 미션은 1개부터 5개까지 달라져요
@@ -47,28 +52,30 @@ export default function ServiceInfoScreen({ onBack }) {
           </p>
         </Section>
 
-        <Section label="만들게 된 이야기">
-          <p>
-            처음엔 저희도 기후 뉴스 앞에서 자주 무력해졌어요. 문제를 알수록 오히려 아무것도 안 하게 되는 순간들이
-            있었고요. &ldquo;마음을 돌보는 것과 행동하는 것이 따로 놀지 않으면 좋겠다&rdquo;는 생각에서 지구 마음을
-            만들기 시작했어요.
-          </p>
-          <p>
-            거창한 캠페인이 아니라, 오늘 하루 딱 할 수 있을 만큼의 실천이면 충분하다고 믿어요. 지구 마음이 그 작은
-            시작을 계속 함께해드릴게요.
-          </p>
-        </Section>
-
         <Section label="앞으로의 계획">
-          <ul className="list-disc space-y-1.5 pl-4">
-            <li>개인화 고도화 — 대화와 실천 이력을 더 깊이 이해해서, 지금 당신에게 더 꼭 맞는 미션을 추천할게요.</li>
-            <li>커뮤니티 확장 — 같은 마음을 가진 사람들과 익명으로 공감하고, 함께 실천을 이어갈 수 있게 할게요.</li>
-            <li>리포트 강화 — 주간·월간 리포트로 감정과 실천의 흐름을 한눈에 돌아볼 수 있게 할게요.</li>
-          </ul>
+          <div className="space-y-3">
+            <div>
+              <p className="font-medium text-ink">개인화 고도화</p>
+              <p className="mt-0.5 text-ink-muted">
+                대화와 실천 이력을 더 깊이 이해해서, 지금 당신에게 더 꼭 맞는 미션을 추천할게요.
+              </p>
+            </div>
+            <div>
+              <p className="font-medium text-ink">커뮤니티 확장</p>
+              <p className="mt-0.5 text-ink-muted">
+                같은 마음을 가진 사람들과 익명으로 공감하고, 함께 실천을 이어갈 수 있게 할게요.
+              </p>
+            </div>
+            <div>
+              <p className="font-medium text-ink">리포트 강화</p>
+              <p className="mt-0.5 text-ink-muted">
+                주간·월간 리포트로 감정과 실천의 흐름을 한눈에 돌아볼 수 있게 할게요.
+              </p>
+            </div>
+          </div>
         </Section>
 
-        <div className="space-y-1 px-2 pt-2">
-          <p className="font-medium text-ink">지구 마음은 전문적인 심리 상담·진단·치료를 대신하지 않아요.</p>
+        <div className="px-2 pt-2">
           <p className="text-ink-muted">버전 0.1.0</p>
         </div>
       </div>
