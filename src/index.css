@@ -119,6 +119,11 @@
   --mind-planet-glow-4: 0 0 19px 4px rgba(111, 196, 239, 0.46);
   --mind-planet-glow-5: 0 0 24px 6px rgba(111, 196, 239, 0.55);
 
+  /* 오브 눈(캐릭터 표정) 색 — 라이트는 바다색이 항상 밝아서 짙은 잉크색 고정이 전
+     단계에서 다 잘 보인다(대비 9.5~16.9:1). 다크/고대비는 아래 각 테마 블록에서
+     오버라이드(2026-07-29 다크/고대비 검토, 위 .mind-planet__eyes 주석 참고) */
+  --mind-planet-eye: #1c1d1f;
+
   /* 감성 레이어: 온보딩/스플래시/데이랩업/업적 시트/체크인 완료 화면 전용 은은한
      파스텔 워시(.pastel-wash 클래스가 소비). 오브와 같은 4색을 아주 낮은 불투명도로 */
   --gradient-pastel-wash: radial-gradient(
@@ -259,6 +264,11 @@
   --mind-planet-glow-4: 0 0 19px 4px rgba(47, 127, 163, 0.46);
   --mind-planet-glow-5: 0 0 24px 6px rgba(47, 127, 163, 0.6);
 
+  /* 다크는 바다색이 전 단계에서 어둡게 유지되므로(가장 밝은 5단계도 #2f7fa3 정도) 흰색
+     고정 하나로 전 단계 대비 4.5:1 이상(실측 4.5~14.3:1) 확보. 라이트처럼 단계별로
+     반전할 필요가 없다 */
+  --mind-planet-eye: #ffffff;
+
   /* 라이트보다 훨씬 낮은 불투명도로 — 다크 배경 위에서 은은하게만 보이도록 */
   --gradient-pastel-wash: radial-gradient(
     ellipse 120% 60% at 50% 0%,
@@ -328,8 +338,14 @@
   --mind-planet-ocean-3: radial-gradient(circle, #333333, #1a1a1a);
   --mind-planet-ocean-4: radial-gradient(circle, var(--color-ink-faint), #666666);
   --mind-planet-ocean-5: radial-gradient(circle, var(--color-ink), #cccccc);
+
+  /* 눈 색 — 고대비는 0~3단계는 거의 검정, 4~5단계는 거의 흰색이라 다크처럼 흰색
+     하나로 고정할 수 없다(4~5단계에서 대비 1.0~1.7:1로 실질적으로 안 보임). 기본은
+     흰색(0~3단계 대비 12.6~17:1)으로 두고, 배경이 뒤집히는 4~5단계만 아래에서
+     --color-surface(#0a0a0a)로 다시 뒤집는다(그 두 단계 대비 3.45~19.8:1) */
+  --mind-planet-eye: #ffffff;
   /* 대륙 블롭·후광은 고대비 모드에서 완전히 꺼진다(아래 .mind-planet__continent 억제 규칙
-     참고) — 색상 구분 없이 명도 3단계만 쓰는 기존 원칙을 그대로 유지 */
+     참고) — 색상 구분 없이 명도 3단계만 유지 원칙을 그대로 유지 */
   --mind-planet-glow-0: none;
   --mind-planet-glow-1: none;
   --mind-planet-glow-2: none;
@@ -716,9 +732,25 @@ body {
 [data-theme='high-contrast'] .mind-planet__continent {
   display: none;
 }
+/* 고대비 모드는 4~5단계에서 바다색이 밝게 뒤집히므로(--mind-planet-ocean-4/5 참고),
+   기본 흰색 눈을 이 두 단계에서만 다시 어둡게 뒤집는다(위 --mind-planet-eye 주석 참고) */
+[data-theme='high-contrast'] .mind-planet__orb[data-planet-stage='4'],
+[data-theme='high-contrast'] .mind-planet__orb[data-planet-stage='5'] {
+  --mind-planet-eye: var(--color-surface);
+}
 
-/* 눈 — 입 없이 눈만, 1단계부터 항상 표시되는 캐릭터 요소. 색은 #1c1d1f 고정이며
-   단계별 명도+채도 램프(위 바다/대륙 레이어)와 완전히 분리된 레이어라 영향을 받지 않는다.
+/* 눈 — 입 없이 눈만, 1단계부터 항상 표시되는 캐릭터 요소.
+   2026-07-29 다크/고대비 검토: 색을 #1c1d1f로 고정해뒀던 원래 구현은 라이트에서만
+   검증된 값이라, 바다 배경이 어두워지는 다크(전 단계)·고대비(0~3단계)에서 눈과 배경의
+   명도차가 거의 없어 캐릭터 표정이 안 보이는 문제가 있었다(실측 대비비 1.0~2.3:1).
+   그래서 SVG를 background-image(고정 fill) 대신 mask-image로 바꿔 도형만 가져오고,
+   실제 색은 --mind-planet-eye(테마별 :root/dark/high-contrast 오버라이드, 아래 참고)를
+   background-color로 칠하는 방식으로 변경했다 — 마스크 SVG의 fill/stroke는 흰색 고정으로
+   두는데, 알파(Firefox 기본)·루미넌스(구형 -webkit-mask 기본) 어느 해석이든 완전 불투명
+   흰 도형은 항상 "보임"으로 처리되어 두 모드 모두에서 동일하게 렌더링된다.
+   단계별 명도+채도 램프(위 바다/대륙 레이어)와는 별도 레이어라 그 자체로는 영향을
+   받지 않지만, 고대비 모드는 4~5단계에서 바다색이 밝아지므로 --mind-planet-eye도
+   단계별로 다시 뒤집어야 한다(아래 고대비 블록 참고).
    기본(둥근 눈)·smile(위로 볼록한 아치) 두 상태를 각각 눈 2개를 담은 SVG 레이어
    하나씩(::before/::after)으로 그리고, opacity 크로스페이드로 전환한다
    (planet_orb_v3_side_rotation.html 참고 — 배경 자체를 스위치하면 크로스페이드가
@@ -734,17 +766,24 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  transition: opacity 0.25s ease;
+  background-color: var(--mind-planet-eye);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  transition:
+    opacity 0.25s ease,
+    background-color 0.2s ease;
 }
 .mind-planet__eyes::before {
   opacity: 1;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='38.5' cy='39' rx='3.5' ry='5' fill='%231c1d1f'/%3E%3Cellipse cx='65.5' cy='39' rx='3.5' ry='5' fill='%231c1d1f'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='38.5' cy='39' rx='3.5' ry='5' fill='%23fff'/%3E%3Cellipse cx='65.5' cy='39' rx='3.5' ry='5' fill='%23fff'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='38.5' cy='39' rx='3.5' ry='5' fill='%23fff'/%3E%3Cellipse cx='65.5' cy='39' rx='3.5' ry='5' fill='%23fff'/%3E%3C/svg%3E");
 }
 .mind-planet__eyes::after {
   opacity: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%231c1d1f' stroke-width='2.4' stroke-linecap='round' fill='none'%3E%3Cpath d='M35,38 Q38.5,28 42,38'/%3E%3Cpath d='M62,38 Q65.5,28 69,38'/%3E%3C/g%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%23fff' stroke-width='2.4' stroke-linecap='round' fill='none'%3E%3Cpath d='M35,38 Q38.5,28 42,38'/%3E%3Cpath d='M62,38 Q65.5,28 69,38'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%23fff' stroke-width='2.4' stroke-linecap='round' fill='none'%3E%3Cpath d='M35,38 Q38.5,28 42,38'/%3E%3Cpath d='M62,38 Q65.5,28 69,38'/%3E%3C/g%3E%3C/svg%3E");
 }
 .mind-planet__eyes--smile::before {
   opacity: 0;

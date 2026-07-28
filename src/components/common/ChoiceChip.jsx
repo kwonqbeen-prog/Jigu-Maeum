@@ -12,7 +12,7 @@ export default function ChoiceChip({ label, hint, selected, disabled, onClick, r
       className={`flex min-h-11 w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition ${
         selected
           ? 'bg-accent-soft border-[1.5px] border-accent'
-          : 'bg-white border-[1.5px] border-transparent'
+          : 'bg-surface-alt border-[1.5px] border-transparent'
       } ${disabled ? 'opacity-50' : ''}`}
     >
       <span

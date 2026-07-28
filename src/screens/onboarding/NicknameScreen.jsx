@@ -49,7 +49,6 @@ export default function NicknameScreen({ auth, onNext, onBack, showStepProgress 
               onChange={(v) => setDisplayName(v.slice(0, 12))}
               maxLength={12}
               counter={`${trimmed.length}/12`}
-              fieldClassName="bg-white"
             />
           </div>
           {auth.authError && <p className="mt-3 text-[13px] font-medium text-danger">{auth.authError}</p>}

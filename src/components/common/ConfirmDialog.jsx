@@ -18,7 +18,7 @@ export default function ConfirmDialog({ title, body, confirmLabel, cancelLabel =
             type="button"
             onClick={onConfirm}
             className={`h-11 flex-1 rounded-full text-[14px] font-medium ${
-              tone === 'danger' ? 'bg-danger text-white' : 'bg-ink text-surface'
+              tone === 'danger' ? 'bg-danger text-surface' : 'bg-ink text-surface'
             }`}
           >
             {confirmLabel}
