@@ -72,7 +72,8 @@ export default function CoachmarkTour({ run, onFinish }) {
       options={{
         spotlightRadius: 16,
         arrowSize: 8,
-        arrowBase: 36,
+        arrowBase: 24,
+        arrowSpacing: 32,
         showProgress: true,
         overlayClickAction: 'disabled',
       }}
