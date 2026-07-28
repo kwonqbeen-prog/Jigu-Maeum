@@ -356,12 +356,13 @@ function AuthenticatedApp({ auth }) {
     <div className="flex min-h-svh flex-col bg-surface lg:flex-row">
       <Sidebar active={activeTab} onChange={setActiveTab} onOpenSettings={() => setScreen('settings-home')} badges={tabBadges} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex-1">
+        <div className="flex flex-1 flex-col">
           {mountedTabs.has('planet') && (
-            <div className={activeTab === 'planet' ? undefined : 'hidden'}>
+            <div className={activeTab === 'planet' ? 'flex flex-1 flex-col' : 'hidden'}>
               <HomeScreen
                 isActive={activeTab === 'planet'}
                 justOnboarded={justOnboarded}
+                signupDate={auth.user.created_at}
                 onStartCheckin={() => setScreen('checkin')}
                 onGoMissions={() => setActiveTab('missions')}
                 onOpenSettings={() => setScreen('settings-home')}
@@ -370,7 +371,7 @@ function AuthenticatedApp({ auth }) {
             </div>
           )}
           {mountedTabs.has('missions') && (
-            <div className={activeTab === 'missions' ? undefined : 'hidden'}>
+            <div className={activeTab === 'missions' ? 'flex flex-1 flex-col' : 'hidden'}>
               <TodayMissionsScreen
                 isActive={activeTab === 'missions'}
                 onOpenSettings={() => setScreen('settings-home')}
@@ -384,7 +385,7 @@ function AuthenticatedApp({ auth }) {
             </div>
           )}
           {mountedTabs.has('records') && (
-            <div className={activeTab === 'records' ? undefined : 'hidden'}>
+            <div className={activeTab === 'records' ? 'flex flex-1 flex-col' : 'hidden'}>
               <RecordsHomeScreen
                 isActive={activeTab === 'records'}
                 onOpenSettings={() => setScreen('settings-home')}

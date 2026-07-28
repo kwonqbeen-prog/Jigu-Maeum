@@ -52,7 +52,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
 
   if (missions === null) {
     return (
-      <div className="flex min-h-svh flex-col bg-surface">
+      <div className="flex flex-1 flex-col bg-surface">
         <AppBar title="미션" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
         <div className="space-y-2 px-4 py-4">
           {[0, 1, 2].map((i) => (
@@ -78,14 +78,14 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface pb-4">
+    <div className="flex flex-1 flex-col bg-surface pb-4">
       <AppBar title="미션" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
       <div className="flex flex-1 flex-col justify-center space-y-5 px-4 lg:mx-auto lg:w-full lg:max-w-2xl lg:px-8 lg:py-8">
         {missions.length === 0 ? (
           <EmptyState
             title="아직 오늘 미션이 없어요"
             body="지금 마음을 알려주시면 맞는 미션을 찾아드릴게요"
-            actionLabel="오늘의 미션 만들기"
+            actionLabel="미션 만들러 가기"
             onAction={onStartCheckin}
             secondaryLabel="지난 미션 보관함"
             onSecondary={onOpenArchive}

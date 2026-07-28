@@ -51,7 +51,7 @@ export default function HistoryScreen({ onBack, onStartCheckin }) {
         />
 
         {sortedDates.length === 0 ? (
-          <EmptyState title="아직 기록이 없어요" actionLabel="오늘의 미션 만들기" onAction={onStartCheckin} />
+          <EmptyState title="아직 기록이 없어요" actionLabel="미션 만들러 가기" onAction={onStartCheckin} />
         ) : (
           sortedDates.map((date) => {
             const rows = groups.get(date)

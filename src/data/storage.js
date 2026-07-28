@@ -19,6 +19,27 @@ export function daysAgoISO(days) {
   return `${y}-${m}-${day}`
 }
 
+export function dateToLocalISO(date) {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+// startISO~오늘(포함) 전체 날짜 목록. "T00:00:00"을 붙여 로컬 자정으로 파싱한다 —
+// "YYYY-MM-DD"만 넘기면 UTC 자정으로 해석돼 시간대에 따라 하루 밀릴 수 있음.
+export function allDatesSince(startISO) {
+  const start = new Date(`${startISO}T00:00:00`)
+  const end = new Date(`${todayISO()}T00:00:00`)
+  const dates = []
+  const cur = new Date(start)
+  while (cur <= end) {
+    dates.push(dateToLocalISO(cur))
+    cur.setDate(cur.getDate() + 1)
+  }
+  return dates
+}
+
 async function getUserId() {
   const { data, error } = await supabase.auth.getUser()
   if (error || !data?.user) {
@@ -297,6 +318,13 @@ export async function getRecentReflections(days) {
     .select('*')
     .eq('user_id', userId)
     .gte('date', daysAgoISO(days))
+  if (error) throw error
+  return data
+}
+
+export async function getAllReflections() {
+  const userId = await getUserId()
+  const { data, error } = await supabase.from('reflections').select('*').eq('user_id', userId)
   if (error) throw error
   return data
 }

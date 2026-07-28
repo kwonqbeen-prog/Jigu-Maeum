@@ -2,11 +2,12 @@
 import AppBar from '../../components/common/AppBar'
 import PlanetOrb, { getPlanetStage } from '../../components/common/PlanetOrb'
 import PrimaryButton from '../../components/common/PrimaryButton'
+import SparkleStar from '../../components/common/SparkleStar'
 import {
   getAllMissions,
   getTodayMissions,
   getTodayCheckin,
-  getRecentReflections,
+  getAllReflections,
   getAchievements,
   getReflectionsCount,
   getStreakDays,
@@ -17,21 +18,21 @@ import {
   toggleMissionLike,
   todayISO,
   daysAgoISO,
+  dateToLocalISO,
+  allDatesSince,
 } from '../../data/storage'
 import { evaluateAchievements } from '../../data/achievementRules'
 import AchievementsSheet from './AchievementsSheet'
 import DayDetailSheet from '../../components/common/DayDetailSheet'
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
-
-function last7Dates() {
-  const dates = []
-  for (let i = 6; i >= 0; i -= 1) dates.push(daysAgoISO(i))
-  return dates
-}
+const DATE_CHIP_WIDTH = 44
+// 가입한 지 얼마 안 됐어도(신규 계정) 날짜 바가 허전해 보이지 않도록 최소 7일 폭은 항상 확보.
+// 무한 스크롤/로딩이 아니라 시작점만 최대 6일 앞당기는 것이라 데이터량은 그대로 유지됨.
+const MIN_VISIBLE_DAYS = 7
 
 // S-20 · 마음 지구 (홈, 탭1) — 명세 5.1, 5.2, 6.1
-export default function HomeScreen({ isActive = true, justOnboarded = false, onStartCheckin, onGoMissions, onOpenSettings, onOpenArchive }) {
+export default function HomeScreen({ isActive = true, justOnboarded = false, signupDate, onStartCheckin, onGoMissions, onOpenSettings, onOpenArchive }) {
   const [data, setData] = useState(null)
   const [achievementsOpen, setAchievementsOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
@@ -39,6 +40,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
   const sliderRef = useRef(null)
   const dragRef = useRef({ dragging: false, moved: false, startX: 0, startScroll: 0 })
   const welcomeSmileConsumedRef = useRef(false)
+  const hasCenteredTodayRef = useRef(false)
 
   // 마음 지구 오브가 1.5~2초간 "웃는 눈"으로 바뀌었다 되돌아온다 — 온보딩 직후 첫 홈 진입,
   // 새 업적 달성 두 시점에서만 호출됨(지시서 §4)
@@ -58,7 +60,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
       getAllMissions(),
       getTodayMissions(),
       getTodayCheckin(),
-      getRecentReflections(6),
+      getAllReflections(),
       getAchievements(),
       getReflectionsCount(),
     ])
@@ -94,6 +96,15 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
     }
   }, [load, isActive])
 
+  // 처음 진입했을 때 오늘 날짜가 화면 가운데 오도록 한 번만 맨 끝(오른쪽)으로 스크롤.
+  // 날짜 목록은 오래된 날짜→오늘 순이라 끝까지 스크롤하면 오늘이 마지막 칩이 되고,
+  // 트랙 좌우 여백(50% - 반칩너비)이 그 칩을 정확히 가운데로 밀어준다.
+  useEffect(() => {
+    if (!data || !sliderRef.current || hasCenteredTodayRef.current) return
+    hasCenteredTodayRef.current = true
+    sliderRef.current.scrollLeft = sliderRef.current.scrollWidth
+  }, [data])
+
   useEffect(() => {
     const onMove = (e) => {
       const s = dragRef.current
@@ -115,7 +126,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
 
   if (!data) {
     return (
-      <div className="flex min-h-svh flex-col bg-surface">
+      <div className="flex flex-1 flex-col bg-surface">
         <AppBar title="마음 지구" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
         <div className="flex-1" />
       </div>
@@ -123,14 +134,14 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
   }
 
   const remaining = data.todayMissions.filter((m) => !m.is_completed)
-  const allDone = data.todayMissions.length > 0 && remaining.length === 0
   const { stage, name } = getPlanetStage(data.totalCompleted)
 
-  let cta = { label: '오늘의 미션 만들기', onClick: onStartCheckin }
-  if (data.todayCheckinExists && remaining.length > 0) {
-    cta = { label: '오늘의 미션 보기', onClick: onGoMissions }
-  } else if (allDone) {
-    cta = { label: '미션 더 둘러보기', onClick: onOpenArchive }
+  let cta = { label: '미션 만들러 가기', onClick: onStartCheckin }
+  if (data.todayCheckinExists) {
+    cta =
+      remaining.length > 0
+        ? { label: '오늘의 미션', onClick: onGoMissions }
+        : { label: '미션 더 둘러보기', onClick: onOpenArchive }
   }
 
   const decorations = data.achievements.slice(0, 3).map((code) => ({
@@ -138,10 +149,14 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
     icon: 'star',
   }))
 
-  const dates = last7Dates()
+  const signupDateISO = signupDate ? dateToLocalISO(new Date(signupDate)) : todayISO()
+  const minRangeStartISO = daysAgoISO(MIN_VISIBLE_DAYS - 1)
+  const rangeStartISO = signupDateISO < minRangeStartISO ? signupDateISO : minRangeStartISO
+  const dates = allDatesSince(rangeStartISO)
   const missionsForDate = (date) => data.allMissions.filter((m) => m.is_completed && m.created_date === date)
   const journalForDate = (date) => data.reflections.find((r) => r.date === date)?.content ?? null
   const hasDataOn = (date) => missionsForDate(date).length > 0 || Boolean(journalForDate(date))
+  const wasMissionCreatedOn = (date) => data.allMissions.some((m) => m.created_date === date)
 
   const handlePointerDown = (e) => {
     dragRef.current = { dragging: true, moved: false, startX: e.clientX, startScroll: sliderRef.current.scrollLeft }
@@ -161,7 +176,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface">
+    <div className="flex flex-1 flex-col bg-surface">
       <AppBar
         title="마음 지구"
         variant="large"
@@ -183,56 +198,75 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
               onClick={() => setAchievementsOpen(true)}
             />
           </div>
-          <p className="text-center text-[12px] font-medium text-ink-muted">
+          <p className="inline-flex items-center rounded-full bg-surface-alt px-3 py-1 text-[12px] font-medium text-ink-muted">
             {stage}단계 · {name}
           </p>
+
+          <div className="mt-3 w-full max-w-xs">
+            {data.todayCheckinExists && data.todayMissions.length > 0 && (
+              <button type="button" onClick={onGoMissions} className="w-full py-1 text-left">
+                <div className="flex items-center justify-between text-[13px] font-medium text-ink">
+                  <span>오늘의 미션</span>
+                  <span>
+                    {data.todayMissions.length - remaining.length} / {data.todayMissions.length}
+                  </span>
+                </div>
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">
+                  <div
+                    className="h-full bg-ink"
+                    style={{
+                      width: `${((data.todayMissions.length - remaining.length) / data.todayMissions.length) * 100}%`,
+                    }}
+                  />
+                </div>
+              </button>
+            )}
+
+            {!data.todayCheckinExists && (
+              <p className="mt-2 text-center text-[13px] font-medium text-ink">마음 지구를 자라게 해볼까요?</p>
+            )}
+
+            <div className="mt-2 flex justify-center" data-tour="home-cta">
+              <PrimaryButton label={cta.label} onClick={cta.onClick} className="max-w-xs" />
+            </div>
+          </div>
         </div>
 
         <div className="shrink-0">
-          {data.todayCheckinExists && data.todayMissions.length > 0 && (
-            <button type="button" onClick={onGoMissions} className="w-full py-1 text-left">
-              <div className="flex items-center justify-between text-[13px] font-medium text-ink">
-                <span>오늘의 미션</span>
-                <span>
-                  {data.todayMissions.length - remaining.length} / {data.todayMissions.length}
-                </span>
-              </div>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">
-                <div
-                  className="h-full bg-ink"
-                  style={{
-                    width: `${((data.todayMissions.length - remaining.length) / data.todayMissions.length) * 100}%`,
-                  }}
-                />
-              </div>
-            </button>
-          )}
-
-          <div className="mt-4 flex justify-center" data-tour="home-cta">
-            <PrimaryButton label={cta.label} onClick={cta.onClick} className="lg:max-w-xs" />
+          <div className="mb-2 flex items-center justify-center gap-1.5 px-4">
+            <SparkleStar style={{ width: 12, height: 12, color: 'var(--color-highlight)' }} />
+            <p className="text-[13px] font-medium text-ink">나의 발자취를 돌아봐요.</p>
+            <SparkleStar style={{ width: 12, height: 12, color: 'var(--color-highlight)' }} />
           </div>
-
           <div
             ref={sliderRef}
             onPointerDown={handlePointerDown}
-            className="mt-4 flex cursor-grab select-none gap-2 overflow-x-auto pb-1 lg:justify-center"
-            style={{ scrollbarWidth: 'none' }}
+            className="flex snap-x snap-mandatory cursor-grab select-none gap-3 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: 'none', paddingLeft: `calc(50% - ${DATE_CHIP_WIDTH / 2}px)`, paddingRight: `calc(50% - ${DATE_CHIP_WIDTH / 2}px)` }}
           >
             {dates.map((date) => {
               const isToday = date === todayISO()
+              const isBeforeSignup = date < signupDateISO
               const dow = WEEKDAY_LABELS[new Date(date).getDay()]
               const day = new Date(date).getDate()
               return (
                 <button
                   key={date}
                   type="button"
+                  disabled={isBeforeSignup}
                   onClick={() => handleChipClick(date)}
-                  className={`flex w-11 shrink-0 flex-col items-center gap-0.5 rounded-2xl border-[1.5px] py-2 ${
-                    isToday ? 'border-accent' : 'border-transparent'
-                  } bg-surface-alt`}
+                  style={{ scrollSnapAlign: 'center', width: DATE_CHIP_WIDTH }}
+                  className={`flex shrink-0 flex-col items-center gap-1 ${isBeforeSignup ? 'opacity-40' : ''}`}
                 >
                   <span className="text-[10px] font-medium text-ink-faint">{dow}</span>
-                  <span className="text-[13px] font-medium text-ink">{day}</span>
+                  <span className={`h-1.5 w-1.5 rounded-full ${wasMissionCreatedOn(date) ? 'day-dot--attempted' : 'bg-transparent'}`} />
+                  <span
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-medium ${
+                      isToday ? 'bg-ink text-surface' : 'text-ink-muted'
+                    }`}
+                  >
+                    {day}
+                  </span>
                   <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(date) ? 'day-dot--active' : 'bg-transparent'}`} />
                 </button>
               )

@@ -463,6 +463,13 @@ body {
   background-image: linear-gradient(135deg, #ffdce8, #d3e7fb);
 }
 
+/* 같은 날짜 슬라이더의 "미션 생성함" 표시 점(성공 여부 무관) — 완료 점과 구분되는
+   테마 불문 고정 앰버 글로우(디자인 확정값) */
+.day-dot--attempted {
+  background-color: #ffc978;
+  box-shadow: 0 0 4px 1px rgba(255, 186, 94, 0.65);
+}
+
 /* MissionCard 좌측 미션 타입(탄소/자연/사회) 아이콘 배지. background-color는 고대비 모드
    폴백(--gradient-type-*가 none일 때 보이는 단색), background-image가 그 위에 얹힌다 */
 .mission-type-icon {

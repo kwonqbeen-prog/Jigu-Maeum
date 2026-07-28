@@ -54,7 +54,7 @@ export default function MissionArchiveScreen({ onBack, onStartCheckin }) {
           <EmptyState
             title="아직 담긴 미션이 없어요"
             body="오늘의 미션을 만들어 보세요"
-            actionLabel="오늘의 미션 만들기"
+            actionLabel="미션 만들러 가기"
             onAction={onStartCheckin}
           />
         ) : (

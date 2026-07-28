@@ -18,7 +18,7 @@ function buildSteps() {
     },
     {
       target: '[data-tour="home-cta"]',
-      title: '오늘의 미션 만들기',
+      title: '미션 만들러 가기',
       content: '지금 마음 상태를 알려주시면 딱 맞는 미션을 추천해드려요.',
       skipBeacon: true,
       placement: 'bottom',
