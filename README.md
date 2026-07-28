@@ -33,7 +33,7 @@
 | 죄책감형 | 자신의 일상 행동이 환경을 파괴하고 있다는 죄책감을 느낌 |
 | 정보과잉형 | 자극적이고 부정적인 기후 뉴스에 반복적으로 노출되어 스트레스를 느낌 |
 
-> 본 프로젝트는 [리부트 AI 활용대회](https://app.notion.com/p/AI-39d64318149380008afbd3ecb2cafd62?pvs=21) 출품작입니다.
+> 본 프로젝트는 [리부트 AI 활용대회](https://aichallenge4all.or.kr/competitions/youth-ai) 출품작입니다.
 
 ---
 
