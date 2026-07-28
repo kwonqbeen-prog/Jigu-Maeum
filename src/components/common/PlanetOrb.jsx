@@ -1,9 +1,12 @@
 import Icon from '../Icon'
-import SparkleStar from './SparkleStar'
 
-// 화면설계서 §6 S-20 — 누적 완료 수 → 5단계 임계값 [결정필요 → Q6, 문서 기본값 그대로 적용]
+// 화면설계서 §6 S-20 — 누적 완료 수 → 5단계 임계값 [결정필요 → Q6, 문서 기본값 그대로 적용].
+// 0단계("막 태어난 지구")는 아무 미션도 완료하지 않은 순간만을 위한 별도 단계 — 기존
+// 1단계는 min:0이라 가입 직후부터 바로 붙었으나, "완전히 갓 태어난" 느낌을 위해 최초
+// 1개 완료 전까지만 보이는 상태를 따로 뺐다
 export const STAGE_THRESHOLDS = [
-  { stage: 1, min: 0, name: '조용한 지구' },
+  { stage: 0, min: 0, name: '막 태어난 지구' },
+  { stage: 1, min: 1, name: '조용한 지구' },
   { stage: 2, min: 3, name: '깨어나는 지구' },
   { stage: 3, min: 10, name: '함께 걷는 지구' },
   { stage: 4, min: 25, name: '숨쉬는 지구' },
@@ -17,26 +20,6 @@ export function getPlanetStage(totalCompleted) {
   }
   return result
 }
-
-// 정적 배경 장식 — 고정 좌표라 리렌더링마다 위치가 바뀌지 않는다
-const STARS = [
-  { top: '6%', left: '18%', size: 8, shape: 'sparkle' },
-  { top: '12%', left: '82%', size: 5, shape: 'dot' },
-  { top: '20%', left: '45%', size: 5, shape: 'dot' },
-  { top: '9%', left: '62%', size: 5, shape: 'sparkle' },
-  { top: '28%', left: '10%', size: 5, shape: 'dot' },
-  { top: '32%', left: '92%', size: 8, shape: 'dot' },
-  { top: '40%', left: '30%', size: 5, shape: 'sparkle' },
-  { top: '46%', left: '70%', size: 5, shape: 'dot' },
-  { top: '54%', left: '15%', size: 8, shape: 'sparkle' },
-  { top: '58%', left: '55%', size: 5, shape: 'dot' },
-  { top: '64%', left: '88%', size: 5, shape: 'dot' },
-  { top: '70%', left: '38%', size: 5, shape: 'sparkle' },
-  { top: '76%', left: '8%', size: 5, shape: 'dot' },
-  { top: '80%', left: '68%', size: 8, shape: 'dot' },
-  { top: '86%', left: '25%', size: 5, shape: 'sparkle' },
-  { top: '90%', left: '80%', size: 5, shape: 'dot' },
-]
 
 // 대륙 블롭 3개의 위치·크기(% 단위, 오브 크기와 무관하게 스케일됨) — 지시서 §2
 const BLOB_LAYOUT = [
@@ -60,36 +43,14 @@ const CONTINENT_CONFIG = {
 // C-09 PlanetOrb — 장식 요소(업적)는 동시 최대 3개
 export default function PlanetOrb({ totalCompleted = 0, decorations = [], size = 'large', expression = 'default', onClick }) {
   const { stage, name } = getPlanetStage(totalCompleted)
-  const sizeClass = size === 'large' ? 'h-56 w-56 sm:h-64 sm:w-64' : 'h-24 w-24'
-  const showDetail = size === 'large' // 대륙/눈은 large 사이즈에서만 — STARS와 동일한 기존 관례
+  // 0단계("막 태어난 지구")는 아직 아무것도 없는 작은 크기로 표시
+  const sizeClass =
+    size === 'large' ? (stage === 0 ? 'h-40 w-40 sm:h-48 sm:w-48' : 'h-56 w-56 sm:h-64 sm:w-64') : 'h-24 w-24'
+  const showDetail = size === 'large' // 대륙/눈은 large 사이즈에서만
   const continentConfig = CONTINENT_CONFIG[stage]
 
   return (
-    <div className="relative flex h-full items-center justify-center overflow-hidden" aria-hidden={size !== 'large' ? undefined : false}>
-      {size === 'large' &&
-        STARS.map((star, i) =>
-          star.shape === 'sparkle' ? (
-            <SparkleStar
-              key={i}
-              className="absolute"
-              style={{
-                top: star.top,
-                left: star.left,
-                width: star.size,
-                height: star.size,
-                color: 'var(--color-highlight)',
-                opacity: 'var(--star-opacity)',
-              }}
-            />
-          ) : (
-            <span
-              key={i}
-              className="mind-planet__star mind-planet__star--dot absolute"
-              style={{ top: star.top, left: star.left, width: star.size, height: star.size }}
-              aria-hidden="true"
-            />
-          ),
-        )}
+    <div className="relative flex h-full items-center justify-center" aria-hidden={size !== 'large' ? undefined : false}>
       <button
         type="button"
         onClick={onClick}

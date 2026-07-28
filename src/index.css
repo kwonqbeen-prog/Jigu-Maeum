@@ -94,6 +94,8 @@
      (지시서 claude-code-task-03-planet-orb-redesign.md 기준). 낮은 단계일수록 흰색에
      가깝고 색이 거의 안 보이며, 단계가 오를수록 채도가 올라가며 대륙이 선명해진다
      (명도를 낮춰 어둡게 만드는 방향이 아님 — 우울해 보인다는 피드백으로 폐기된 방향) */
+  /* 0단계("막 태어난 지구")는 대륙 블롭조차 없는 순백 — 1단계보다도 더 옅다 */
+  --mind-planet-ocean-0: #ffffff;
   --mind-planet-ocean-1: #eef4f7;
   --mind-planet-ocean-2: #d6ecf9;
   --mind-planet-ocean-3: #a9ddf5;
@@ -106,9 +108,16 @@
   --mind-planet-continent-4: #f98fb9;
   --mind-planet-continent-5: #ff8fb8;
 
-  --mind-planet-glow-3: 0 0 8px 1px rgba(111, 196, 239, 0.25);
-  --mind-planet-glow-4: 0 0 14px 3px rgba(111, 196, 239, 0.35);
-  --mind-planet-glow-5: 0 0 22px 6px rgba(111, 196, 239, 0.5);
+  /* 0~2단계는 원래 글로우가 아예 없었으나("화면에 발광 효과가 안 보인다" 피드백),
+     3~5단계와 같은 색으로 항상 보이도록 추가함. 배경에 진한 핑크/블루 워시(.mind-planet-wash)가
+     깔리면서 기존 3~5단계 값(8px·0.25 등)도 배경과 색이 겹쳐 거의 안 보였어서, 전체 단계의
+     블러 반경·불투명도를 함께 올려 재조정함(0→5로 갈수록 커지는 순서는 유지) */
+  --mind-planet-glow-0: 0 0 8px 2px rgba(111, 196, 239, 0.28);
+  --mind-planet-glow-1: 0 0 10px 2px rgba(111, 196, 239, 0.32);
+  --mind-planet-glow-2: 0 0 12px 3px rgba(111, 196, 239, 0.36);
+  --mind-planet-glow-3: 0 0 15px 3px rgba(111, 196, 239, 0.4);
+  --mind-planet-glow-4: 0 0 19px 4px rgba(111, 196, 239, 0.46);
+  --mind-planet-glow-5: 0 0 24px 6px rgba(111, 196, 239, 0.55);
 
   /* 감성 레이어: 온보딩/스플래시/데이랩업/업적 시트/체크인 완료 화면 전용 은은한
      파스텔 워시(.pastel-wash 클래스가 소비). 오브와 같은 4색을 아주 낮은 불투명도로 */
@@ -120,6 +129,16 @@
     rgba(211, 231, 251, 0.12) 80%,
     transparent 100%
   );
+
+  /* 감성 레이어: "마음 지구" 홈 화면 전용(.mind-planet-wash 클래스가 소비) — 오브 팔레트의
+     진한 핑크(대륙 5단계)·스카이블루(바다 3단계)를 화면 대각 모서리에 배치해 오브와 대비되면서
+     글로우가 도드라져 보이도록 진하게 뺀 버전. transparent 지점을 50%가 아니라 85%로 멀리
+     잡은 이유: 50%로 하면 색이 모서리 근처에서만 보이고 오브가 있는 중앙 부근은 이미
+     투명하게 다 빠져서, 1단계처럼 오브 자체가 옅은 색(--mind-planet-ocean-1)일 때 배경과
+     거의 구분이 안 되는 문제가 있었음(직접 스크린샷으로 확인) — 중앙까지 색이 옅게라도
+     걸쳐 있어야 저채도 오브가 그 위에서 밝은 덩어리로 도드라져 보인다 */
+  --gradient-mind-planet-wash: radial-gradient(circle at 15% 10%, rgba(255, 143, 184, 0.55) 0%, transparent 85%),
+    radial-gradient(circle at 85% 90%, rgba(74, 168, 217, 0.5) 0%, transparent 85%);
 
   /* 감성 레이어: MissionCard 좌측 미션 타입(탄소/자연/사회) 아이콘 배지. 오브와 같은
      파스텔 팔레트를 재사용 — 탄소=스카이블루→라벤더, 사회=라이트옐로우→핑크는 오브의
@@ -220,6 +239,7 @@
      분리 토큰으로 교체. 정확한 값은 1차 구현 범위 밖이라(지시서 §1) 라이트와 같은
      "옅음→선명함" 명도 램프를 다크 배경 기준으로 임시 재계산만 하고, 색상군은 라이트와
      동일하게 스카이블루(바다)/핑크(대륙) 계열로 맞췄다 — 정밀 튜닝은 별도 세션에서 진행 */
+  --mind-planet-ocean-0: #363c42;
   --mind-planet-ocean-1: #262b30;
   --mind-planet-ocean-2: #253844;
   --mind-planet-ocean-3: #1f4a5e;
@@ -232,9 +252,12 @@
   --mind-planet-continent-4: #99406b;
   --mind-planet-continent-5: #c94f82;
 
-  --mind-planet-glow-3: 0 0 8px 1px rgba(47, 127, 163, 0.3);
-  --mind-planet-glow-4: 0 0 14px 3px rgba(47, 127, 163, 0.4);
-  --mind-planet-glow-5: 0 0 22px 6px rgba(47, 127, 163, 0.55);
+  --mind-planet-glow-0: 0 0 8px 2px rgba(47, 127, 163, 0.24);
+  --mind-planet-glow-1: 0 0 10px 2px rgba(47, 127, 163, 0.28);
+  --mind-planet-glow-2: 0 0 12px 3px rgba(47, 127, 163, 0.32);
+  --mind-planet-glow-3: 0 0 15px 3px rgba(47, 127, 163, 0.38);
+  --mind-planet-glow-4: 0 0 19px 4px rgba(47, 127, 163, 0.46);
+  --mind-planet-glow-5: 0 0 24px 6px rgba(47, 127, 163, 0.6);
 
   /* 라이트보다 훨씬 낮은 불투명도로 — 다크 배경 위에서 은은하게만 보이도록 */
   --gradient-pastel-wash: radial-gradient(
@@ -245,6 +268,8 @@
     rgba(211, 231, 251, 0.06) 80%,
     transparent 100%
   );
+  --gradient-mind-planet-wash: radial-gradient(circle at 15% 10%, rgba(201, 79, 130, 0.4) 0%, transparent 85%),
+    radial-gradient(circle at 85% 90%, rgba(47, 127, 163, 0.4) 0%, transparent 85%);
 
   /* 미션 타입 배지도 오브와 같은 방식(파스텔을 어두운 앵커와 섞어 톤다운) — 탄소/사회는
      오브 다크 팔레트의 4단계 그라데이션에서 이미 쓰던 톤다운 엔드포인트를 그대로 재사용
@@ -295,6 +320,9 @@
   --focus-ring-width: 4px;
   --star-opacity: 0.6;
 
+  /* 0단계는 명도 램프의 맨 아래(가장 어두움)로 — "흰색"은 이 모드의 색상 규칙이 아니라
+     라이트/다크와 동일하게 "단계가 오를수록 밝아진다" 순서만 유지 */
+  --mind-planet-ocean-0: radial-gradient(circle, #1c1c1c, #0d0d0d);
   --mind-planet-ocean-1: radial-gradient(circle, #262626, #141414);
   --mind-planet-ocean-2: radial-gradient(circle, #2c2c2c, #171717);
   --mind-planet-ocean-3: radial-gradient(circle, #333333, #1a1a1a);
@@ -302,12 +330,16 @@
   --mind-planet-ocean-5: radial-gradient(circle, var(--color-ink), #cccccc);
   /* 대륙 블롭·후광은 고대비 모드에서 완전히 꺼진다(아래 .mind-planet__continent 억제 규칙
      참고) — 색상 구분 없이 명도 3단계만 쓰는 기존 원칙을 그대로 유지 */
+  --mind-planet-glow-0: none;
+  --mind-planet-glow-1: none;
+  --mind-planet-glow-2: none;
   --mind-planet-glow-3: none;
   --mind-planet-glow-4: none;
   --mind-planet-glow-5: none;
 
   /* 파스텔 워시는 대비 손실 위험이 있어 고대비 모드에서는 아예 끔 (AAA 원칙 유지) */
   --gradient-pastel-wash: none;
+  --gradient-mind-planet-wash: none;
 
   /* 미션 타입 배지도 마음 지구 오브와 동일 원칙 — 고대비 모드는 카테고리 색상 구분 없이
      명도만 씀. background-image를 꺼서 .mission-type-icon의 background-color(surface-alt)
@@ -443,13 +475,13 @@ body {
   background-color: var(--color-ink);
   color: var(--color-surface);
 }
-/* 배경 장식용 별 — 정적 요소, 테마별 --star-opacity로 은은함 정도만 조절.
-   색상은 --color-ink-faint(무채색)가 아니라 --color-highlight(테마별로 이미 대비 검증된
-   보조 강조색)를 써서 배경과 뚜렷하게 구분되게 한다. 원형(dot)/사각별(sparkle) 두 형태와
-   두 가지 크기를 섞어 다채로운 느낌을 준다 */
+/* 배경 장식용 원형별(dot) — 정적 요소, 테마별 --star-opacity로 은은함 정도만 조절.
+   랜딩/가입 화면의 흰색+블러 사각별과 톤을 맞추기 위해 색을 흰색으로 고정하고 블러를
+   추가함(테마 불문 — day-dot--active와 같은 종류의 고정 파스텔/화이트 장식 예외) */
 .mind-planet__star {
-  background-color: var(--color-highlight);
+  background-color: #fff;
   opacity: var(--star-opacity);
+  filter: blur(1px);
 }
 .mind-planet__star--dot {
   border-radius: 50%;
@@ -500,6 +532,21 @@ body {
   background-image: var(--gradient-pastel-wash);
 }
 
+/* "마음 지구" 홈 화면 전용 워시 — .pastel-wash와 같은 위치 지정 패턴, 색만 핑크·
+   스카이블루 2색으로 한정 */
+.mind-planet-wash {
+  position: relative;
+  z-index: 0;
+}
+.mind-planet-wash::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--gradient-mind-planet-wash);
+}
+
 /* "마음 지구" 오브젝트 — data-planet-stage로 CSS만으로 분기.
    2026-07-28 리디자인: 기존 단일 그라데이션 + ::before 블러 광채 + 5단계 전체 회전
    방식을 폐기하고, 바다/대륙/눈을 분리된 레이어로 쌓는 구조로 교체했다
@@ -516,6 +563,9 @@ body {
   z-index: 0;
   background: var(--mind-planet-ocean-1);
   transition: background 0.3s ease;
+}
+.mind-planet__orb[data-planet-stage='0'] {
+  background: var(--mind-planet-ocean-0);
 }
 .mind-planet__orb[data-planet-stage='2'] {
   background: var(--mind-planet-ocean-2);
@@ -564,6 +614,15 @@ body {
   border-radius: 50%;
   overflow: hidden;
   background: inherit;
+}
+.mind-planet__orb[data-planet-stage='0'] .mind-planet__surface {
+  box-shadow: var(--mind-planet-glow-0);
+}
+.mind-planet__orb[data-planet-stage='1'] .mind-planet__surface {
+  box-shadow: var(--mind-planet-glow-1);
+}
+.mind-planet__orb[data-planet-stage='2'] .mind-planet__surface {
+  box-shadow: var(--mind-planet-glow-2);
 }
 .mind-planet__orb[data-planet-stage='3'] .mind-planet__surface {
   box-shadow: var(--mind-planet-glow-3);

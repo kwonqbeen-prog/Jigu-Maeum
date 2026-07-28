@@ -25,6 +25,28 @@ import { evaluateAchievements } from '../../data/achievementRules'
 import AchievementsSheet from './AchievementsSheet'
 import DayDetailSheet from '../../components/common/DayDetailSheet'
 
+// 배경 장식 별 — 화면 전체에 걸쳐 퍼지도록 고정 좌표 사용(원래 PlanetOrb 내부의 작은 박스에
+// 갇혀 있던 걸 화면 루트로 옮김). 사각별(sparkle)이 원형별(dot)보다 항상 크게 보이도록
+// 사각별은 11~16px, 원형별은 4~6px 범위로 나눔
+const BACKGROUND_STARS = [
+  { top: '6%', left: '18%', size: 14, shape: 'sparkle' },
+  { top: '12%', left: '82%', size: 5, shape: 'dot' },
+  { top: '20%', left: '45%', size: 4, shape: 'dot' },
+  { top: '9%', left: '62%', size: 12, shape: 'sparkle' },
+  { top: '28%', left: '10%', size: 5, shape: 'dot' },
+  { top: '32%', left: '92%', size: 6, shape: 'dot' },
+  { top: '40%', left: '30%', size: 11, shape: 'sparkle' },
+  { top: '46%', left: '70%', size: 4, shape: 'dot' },
+  { top: '54%', left: '15%', size: 16, shape: 'sparkle' },
+  { top: '58%', left: '55%', size: 5, shape: 'dot' },
+  { top: '64%', left: '88%', size: 4, shape: 'dot' },
+  { top: '70%', left: '38%', size: 13, shape: 'sparkle' },
+  { top: '76%', left: '8%', size: 6, shape: 'dot' },
+  { top: '80%', left: '68%', size: 5, shape: 'dot' },
+  { top: '86%', left: '25%', size: 12, shape: 'sparkle' },
+  { top: '90%', left: '80%', size: 4, shape: 'dot' },
+]
+
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 const DATE_CHIP_WIDTH = 44
 // 가입한 지 얼마 안 됐어도(신규 계정) 날짜 바가 허전해 보이지 않도록 최소 7일 폭은 항상 확보.
@@ -126,7 +148,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, sig
 
   if (!data) {
     return (
-      <div className="flex flex-1 flex-col bg-surface">
+      <div className="mind-planet-wash flex flex-1 flex-col bg-surface">
         <AppBar title="마음 지구" variant="large" actions={[{ icon: 'settings', label: '설정', onClick: onOpenSettings }]} />
         <div className="flex-1" />
       </div>
@@ -175,7 +197,23 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, sig
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-surface">
+    <div className="mind-planet-wash flex flex-1 flex-col bg-surface">
+      {BACKGROUND_STARS.map((star, i) =>
+        star.shape === 'sparkle' ? (
+          <SparkleStar
+            key={i}
+            className="absolute"
+            style={{ top: star.top, left: star.left, width: star.size, height: star.size, color: '#fff', opacity: 'var(--star-opacity)', filter: 'blur(1px)' }}
+          />
+        ) : (
+          <span
+            key={i}
+            className="mind-planet__star mind-planet__star--dot absolute"
+            style={{ top: star.top, left: star.left, width: star.size, height: star.size }}
+            aria-hidden="true"
+          />
+        ),
+      )}
       <AppBar
         title="마음 지구"
         variant="large"
