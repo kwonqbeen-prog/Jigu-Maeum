@@ -3,7 +3,7 @@ import AppBar from '../../components/common/AppBar'
 import StatTile from '../../components/common/StatTile'
 import MissionCard from '../../components/common/MissionCard'
 import ListBlock from '../../components/common/ListBlock'
-import { getAllMissions, getArchiveMissions, getStreakDays, getTotalCompletedCount, toggleMissionComplete } from '../../data/storage'
+import { getAllMissions, getArchiveMissions, getStreakDays, getTotalCompletedCount, toggleMissionComplete, todayISO } from '../../data/storage'
 
 // S-50 · 기록 홈 (탭3) — 명세 6.1, 6.2, 6.3
 export default function RecordsHomeScreen({ isActive = true, onOpenSettings, onOpenHistory, onOpenStreak, onOpenArchive }) {
@@ -12,10 +12,11 @@ export default function RecordsHomeScreen({ isActive = true, onOpenSettings, onO
   const refresh = async () => {
     try {
       const [allMissions, archive] = await Promise.all([getAllMissions(), getArchiveMissions()])
+      const retryCandidates = archive.filter((m) => !m.is_completed && m.created_date < todayISO())
       setData({
         streak: getStreakDays(allMissions),
         total: getTotalCompletedCount(allMissions),
-        retryPreview: archive.slice(0, 2),
+        retryPreview: retryCandidates.slice(0, 2),
       })
     } catch (err) {
       console.error('[RecordsHomeScreen] refresh failed', err)

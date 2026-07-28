@@ -2,7 +2,7 @@ import { askSolar } from '../api/solarClient'
 import { missionGenerationPrompt } from '../prompts/systemPrompts'
 import { getAllMissions, getRecentMissions, getUserMemories, getTotalCompletedCount } from '../data/storage'
 import { pickFallbackMissions } from '../data/missionPool'
-import { EMOTION_TYPES, ENERGY_LEVELS, PLACES, DIFFICULTY_LEVELS, labelOf } from '../data/constants'
+import { EMOTION_TYPES, ENERGY_LEVELS, PLACES, DIFFICULTY_LEVELS, MISSION_COUNT_BY_ENERGY, labelOf } from '../data/constants'
 
 function jaccard(a, b) {
   const tokensA = new Set(a.split(''))
@@ -21,14 +21,14 @@ function computeBaseDifficulty(totalCompleted) {
   return DIFFICULTY_LEVELS[step]
 }
 
-function shortfallTypePlan(recentTypeCounts, socialPreference) {
+function shortfallTypePlan(recentTypeCounts, socialPreference, count) {
   const order = Object.entries(recentTypeCounts)
     .sort((a, b) => a[1] - b[1])
     .map(([type]) => type)
-  let plan = [order[0], order[1], order[2]]
+  let plan = Array.from({ length: count }, (_, i) => order[i % order.length])
   if (socialPreference === 'avoid') {
     plan = plan.map((t) => (t === 'social' ? order.find((x) => x !== 'social') ?? 'carbon' : t))
-    if (!plan.includes('social')) plan[2] = 'social'
+    if (count > 1 && !plan.includes('social')) plan[plan.length - 1] = 'social'
   }
   return plan
 }
@@ -49,6 +49,7 @@ export async function generateMissionsForCheckin(checkin, profile) {
   const baseDifficulty = computeBaseDifficulty(totalCompleted)
   const isFirstMission = totalCompleted === 0
   const energyLevel = ENERGY_LEVELS.find((e) => e.value === checkin.energy_level)
+  const missionCount = MISSION_COUNT_BY_ENERGY[checkin.energy_level] ?? 3
 
   const promptArgs = {
     emotionLabel: labelOf(EMOTION_TYPES, checkin.emotion_type),
@@ -62,12 +63,13 @@ export async function generateMissionsForCheckin(checkin, profile) {
     recentTitles,
     baseDifficulty,
     isFirstMission,
+    missionCount,
   }
 
   async function attempt(extraNote) {
     const systemPrompt = missionGenerationPrompt(promptArgs) + (extraNote ?? '')
     const result = await askSolar({ systemPrompt, userMessage: '미션을 생성해주세요.' })
-    if (!Array.isArray(result?.missions) || result.missions.length !== 3) {
+    if (!Array.isArray(result?.missions) || result.missions.length !== missionCount) {
       throw new Error('미션 개수가 올바르지 않습니다.')
     }
     return result
@@ -85,7 +87,7 @@ export async function generateMissionsForCheckin(checkin, profile) {
       usedFallback: false,
     }
   } catch {
-    const typePlan = shortfallTypePlan(recentTypeCounts, profile?.social_preference)
+    const typePlan = shortfallTypePlan(recentTypeCounts, profile?.social_preference, missionCount)
     const missions = pickFallbackMissions(typePlan).map((m) => ({ ...m, source: 'checkin' }))
     return {
       missions,

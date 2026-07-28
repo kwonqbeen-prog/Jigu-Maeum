@@ -15,6 +15,9 @@ export const ENERGY_LEVELS = [
   { value: 'high', label: '좀 더요', hint: '오늘은 해볼 마음이 있어요', note: '도전적인 것 1개 포함 (15~30분)' },
 ]
 
+// 오늘의 의욕(에너지 레벨)에 따라 체크인 한 번에 받는 미션 개수를 다르게 준다.
+export const MISSION_COUNT_BY_ENERGY = { low: 1, mid: 3, high: 5 }
+
 export const PLACES = [
   { value: 'home', label: '집' },
   { value: 'work', label: '직장·학교' },

@@ -46,3 +46,10 @@ export function pickFallbackMissions(typePlan) {
     return { ...pool[idx], type, why: '지금 상황에서 바로 해볼 수 있는 걸로 골랐어요.' }
   })
 }
+
+const DEFAULT_TYPE_ORDER = ['carbon', 'nature', 'social']
+
+// carbon/nature/social을 순서대로 순환시켜 원하는 개수만큼의 유형 배열을 만든다.
+export function defaultTypePlan(count) {
+  return Array.from({ length: count }, (_, i) => DEFAULT_TYPE_ORDER[i % DEFAULT_TYPE_ORDER.length])
+}

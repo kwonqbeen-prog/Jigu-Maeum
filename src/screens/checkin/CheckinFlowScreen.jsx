@@ -9,7 +9,7 @@ import TextField from '../../components/common/TextField'
 import MissionCard from '../../components/common/MissionCard'
 import Icon from '../../components/Icon'
 import SupportScreen from '../SupportScreen'
-import { EMOTION_TYPES, ENERGY_LEVELS, PLACES } from '../../data/constants'
+import { EMOTION_TYPES, ENERGY_LEVELS, PLACES, MISSION_COUNT_BY_ENERGY } from '../../data/constants'
 import { detectSafetySignal } from '../../data/safetyKeywords'
 import {
   getTodayCheckin,
@@ -20,7 +20,8 @@ import {
   insertMissions,
 } from '../../data/storage'
 import { generateMissionsForCheckin } from '../../hooks/useMissionGeneration'
-import { pickFallbackMissions } from '../../data/missionPool'
+import { pickFallbackMissions, defaultTypePlan } from '../../data/missionPool'
+import earthStage5 from '../../assets/planet-mascot/stage-5.svg'
 
 const GENERATING_MESSAGES = ['오늘의 미션을 준비하는 중', '지금 상황에서 할 수 있는 걸 찾는 중', '거의 다 됐어요']
 const MAX_RETRY = 2
@@ -179,7 +180,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   if (phase === 'generating') {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-surface px-6 text-center lg:mx-auto lg:max-w-[480px]">
-        <div className="mind-planet__orb h-16 w-16 rounded-full" data-planet-stage="2" aria-hidden="true" />
+        <img src={earthStage5} alt="" aria-hidden="true" className="h-16 w-16" />
         <p className="text-[15px] font-medium text-ink-muted">{GENERATING_MESSAGES[msgIndex]}</p>
       </div>
     )
@@ -195,8 +196,9 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
             label="기본 미션 받기"
             className="w-full"
             onClick={() => {
+              const count = MISSION_COUNT_BY_ENERGY[checkin.energy_level] ?? 3
               setGenResult({
-                missions: pickFallbackMissions(['carbon', 'nature', 'social']).map((m) => ({ ...m, source: 'checkin' })),
+                missions: pickFallbackMissions(defaultTypePlan(count)).map((m) => ({ ...m, source: 'checkin' })),
                 bundleMessage: '지금 상황에서 바로 해볼 수 있는 미션으로 준비했어요.',
               })
               setPhase('result')
@@ -218,12 +220,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
           </h1>
           <div className="mt-4 space-y-2">
             {genResult.missions.map((m, i) => (
-              <MissionCard
-                key={i}
-                mission={m}
-                onOpen={() => {}}
-                onToggle={() => {}}
-              />
+              <MissionCard key={i} mission={m} onOpen={() => {}} trailing={false} />
             ))}
           </div>
           <div className="mt-4 rounded-2xl bg-surface-alt p-4">
