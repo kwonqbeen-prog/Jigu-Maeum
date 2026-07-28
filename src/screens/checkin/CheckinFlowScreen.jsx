@@ -22,7 +22,7 @@ import {
 import { generateMissionsForCheckin } from '../../hooks/useMissionGeneration'
 import { pickFallbackMissions } from '../../data/missionPool'
 
-const GENERATING_MESSAGES = ['오늘의 마음을 살펴보는 중', '지금 상황에서 할 수 있는 걸 찾는 중', '거의 다 됐어요']
+const GENERATING_MESSAGES = ['오늘의 미션을 준비하는 중', '지금 상황에서 할 수 있는 걸 찾는 중', '거의 다 됐어요']
 const MAX_RETRY = 2
 
 export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, onMissionsSaved }) {
@@ -143,7 +143,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
           <h2 className="text-[16px] font-medium text-ink">오늘은 이미 미션을 받으셨어요</h2>
           <div className="mt-5 space-y-2">
             <PrimaryButton label="오늘 미션 보기" onClick={onGoToMissions} />
-            <GhostButton label="다시 체크인하기" onClick={handleDiscardDraft} className="w-full" />
+            <GhostButton label="미션 다시 만들기" onClick={handleDiscardDraft} className="w-full" />
           </div>
         </div>
       </div>

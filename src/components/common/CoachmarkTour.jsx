@@ -12,13 +12,13 @@ function buildSteps() {
     {
       target: '[data-tour="planet-orb"]',
       title: '마음 지구',
-      content: '매일 체크인할수록 마음 지구가 자라나요. 지금까지의 실천을 한눈에 볼 수 있어요.',
+      content: '매일 미션을 만들수록 마음 지구가 자라나요. 지금까지의 실천을 한눈에 볼 수 있어요.',
       skipBeacon: true,
       placement: 'bottom',
     },
     {
       target: '[data-tour="home-cta"]',
-      title: '오늘의 마음 체크인',
+      title: '오늘의 미션 만들기',
       content: '지금 마음 상태를 알려주시면 딱 맞는 미션을 추천해드려요.',
       skipBeacon: true,
       placement: 'bottom',
@@ -26,7 +26,7 @@ function buildSteps() {
     {
       target: isDesktop ? '[data-tour="sidebar-missions"]' : '[data-tour="tab-missions"]',
       title: '미션',
-      content: '체크인 후 받은 오늘의 미션은 이 탭에서 확인하고 완료 처리할 수 있어요.',
+      content: '미션을 만들면 오늘의 미션을 이 탭에서 확인하고 완료 처리할 수 있어요.',
       skipBeacon: true,
       placement: isDesktop ? 'right' : 'top',
     },

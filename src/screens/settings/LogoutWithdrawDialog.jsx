@@ -48,7 +48,7 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
         <h1 className="text-[20px] font-medium text-ink">정말 탈퇴하실까요?</h1>
         <ul className="mt-4 list-disc space-y-1 pl-5 text-[13px] text-ink-muted">
           <li>미션 기록</li>
-          <li>체크인 기록</li>
+          <li>미션 생성 기록</li>
           <li>회고</li>
           <li>지구 성장 단계</li>
         </ul>

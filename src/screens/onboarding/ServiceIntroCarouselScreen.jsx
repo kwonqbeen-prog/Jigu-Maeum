@@ -12,7 +12,7 @@ const SLIDES = [
   },
   {
     wash: 'radial-gradient(circle at 70% 20%, #d3e7fb 0%, transparent 45%), radial-gradient(circle at 25% 55%, #ffdce8 0%, transparent 50%), radial-gradient(circle at 70% 85%, #e4d9f7 0%, transparent 50%)',
-    headline: ['오늘의 마음을 입력하면,', 'AI가 나에게 딱 맞는', '미션을 만들어요.'],
+    headline: ['오늘의 기분을 입력하면,', 'AI가 나에게 딱 맞는', '미션을 만들어요.'],
     body: ['미션을 실천하고, 매일매일', '달라지는 감정을 기록해요.'],
   },
   {

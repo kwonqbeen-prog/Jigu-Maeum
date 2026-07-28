@@ -85,7 +85,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
           <EmptyState
             title="아직 오늘 미션이 없어요"
             body="지금 마음을 알려주시면 맞는 미션을 찾아드릴게요"
-            actionLabel="오늘의 마음 확인하기"
+            actionLabel="오늘의 미션 만들기"
             onAction={onStartCheckin}
             secondaryLabel="지난 미션 보관함"
             onSecondary={onOpenArchive}

@@ -126,7 +126,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, onS
   const allDone = data.todayMissions.length > 0 && remaining.length === 0
   const { stage, name } = getPlanetStage(data.totalCompleted)
 
-  let cta = { label: '오늘의 마음 확인하기', onClick: onStartCheckin }
+  let cta = { label: '오늘의 미션 만들기', onClick: onStartCheckin }
   if (data.todayCheckinExists && remaining.length > 0) {
     cta = { label: '오늘의 미션 보기', onClick: onGoMissions }
   } else if (allDone) {
