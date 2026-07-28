@@ -156,7 +156,6 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, sig
   const missionsForDate = (date) => data.allMissions.filter((m) => m.is_completed && m.created_date === date)
   const journalForDate = (date) => data.reflections.find((r) => r.date === date)?.content ?? null
   const hasDataOn = (date) => missionsForDate(date).length > 0 || Boolean(journalForDate(date))
-  const wasMissionCreatedOn = (date) => data.allMissions.some((m) => m.created_date === date)
 
   const handlePointerDown = (e) => {
     dragRef.current = { dragging: true, moved: false, startX: e.clientX, startScroll: sliderRef.current.scrollLeft }
@@ -259,7 +258,6 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, sig
                   className={`flex shrink-0 flex-col items-center gap-1 ${isBeforeSignup ? 'opacity-40' : ''}`}
                 >
                   <span className="text-[10px] font-medium text-ink-faint">{dow}</span>
-                  <span className={`h-1.5 w-1.5 rounded-full ${wasMissionCreatedOn(date) ? 'day-dot--attempted' : 'bg-transparent'}`} />
                   <span
                     className={`flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-medium ${
                       isToday ? 'bg-ink text-surface' : 'text-ink-muted'
@@ -267,7 +265,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, sig
                   >
                     {day}
                   </span>
-                  <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(date) ? 'day-dot--active' : 'bg-transparent'}`} />
+                  <span className={`h-1.5 w-1.5 rounded-full ${hasDataOn(date) ? 'day-dot--active' : 'day-dot--empty'}`} />
                 </button>
               )
             })}
