@@ -13,14 +13,18 @@ export default function TextField({
   autoComplete,
   inputMode,
   rightSlot,
+  fieldClassName = 'bg-surface-alt',
+  labelHidden = false,
 }) {
   const Component = multiline ? 'textarea' : 'input'
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-[13px] font-medium text-ink-muted">
-        {label}
-      </label>
-      <div className="flex items-center gap-2 rounded-xl bg-surface-alt px-4 py-3">
+      {label && (
+        <label htmlFor={id} className={labelHidden ? 'sr-only' : 'mb-1.5 block text-[13px] font-medium text-ink-muted'}>
+          {label}
+        </label>
+      )}
+      <div className={`flex items-center gap-2 rounded-xl px-4 py-3 ${fieldClassName}`}>
         <Component
           id={id}
           type={multiline ? undefined : type}

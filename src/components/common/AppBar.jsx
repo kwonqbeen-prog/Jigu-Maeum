@@ -5,7 +5,7 @@ import Icon from '../Icon'
 // variant="large": 마음지구/미션/마음기록 3개 탭 루트 화면 전용(뒤로가기 없는 화면).
 // 타이틀 21px·상단 패딩 34px·액션 아이콘 24px로 확대. 디테일 화면(leading=back/close)은
 // 기본값(15px, h-14)을 그대로 쓴다
-export default function AppBar({ title, leading = 'none', onLeadingClick, actions = [], variant = 'default' }) {
+export default function AppBar({ title, leading = 'none', onLeadingClick, actions = [], variant = 'default', transparent = false }) {
   const [scrolled, setScrolled] = useState(false)
   const isLarge = variant === 'large'
 
@@ -17,9 +17,9 @@ export default function AppBar({ title, leading = 'none', onLeadingClick, action
 
   return (
     <header
-      className={`sticky top-0 z-20 flex items-center justify-between bg-surface px-4 transition-shadow ${
+      className={`sticky top-0 z-20 flex items-center justify-between px-4 transition-shadow ${transparent ? '' : 'bg-surface'} ${
         isLarge ? 'pb-3 pt-[34px] lg:pt-6' : 'h-14'
-      } ${scrolled ? 'shadow-[0_1px_0_var(--color-line)]' : ''}`}
+      } ${scrolled && !transparent ? 'shadow-[0_1px_0_var(--color-line)]' : ''}`}
     >
       <div className="flex w-11 items-center">
         {leading === 'back' && (

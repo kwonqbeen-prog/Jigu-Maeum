@@ -11,6 +11,7 @@ import PrimaryButton from '../../components/common/PrimaryButton'
 export default function NicknameScreen({ auth, onNext, onBack, showStepProgress = true }) {
   const [displayName, setDisplayName] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [showGreeting, setShowGreeting] = useState(false)
 
   const trimmed = displayName.trim()
   const isValid = trimmed.length >= 1 && trimmed.length <= 12
@@ -20,34 +21,53 @@ export default function NicknameScreen({ auth, onNext, onBack, showStepProgress 
     if (!isValid) return
     setSubmitting(true)
     const { error } = await auth.updateDisplayName(trimmed)
-    setSubmitting(false)
-    if (!error) onNext()
+    if (error) {
+      setSubmitting(false)
+      return
+    }
+    setShowGreeting(true)
+    setTimeout(onNext, 1200)
   }
 
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
       <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[480px] lg:flex-none">
-        <AppBar title="" leading="back" onLeadingClick={onBack} />
+        <AppBar title="" leading="back" onLeadingClick={onBack} transparent />
         <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-6 pb-6 lg:flex-none">
           {showStepProgress && <StepProgress current={2} total={5} />}
-          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">뭐라고 부르면 될까요?</h1>
+          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">뭐라고 불러드리면 좋을까요?</h1>
+          {showStepProgress && (
+            <p className="mt-2 text-[13px] text-ink-muted">닉네임은 설정-계정 정보에서 언제든지 바꿀 수 있어요.</p>
+          )}
           <div className="mt-6">
             <TextField
               id="nickname"
-              label="닉네임"
+              label="닉네임을 입력해 주세요."
+              labelHidden
+              placeholder="닉네임을 입력해 주세요."
               value={displayName}
               onChange={(v) => setDisplayName(v.slice(0, 12))}
               maxLength={12}
               counter={`${trimmed.length}/12`}
+              fieldClassName="bg-white"
             />
           </div>
-          {trimmed && <p className="mt-3 text-[15px] text-ink-muted">안녕하세요, <span className="font-medium text-ink">{trimmed}</span>님.</p>}
           {auth.authError && <p className="mt-3 text-[13px] font-medium text-danger">{auth.authError}</p>}
           <div className="mt-auto pt-8">
             <PrimaryButton type="submit" label="이 이름으로 시작하기" loading={submitting} disabled={!isValid} />
           </div>
         </form>
       </div>
+
+      {showGreeting && (
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center px-6">
+          <div className="animate-pop-in rounded-2xl bg-ink px-6 py-4 text-center shadow-lg">
+            <p className="text-[16px] font-medium text-surface">
+              안녕하세요, <span className="font-semibold">{trimmed}</span>님!
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

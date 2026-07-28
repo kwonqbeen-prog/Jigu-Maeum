@@ -26,11 +26,11 @@ export default function ThemeModeScreen({ onNext, onBack }) {
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
       <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[480px] lg:flex-none">
-        <AppBar title="" leading="back" onLeadingClick={onBack} />
+        <AppBar title="" leading="back" onLeadingClick={onBack} transparent />
         <div className="flex flex-1 flex-col px-6 pb-6 lg:flex-none">
           <StepProgress current={1} total={5} />
-          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">어떤 화면이 편하세요?</h1>
-          <p className="mt-2 text-[13px] text-ink-muted">나중에 설정에서 바꿀 수 있어요.</p>
+          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">원하시는 화면 모드를 선택해 주세요.</h1>
+          <p className="mt-2 text-[13px] text-ink-muted">화면 모드는 설정-화면 및 접근성에서 언제든지 바꿀 수 있어요.</p>
 
           <div role="radiogroup" aria-label="화면 모드" className="mt-6 grid grid-cols-2 gap-3">
             {CHOICES.map((choice) => {

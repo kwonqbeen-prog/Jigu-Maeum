@@ -16,8 +16,6 @@ export default function WelcomeScreen({ onNext }) {
           </h1>
           <p className="text-[13px] leading-relaxed text-ink-muted">
             당신의 여정을 시작하는 데 필요한 것들을 준비했어요.
-            <br />
-            지금 설정하는 내용들은 언제든 바꿀 수 있으니, 편하게 말씀해주세요.
           </p>
         </div>
         <div className="pt-8">

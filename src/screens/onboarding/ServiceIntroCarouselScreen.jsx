@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import PrimaryButton from '../../components/common/PrimaryButton'
+import SparkleStar from '../../components/common/SparkleStar'
 
 // 가입 전 서비스 소개 4장 캐러셀 — 오브 4색 중 옐로우를 뺀 스카이블루/라벤더/핑크만 사용,
 // 슬라이드마다 원 위치만 바꿔서 배리에이션을 만든다(--gradient-landing-wash 지역 override).
@@ -90,11 +91,19 @@ export default function ServiceIntroCarouselScreen({ onComplete }) {
       >
         <span className="sr-only">화면 오른쪽을 누르면 다음, 왼쪽을 누르면 이전 슬라이드로 이동해요</span>
         <div
-          className="flex flex-1 transition-transform duration-300 ease-out"
+          className="flex flex-1 transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${index * 100}%)` }}
         >
           {SLIDES.map((s, i) => (
-            <div key={i} className="flex w-full shrink-0 flex-col items-center justify-center px-8 text-center">
+            <div
+              key={i}
+              className="flex w-full shrink-0 flex-col items-center justify-center px-8 text-center transition-opacity duration-500 ease-in-out"
+              style={{ opacity: i === index ? 1 : 0.25 }}
+            >
+              <SparkleStar
+                className="mb-4"
+                style={{ width: 36, height: 36, color: '#fff', opacity: 'var(--star-opacity)', filter: 'blur(1px)' }}
+              />
               <h1 className="text-[24px] font-medium leading-snug text-ink">
                 <TextLines lines={s.headline} />
               </h1>

@@ -4,7 +4,7 @@ import ChipGroup from '../../components/common/ChipGroup'
 import PrimaryButton from '../../components/common/PrimaryButton'
 import Icon from '../../components/Icon'
 import { useToast } from '../../contexts/ToastContext'
-import { COPING_STYLES, SOCIAL_PREFERENCES, INTERESTS, MAX_INTERESTS } from '../../data/constants'
+import { COPING_STYLES, SOCIAL_PREFERENCES, INTERESTS } from '../../data/constants'
 import { getUserMemories, deleteUserMemory } from '../../data/storage'
 
 // S-63 · 사용자 프로필 수정 (명세 7.3, 3.5)
@@ -46,21 +46,12 @@ export default function ProfileEditScreen({ profile, onBack, onSave }) {
           <ChipGroup items={COPING_STYLES} mode="single" value={copingStyle} onChange={setCopingStyle} />
         </section>
         <section>
-          <p className="mb-2 text-[13px] font-medium text-ink-muted">다른 사람과 함께하는 활동은 어떠세요?</p>
+          <p className="mb-2 text-[13px] font-medium text-ink-muted">다른 사람과 함께하는 것과 혼자만의 시간, 어느 쪽이 더 편하세요?</p>
           <ChipGroup items={SOCIAL_PREFERENCES} mode="single" value={socialPreference} onChange={setSocialPreference} />
         </section>
         <section>
-          <p className="mb-2 text-[13px] font-medium text-ink-muted">어떤 쪽이 더 마음이 가세요? (1~3개)</p>
-          <ChipGroup
-            items={INTERESTS}
-            mode="multi"
-            value={interests}
-            maxSelected={MAX_INTERESTS}
-            onChange={(next, meta) => {
-              setInterests(next)
-              if (meta?.limitReached) showToast('3개까지 고를 수 있어요')
-            }}
-          />
+          <p className="mb-2 text-[13px] font-medium text-ink-muted">어떤 기후 문제에 관심이 있나요?</p>
+          <ChipGroup items={INTERESTS} mode="multi" value={interests} onChange={setInterests} />
         </section>
 
         <section>

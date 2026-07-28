@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import Icon from '../components/Icon'
 import TextField from '../components/common/TextField'
 import PrimaryButton from '../components/common/PrimaryButton'
@@ -15,6 +15,7 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
   const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [signupDone, setSignupDone] = useState(false)
+  const [switchedFromDuplicate, setSwitchedFromDuplicate] = useState(false)
 
   const passwordTooShort = mode === 'signup' && password.length > 0 && password.length < 8
   const passwordMismatch = mode === 'signup' && passwordConfirm.length > 0 && password !== passwordConfirm
@@ -26,6 +27,7 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
   const switchMode = (next) => {
     setMode(next)
     setSignupDone(false)
+    setSwitchedFromDuplicate(false)
     auth.clearAuthError()
   }
 
@@ -34,6 +36,7 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
     if (!canSubmit) return
     setSubmitting(true)
     setSignupDone(false)
+    setSwitchedFromDuplicate(false)
     if (mode === 'login') {
       await auth.signInWithEmail(email, password)
     } else {
@@ -46,19 +49,26 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
   }
 
   const isAlreadyRegistered = /already registered|user already exists/i.test(auth.authError ?? '')
-  if (isAlreadyRegistered && mode === 'signup') {
-    // 하단에 안내와 함께 자동으로 로그인 모드로 전환
-  }
+
+  // 이미 가입된 이메일로 가입을 시도하면 안내와 함께 로그인 모드로 자동 전환한다.
+  // 전환 시 auth.authError를 지우므로, 안내 문구는 별도 상태(switchedFromDuplicate)로 유지한다.
+  useEffect(() => {
+    if (isAlreadyRegistered && mode === 'signup') {
+      setMode('login')
+      setSwitchedFromDuplicate(true)
+      auth.clearAuthError()
+    }
+  }, [isAlreadyRegistered, mode, auth])
 
   return (
     <div className="landing-wash pre-auth-light relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-surface px-6 py-10">
       <SparkleStar
         className="absolute"
-        style={{ top: '9%', right: '14%', width: 20, height: 20, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
+        style={{ top: '9%', right: '14%', width: 60, height: 60, color: '#fff', opacity: 'var(--star-opacity)', filter: 'blur(1px)' }}
       />
       <SparkleStar
         className="absolute"
-        style={{ bottom: '10%', left: '12%', width: 16, height: 16, color: 'var(--color-highlight)', opacity: 'var(--star-opacity)' }}
+        style={{ bottom: '10%', left: '12%', width: 48, height: 48, color: '#fff', opacity: 'var(--star-opacity)', filter: 'blur(1px)' }}
       />
 
       <div className="relative w-full max-w-xs">
@@ -129,14 +139,7 @@ export default function AuthScreen({ auth, initialMode = 'login', onForgotPasswo
               message={mode === 'login' ? '이메일 또는 비밀번호가 일치하지 않아요' : '가입을 완료하지 못했어요. 잠시 후 다시 시도해 주세요'}
             />
           )}
-          {isAlreadyRegistered && (
-            <InlineBanner
-              tone="warning"
-              message="이미 가입된 이메일이에요. 로그인해 주세요"
-              actionLabel="로그인하기"
-              onAction={() => switchMode('login')}
-            />
-          )}
+          {switchedFromDuplicate && <InlineBanner tone="warning" message="이미 가입된 이메일이에요. 로그인해 주세요" />}
           {signupDone && <InlineBanner tone="warning" message="가입 확인 메일을 보냈어요. 메일함을 확인한 뒤 로그인해주세요." />}
 
           <PrimaryButton

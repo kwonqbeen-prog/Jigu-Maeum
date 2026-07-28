@@ -31,9 +31,9 @@ export const COPING_STYLES = [
 ]
 
 export const SOCIAL_PREFERENCES = [
-  { value: 'like', label: '좋아요' },
-  { value: 'neutral', label: '상황에 따라요' },
-  { value: 'avoid', label: '부담스러워요' },
+  { value: 'like', label: '함께 하는 게 좋아요' },
+  { value: 'neutral', label: '상황에 따라서요' },
+  { value: 'avoid', label: '혼자 있는 게 편해요' },
 ]
 
 export const INTERESTS = [
