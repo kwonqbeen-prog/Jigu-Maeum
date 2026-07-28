@@ -48,7 +48,7 @@ function buildSteps() {
 }
 
 export default function CoachmarkTour({ run, onFinish }) {
-  const handleCallback = (data) => {
+  const handleTourEvent = (data) => {
     if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
       onFinish()
     }
@@ -60,11 +60,11 @@ export default function CoachmarkTour({ run, onFinish }) {
       steps={buildSteps()}
       continuous
       scrollToFirstStep
-      callback={handleCallback}
+      onEvent={handleTourEvent}
       tooltipComponent={CoachmarkTooltip}
       locale={{
         back: '이전',
-        close: '닫기',
+        close: '나가기',
         last: '완료',
         next: '다음',
         nextWithProgress: '다음 ({current}/{total})',
@@ -76,6 +76,7 @@ export default function CoachmarkTour({ run, onFinish }) {
         arrowSpacing: 32,
         showProgress: true,
         overlayClickAction: 'disabled',
+        closeButtonAction: 'skip',
       }}
       styles={{
         options: {

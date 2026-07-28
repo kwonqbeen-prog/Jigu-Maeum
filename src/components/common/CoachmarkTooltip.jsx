@@ -14,7 +14,7 @@ export default function CoachmarkTooltip({ backProps, closeProps, index, isLastS
       <div className="flex items-start justify-between gap-3">
         <h4 className="text-[16px] font-semibold leading-snug text-ink">{step.title}</h4>
         <button {...closeProps} type="button" className="-mr-1 -mt-1 flex h-7 w-7 shrink-0 items-center justify-center">
-          <Icon name="close" className="text-ink" />
+          <Icon name="logout" className="text-ink" />
         </button>
       </div>
       <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">{step.content}</p>
