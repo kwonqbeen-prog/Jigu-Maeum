@@ -14,7 +14,7 @@
     <script>
       (function () {
         try {
-          var raw = JSON.parse(localStorage.getItem('climatemood:display-settings') || 'null') || {};
+          var raw = JSON.parse(localStorage.getItem('jigu-maeum:display-settings') || 'null') || {};
           var theme = raw.theme || 'system';
           if (theme === 'system') {
             theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

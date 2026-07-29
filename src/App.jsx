@@ -32,7 +32,7 @@ import CoachmarkTour from './components/common/CoachmarkTour'
 import Sidebar from './components/common/Sidebar'
 import { markOnboardingCompleted, markCoachmarkSeen, getTodayIncompleteMissionCount, hasNewRecordsSince } from './data/storage'
 
-const RECORDS_LAST_SEEN_KEY = 'climatemood:records-last-seen-at'
+const RECORDS_LAST_SEEN_KEY = 'jigu-maeum:records-last-seen-at'
 
 function AuthenticatedApp({ auth }) {
   const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile, save: saveProfile } = useProfile(auth.user.id)

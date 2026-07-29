@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-const STORAGE_KEY = 'climatemood:display-settings'
+const STORAGE_KEY = 'jigu-maeum:display-settings'
 
 export const THEME_OPTIONS = ['light', 'dark', 'system', 'high-contrast']
 // 화면설계서 §5-1 / §7.1: 없음 / 적록 1형(protanopia) / 적록 2형(deuteranopia) / 청황형(tritanopia)
