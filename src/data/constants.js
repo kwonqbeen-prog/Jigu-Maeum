@@ -10,9 +10,9 @@ export const EMOTION_TYPES = [
 ]
 
 export const ENERGY_LEVELS = [
-  { value: 'low', label: '조금만요', hint: '오늘은 최소한만 하고 싶어요', note: '아주 가벼운 미션 위주 (1~3분)' },
-  { value: 'mid', label: '적당히요', hint: '무리 없는 선에서 해볼게요', note: '보통 (5~15분)' },
-  { value: 'high', label: '좀 더요', hint: '오늘은 해볼 마음이 있어요', note: '도전적인 것 1개 포함 (15~30분)' },
+  { value: 'low', label: '가볍게 시도해 볼래요.', hint: '미션을 1개 만들어요.', note: '아주 가벼운 미션 위주 (1~3분)' },
+  { value: 'mid', label: '꽤 해볼 수 있을 것 같아요.', hint: '미션을 3개 만들어요.', note: '보통 (5~15분)' },
+  { value: 'high', label: '의욕이 넘쳐요!', hint: '미션을 5개 만들어요.', note: '도전적인 것 1개 포함 (15~30분)' },
 ]
 
 // 오늘의 의욕(에너지 레벨)에 따라 체크인 한 번에 받는 미션 개수를 다르게 준다.

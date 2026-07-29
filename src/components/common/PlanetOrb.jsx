@@ -40,7 +40,8 @@ const CONTINENT_CONFIG = {
   5: { color: 'var(--mind-planet-continent-5)', opacities: [0.85, 0.8, 0.8] },
 }
 
-// C-09 PlanetOrb — 장식 요소(업적)는 동시 최대 3개
+// C-09 PlanetOrb — 장식 요소(업적)는 동시 최대 1개(2026-07-29: 배지 여러 개가 겹쳐 보인다는
+// 피드백으로 3개→1개로 축소, 가장 먼저 딴 업적만 보여준다)
 export default function PlanetOrb({ totalCompleted = 0, decorations = [], size = 'large', expression = 'default', onClick }) {
   const { stage, name } = getPlanetStage(totalCompleted)
   // 0단계("막 태어난 지구")는 아직 아무것도 없는 작은 크기로 표시
@@ -79,7 +80,7 @@ export default function PlanetOrb({ totalCompleted = 0, decorations = [], size =
           </div>
           {showDetail && <div className={`mind-planet__eyes mind-planet__eyes--${expression}`} aria-hidden="true" />}
         </div>
-        {decorations.slice(0, 3).map((deco, i) => (
+        {decorations.slice(0, 1).map((deco, i) => (
           <span
             key={deco.code ?? i}
             className="absolute flex h-7 w-7 items-center justify-center rounded-full bg-surface-alt"

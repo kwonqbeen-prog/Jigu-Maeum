@@ -251,7 +251,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   // step 1~4
   const stepConfig = {
     1: {
-      headline: '지금 마음이 어느 쪽에 가깝나요?',
+      headline: '지금 기후 위기를 떠올리면 어떤 마음이 드나요?',
       sub: '가장 가까운 하나만 골라주세요.',
       body: (
         <ChipGroup items={EMOTION_TYPES} mode="single" value={checkin.emotion_type} onChange={(v) => setCheckin((c) => ({ ...c, emotion_type: v }))} />
@@ -260,7 +260,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
       onNext: () => goNext({ emotion_type: checkin.emotion_type }),
     },
     2: {
-      headline: '오늘은 얼마나 해볼 수 있을 것 같아요?',
+      headline: '오늘의 도전 에너지는 얼마나 있나요?',
       sub: '미션 난이도를 맞추는 데만 써요.',
       body: (
         <ChipGroup items={ENERGY_LEVELS} mode="single" value={checkin.energy_level} onChange={(v) => setCheckin((c) => ({ ...c, energy_level: v }))} />
@@ -269,8 +269,8 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
       onNext: () => goNext({ energy_level: checkin.energy_level }),
     },
     3: {
-      headline: '지금 어디에 계세요?',
-      sub: '지금 하기 어려운 미션을 걸러내는 데 써요.',
+      headline: '오늘 미션은 어떤 장소에서 해볼까요?',
+      sub: '선택한 장소에 딱 맞는 활동을 추천해 드릴게요.',
       body: (
         <ChipGroup items={PLACES} mode="single" value={checkin.context_place} onChange={(v) => setCheckin((c) => ({ ...c, context_place: v }))} />
       ),
@@ -278,17 +278,16 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
       onNext: () => goNext({ context_place: checkin.context_place }),
     },
     4: {
-      headline: '더 알려주고 싶은 게 있나요?',
-      sub: '안 쓰셔도 괜찮아요. (선택)',
+      headline: '저에게 더 알려주고 싶은 것이 있나요?',
+      sub: '안 쓰고 넘어가셔도 괜찮아요. (선택)',
       body: (
         <TextField
           id="free-text"
-          label="자유 입력"
           multiline
           value={freeText}
           onChange={(v) => setFreeText(v.slice(0, 200))}
           maxLength={200}
-          placeholder="예: 오늘 저녁에 약속이 있어요 / 뉴스 보고 마음이 안 좋았어요"
+          placeholder={'오늘 있었던 일, 기후 위기에 대해 들었던 생각 등을 자유롭게 말씀해 주세요.\n예: 오늘 저녁에 약속이 있어요 / 뉴스 보고 마음이 안 좋았어요'}
           counter={`${freeText.length} / 200`}
         />
       ),

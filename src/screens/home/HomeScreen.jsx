@@ -166,7 +166,7 @@ export default function HomeScreen({ isActive = true, justOnboarded = false, sig
         : { label: '미션 더 둘러보기', onClick: onOpenArchive }
   }
 
-  const decorations = data.achievements.slice(0, 3).map((code) => ({
+  const decorations = data.achievements.slice(0, 1).map((code) => ({
     code,
     icon: 'star',
   }))
