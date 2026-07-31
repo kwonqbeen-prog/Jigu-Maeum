@@ -214,7 +214,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
     return (
       <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
         <div className="flex w-full flex-1 flex-col px-6 py-6 lg:mx-auto lg:max-w-[480px] lg:flex-none lg:py-12">
-          <AppBar title="" leading="close" onLeadingClick={() => setShowConfirmClose(true)} />
+          <AppBar title="" leading="close" onLeadingClick={() => setShowConfirmClose(true)} transparent />
           <h1 className="mt-2 text-[20px] font-medium leading-snug text-ink">
             {profile?.displayName ? `${profile.displayName}님, ` : ''}오늘은 이렇게 해보면 어떨까요?
           </h1>
