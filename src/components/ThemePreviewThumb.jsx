@@ -1,3 +1,5 @@
+import Icon from './Icon'
+
 // 라이트/다크/고대비 3개를 동시에 보여주는 미리보기라 CSS 변수(현재 테마 값만 읽힘)를
 // 못 쓰고 값을 하드코딩했다. index.css의 --color-surface/--color-accent 등을 바꿀 때는
 // 여기도 같은 값으로 맞춰줘야 한다.
@@ -15,15 +17,8 @@ export default function ThemePreviewThumb({ variant }) {
         style={{ background: 'linear-gradient(135deg, #ffffff 50%, #121212 50%)' }}
         aria-hidden="true"
       >
-        <span className="material-symbols-rounded absolute left-1.5 top-1.5 text-[13px]" style={{ color: '#26282b' }}>
-          light_mode
-        </span>
-        <span
-          className="material-symbols-rounded absolute bottom-1 right-1.5 text-[13px]"
-          style={{ color: '#e9eaeb' }}
-        >
-          dark_mode
-        </span>
+        <Icon name="light_mode" className="absolute left-1.5 top-1.5 text-[13px] text-[#26282b]" />
+        <Icon name="dark_mode" className="absolute bottom-1 right-1.5 text-[13px] text-[#e9eaeb]" />
       </div>
     )
   }
