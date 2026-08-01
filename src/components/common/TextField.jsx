@@ -35,7 +35,7 @@ export default function TextField({
           autoComplete={autoComplete}
           inputMode={inputMode}
           rows={multiline ? 3 : undefined}
-          className="w-full flex-1 resize-none bg-transparent text-[15px] text-ink placeholder:text-ink-faint focus:outline-none"
+          className="w-full flex-1 resize-none bg-transparent text-[16px] text-ink placeholder:text-ink-faint focus:outline-none"
         />
         {rightSlot}
       </div>

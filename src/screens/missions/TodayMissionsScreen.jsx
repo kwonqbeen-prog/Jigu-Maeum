@@ -152,7 +152,7 @@ export default function TodayMissionsScreen({ isActive = true, onOpenSettings, o
                 onChange={(e) => setJournalContent(e.target.value)}
                 placeholder="오늘 느낀 점을 자유롭게 적어보세요"
                 rows={4}
-                className="w-full resize-none rounded-2xl bg-surface-alt px-4 py-3 text-[14px] leading-relaxed text-ink placeholder:text-ink-faint focus:outline-none"
+                className="w-full resize-none rounded-2xl bg-surface-alt px-4 py-3 text-[16px] leading-relaxed text-ink placeholder:text-ink-faint focus:outline-none"
               />
               <p
                 className={`mt-1.5 flex items-center gap-1 text-[12px] font-medium text-ink-faint transition-opacity ${

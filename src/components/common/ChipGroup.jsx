@@ -1,8 +1,9 @@
 import ChoiceChip from './ChoiceChip'
 
 // C-05 ChipGroup — 힌트 있으면 1열, 없으면 2열 그리드
-export default function ChipGroup({ items, mode = 'single', value, onChange, maxSelected }) {
+export default function ChipGroup({ items, mode = 'single', value, onChange, maxSelected, layout = 'auto' }) {
   const hasHint = items.some((item) => item.hint)
+  const isList = layout === 'list' || (layout === 'auto' && hasHint)
   const selectedList = mode === 'multi' ? value ?? [] : null
 
   const isSelected = (itemValue) => (mode === 'multi' ? selectedList.includes(itemValue) : value === itemValue)
@@ -27,7 +28,7 @@ export default function ChipGroup({ items, mode = 'single', value, onChange, max
   return (
     <div
       role={mode === 'single' ? 'radiogroup' : 'group'}
-      className={hasHint ? 'flex flex-col gap-2' : 'grid grid-cols-2 gap-2'}
+      className={isList ? 'flex flex-col gap-2' : 'grid grid-cols-2 gap-2'}
     >
       {items.map((item) => (
         <ChoiceChip

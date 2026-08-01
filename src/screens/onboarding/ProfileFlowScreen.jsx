@@ -25,7 +25,7 @@ export default function ProfileFlowScreen({ onNext, onBack }) {
     },
     {
       headline: '다른 사람과 함께하는 것과 혼자만의 시간, 어느 쪽이 더 편하세요?',
-      body: <ChipGroup items={SOCIAL_PREFERENCES} mode="single" value={socialPreference} onChange={setSocialPreference} />,
+      body: <ChipGroup items={SOCIAL_PREFERENCES} mode="single" value={socialPreference} onChange={setSocialPreference} layout="list" />,
       valid: Boolean(socialPreference),
     },
     {

@@ -47,7 +47,7 @@ export default function ProfileEditScreen({ profile, onBack, onSave }) {
         </section>
         <section>
           <p className="mb-2 text-[13px] font-medium text-ink-muted">다른 사람과 함께하는 것과 혼자만의 시간, 어느 쪽이 더 편하세요?</p>
-          <ChipGroup items={SOCIAL_PREFERENCES} mode="single" value={socialPreference} onChange={setSocialPreference} />
+          <ChipGroup items={SOCIAL_PREFERENCES} mode="single" value={socialPreference} onChange={setSocialPreference} layout="list" />
         </section>
         <section>
           <p className="mb-2 text-[13px] font-medium text-ink-muted">어떤 기후 문제에 관심이 있나요?</p>
