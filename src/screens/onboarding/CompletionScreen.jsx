@@ -6,9 +6,9 @@ import GhostButton from '../../components/common/GhostButton'
 export default function CompletionScreen({ onStartTour, onSkipTour }) {
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
-      <div className="flex w-full flex-1 flex-col px-6 py-6 lg:mx-auto lg:max-w-[480px] lg:flex-none lg:py-12">
+      <div className="flex w-full flex-1 flex-col px-6 py-6 lg:mx-auto lg:max-w-[560px] lg:flex-none lg:px-10 lg:py-14">
         <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-          <h1 className="text-[22px] font-medium leading-snug text-ink">
+          <h1 className="text-[22px] font-medium leading-snug text-ink lg:text-[28px]">
             다 끝났어요!
             <br />
             이제 앱을 사용해 볼까요?

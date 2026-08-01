@@ -31,13 +31,13 @@ export default function NicknameScreen({ auth, onNext, onBack, showStepProgress 
 
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
-      <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[480px] lg:flex-none">
+      <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[560px] lg:flex-none">
         <AppBar title="" leading="back" onLeadingClick={onBack} transparent />
-        <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-6 pb-6 lg:flex-none">
+        <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-6 pb-6 lg:flex-none lg:px-10 lg:pb-10">
           {showStepProgress && <StepProgress current={2} total={5} />}
-          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">뭐라고 불러드리면 좋을까요?</h1>
+          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink lg:text-[28px]">뭐라고 불러드리면 좋을까요?</h1>
           {showStepProgress && (
-            <p className="mt-2 text-[13px] text-ink-muted">닉네임은 설정-계정 정보에서 언제든지 바꿀 수 있어요.</p>
+            <p className="mt-2 text-[13px] text-ink-muted lg:text-[14px]">닉네임은 설정-계정 정보에서 언제든지 바꿀 수 있어요.</p>
           )}
           <div className="mt-6">
             <TextField

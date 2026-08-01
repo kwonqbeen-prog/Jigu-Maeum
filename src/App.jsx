@@ -1,6 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import BottomTabBar from './components/common/BottomTabBar'
-import Icon from './components/Icon'
 import SplashScreen from './screens/SplashScreen'
 import LandingScreen from './screens/LandingScreen'
 import AuthScreen from './screens/AuthScreen'
@@ -15,6 +14,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider, useToast } from './contexts/ToastContext'
 import Sidebar from './components/common/Sidebar'
 import { markOnboardingCompleted, markCoachmarkSeen, getTodayIncompleteMissionCount, hasNewRecordsSince } from './data/storage'
+import { navigateWithTransition } from './lib/viewTransition'
 
 // 첫 진입/복귀 사용자가 매번 거치는 화면(위)은 즉시 로드하고, 온보딩·설정처럼
 // 세션당 한 번이거나 드물게 들어가는 화면(아래)은 지연 로드해 초기 JS 번들을 줄인다
@@ -36,12 +36,13 @@ const ServiceInfoScreen = lazy(() => import('./screens/settings/ServiceInfoScree
 const LogoutWithdrawDialog = lazy(() => import('./screens/settings/LogoutWithdrawDialog'))
 const CoachmarkTour = lazy(() => import('./components/common/CoachmarkTour'))
 
+// 지연 로드 화면 전환 중 잠깐 보이는 폴백. 원래 진행 아이콘 스피너가 있었으나,
+// Material Symbols 폰트가 아직 로드되기 전 타이밍에 걸리면 font-display: swap
+// 폴백으로 아이콘 리거처 문자열("progress_activity")이 그대로 텍스트로 노출된 채
+// 회전해 보이는 문제가 있어(SplashScreen과 동일한 사유) 제거함 — 청크 로드는
+// 대부분 순식간이라 빈 배경만으로 충분하다.
 function ScreenFallback() {
-  return (
-    <div className="flex min-h-svh items-center justify-center bg-surface">
-      <Icon name="progress_activity" className="animate-spin text-2xl text-ink-faint" />
-    </div>
-  )
+  return <div className="min-h-svh bg-surface" />
 }
 
 const RECORDS_LAST_SEEN_KEY = 'jigu-maeum:records-last-seen-at'
@@ -82,8 +83,21 @@ const PRE_AUTH_TITLES = {
 
 function AuthenticatedApp({ auth }) {
   const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile, save: saveProfile } = useProfile(auth.user.id)
-  const [screen, setScreen] = useState('splash')
-  const [activeTab, setActiveTab] = useState('planet')
+  const [screen, setScreenState] = useState('splash')
+  const [activeTab, setActiveTabState] = useState('planet')
+  // screen/activeTab 변경은 View Transitions API로 감싸 부드러운 화면 전환 효과를 준다.
+  // 두 상태를 함께 바꾸는 탭 이동(goToTab)은 한 트랜지션으로 묶어야 하므로 별도 헬퍼로 뺐다 —
+  // setScreen과 setActiveTab을 각각 따로 호출하면 두 번째 호출이 첫 번째 트랜지션을 스킵시켜버린다.
+  const setScreen = useCallback((next) => navigateWithTransition(() => setScreenState(next)), [])
+  const setActiveTab = useCallback((next) => navigateWithTransition(() => setActiveTabState(next)), [])
+  const goToTab = useCallback(
+    (tab) =>
+      navigateWithTransition(() => {
+        setScreenState('main')
+        setActiveTabState(tab)
+      }),
+    [],
+  )
   const [mountedTabs, setMountedTabs] = useState(() => new Set(['planet']))
   const [logoutWithdrawMode, setLogoutWithdrawMode] = useState(null)
   const bootstrappedRef = useRef(false)
@@ -204,10 +218,7 @@ function AuthenticatedApp({ auth }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileLoading])
 
-  const goHome = () => {
-    setScreen('main')
-    setActiveTab('planet')
-  }
+  const goHome = () => goToTab('planet')
   // 탭 전환 없이 main으로만 복귀 — 여러 탭에서 진입 가능한 화면(미션 보관함 등)의 뒤로가기용
   const goMain = () => setScreen('main')
 
@@ -302,14 +313,10 @@ function AuthenticatedApp({ auth }) {
       <CheckinFlowScreen
         profile={{ ...profile, displayName: auth.user?.user_metadata?.display_name }}
         onClose={goHome}
-        onGoToMissions={() => {
-          setScreen('main')
-          setActiveTab('missions')
-        }}
+        onGoToMissions={() => goToTab('missions')}
         onMissionsSaved={() => {
           showToast('미션을 담았어요')
-          setScreen('main')
-          setActiveTab('missions')
+          goToTab('missions')
         }}
       />
     )
@@ -327,10 +334,7 @@ function AuthenticatedApp({ auth }) {
     return (
       <Suspense fallback={<ScreenFallback />}>
         <HistoryScreen
-          onBack={() => {
-            setScreen('main')
-            setActiveTab('records')
-          }}
+          onBack={() => goToTab('records')}
           onStartCheckin={() => setScreen('checkin')}
         />
       </Suspense>
@@ -340,12 +344,7 @@ function AuthenticatedApp({ auth }) {
   if (screen === 'records-streak') {
     return (
       <Suspense fallback={<ScreenFallback />}>
-        <StreakCalendarScreen
-          onBack={() => {
-            setScreen('main')
-            setActiveTab('records')
-          }}
-        />
+        <StreakCalendarScreen onBack={() => goToTab('records')} />
       </Suspense>
     )
   }
@@ -495,7 +494,8 @@ function AuthenticatedApp({ auth }) {
 
 function AppInner({ auth }) {
   // 'landing' | 'carousel' | 'auth-login' | 'auth-signup' | 'reset-password'
-  const [preAuthScreen, setPreAuthScreen] = useState('landing')
+  const [preAuthScreen, setPreAuthScreenState] = useState('landing')
+  const setPreAuthScreen = useCallback((next) => navigateWithTransition(() => setPreAuthScreenState(next)), [])
   const wasLoadingRef = useRef(true)
   const [sessionRestored, setSessionRestored] = useState(false)
   const [welcomeDone, setWelcomeDone] = useState(false)

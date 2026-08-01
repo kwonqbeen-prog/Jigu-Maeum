@@ -25,14 +25,14 @@ export default function ThemeModeScreen({ onNext, onBack }) {
 
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
-      <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[480px] lg:flex-none">
+      <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[560px] lg:flex-none">
         <AppBar title="" leading="back" onLeadingClick={onBack} transparent />
-        <div className="flex flex-1 flex-col px-6 pb-6 lg:flex-none">
+        <div className="flex flex-1 flex-col px-6 pb-6 lg:flex-none lg:px-10 lg:pb-10">
           <StepProgress current={1} total={5} />
-          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">원하시는 화면 모드를 선택해 주세요.</h1>
-          <p className="mt-2 text-[13px] text-ink-muted">화면 모드는 설정-화면 및 접근성에서 언제든지 바꿀 수 있어요.</p>
+          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink lg:text-[28px]">원하시는 화면 모드를 선택해 주세요.</h1>
+          <p className="mt-2 text-[13px] text-ink-muted lg:text-[14px]">화면 모드는 설정-화면 및 접근성에서 언제든지 바꿀 수 있어요.</p>
 
-          <div role="radiogroup" aria-label="화면 모드" className="mt-6 grid grid-cols-2 gap-3">
+          <div role="radiogroup" aria-label="화면 모드" className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
             {CHOICES.map((choice) => {
               const checked = selected === choice.value
               return (

@@ -393,6 +393,41 @@
   scroll-behavior: auto !important;
 }
 
+/* 화면 전환(View Transitions API, viewTransition.js가 트리거) — 이전 화면은 살짝
+   가라앉으며 페이드아웃, 새 화면은 살짝 떠오르며 페이드인 되도록 커스텀한다. 기본
+   크로스페이드보다 은은한 방향감을 주되, 자극적이지 않도록 이동 거리는 최소화했다.
+   viewTransition.js가 data-motion='reduced'일 때는 아예 startViewTransition을
+   호출하지 않으므로, 아래 명시적 해제 규칙은 방어적 차원의 이중 안전장치다 — 위
+   [data-motion='reduced'] * 규칙은 ::view-transition-*이 ::before/::after가 아닌
+   별도 의사요소라 대상에 포함되지 않는다 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.32s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+::view-transition-old(root) {
+  animation-name: jm-screen-out;
+}
+::view-transition-new(root) {
+  animation-name: jm-screen-in;
+}
+@keyframes jm-screen-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+}
+@keyframes jm-screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+}
+[data-motion='reduced']::view-transition-old(root),
+[data-motion='reduced']::view-transition-new(root) {
+  animation: none !important;
+}
+
 /* 굵은 텍스트 */
 [data-bold-text='true'] body {
   font-weight: 500;

@@ -22,6 +22,7 @@ import {
 import { generateMissionsForCheckin } from '../../hooks/useMissionGeneration'
 import { pickFallbackMissions, defaultTypePlan } from '../../data/missionPool'
 import earthStage5 from '../../assets/planet-mascot/stage-5.svg'
+import { navigateWithTransition } from '../../lib/viewTransition'
 
 const GENERATING_MESSAGES = ['오늘의 미션을 준비하는 중', '지금 상황에서 할 수 있는 걸 찾는 중', '거의 다 됐어요']
 const MAX_RETRY = 2
@@ -38,19 +39,21 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
 
   useEffect(() => {
     getTodayCheckin().then((existing) => {
-      if (existing?.status === 'completed') {
-        setCheckin(existing)
-        setPhase('resume-completed')
-      } else if (existing?.status === 'draft') {
-        setCheckin(existing)
-        setStep(existing.step ?? 1)
-        setFreeText(existing.free_text ?? '')
-        setPhase('resume-draft')
-      } else {
-        setCheckin({ emotion_type: null, energy_level: null, context_place: null })
-        setPhase('step')
-        setStep(1)
-      }
+      navigateWithTransition(() => {
+        if (existing?.status === 'completed') {
+          setCheckin(existing)
+          setPhase('resume-completed')
+        } else if (existing?.status === 'draft') {
+          setCheckin(existing)
+          setStep(existing.step ?? 1)
+          setFreeText(existing.free_text ?? '')
+          setPhase('resume-draft')
+        } else {
+          setCheckin({ emotion_type: null, energy_level: null, context_place: null })
+          setPhase('step')
+          setStep(1)
+        }
+      })
     })
   }, [])
 
@@ -69,7 +72,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   const goNext = async (partial) => {
     if (step < 4) {
       await persistStep(partial, step + 1)
-      setStep((s) => s + 1)
+      navigateWithTransition(() => setStep((s) => s + 1))
     } else {
       submitCheckin(partial)
     }
@@ -78,8 +81,10 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   const submitCheckin = async (partial) => {
     const merged = { ...checkin, ...partial }
     if (detectSafetySignal(merged.free_text)) {
-      setCheckin(merged)
-      setShowSupport(true)
+      navigateWithTransition(() => {
+        setCheckin(merged)
+        setShowSupport(true)
+      })
       return
     }
     await runCompletion(merged)
@@ -92,14 +97,18 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   }
 
   const startGeneration = async (completedCheckin) => {
-    setPhase('generating')
-    setMsgIndex(0)
+    navigateWithTransition(() => {
+      setPhase('generating')
+      setMsgIndex(0)
+    })
     try {
       const result = await generateMissionsForCheckin(completedCheckin, profile)
-      setGenResult(result)
-      setPhase('result')
+      navigateWithTransition(() => {
+        setGenResult(result)
+        setPhase('result')
+      })
     } catch {
-      setPhase('gen-error')
+      navigateWithTransition(() => setPhase('gen-error'))
     }
   }
 
@@ -117,16 +126,20 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
 
   const handleDiscardDraft = async () => {
     if (checkin?.id) await discardCheckin(checkin.id)
-    setCheckin({ emotion_type: null, energy_level: null, context_place: null })
-    setStep(1)
-    setFreeText('')
-    setPhase('step')
+    navigateWithTransition(() => {
+      setCheckin({ emotion_type: null, energy_level: null, context_place: null })
+      setStep(1)
+      setFreeText('')
+      setPhase('step')
+    })
   }
 
   const handleResumeDraft = () => {
-    setStep(checkin.step ?? 1)
-    setFreeText(checkin.free_text ?? '')
-    setPhase('step')
+    navigateWithTransition(() => {
+      setStep(checkin.step ?? 1)
+      setFreeText(checkin.free_text ?? '')
+      setPhase('step')
+    })
   }
 
   if (phase === 'loading') {
@@ -170,7 +183,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
     return (
       <SupportScreen
         onConfirm={() => {
-          setShowSupport(false)
+          navigateWithTransition(() => setShowSupport(false))
           runCompletion(checkin)
         }}
       />
@@ -197,11 +210,13 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
             className="w-full"
             onClick={() => {
               const count = MISSION_COUNT_BY_ENERGY[checkin.energy_level] ?? 3
-              setGenResult({
-                missions: pickFallbackMissions(defaultTypePlan(count)).map((m) => ({ ...m, source: 'checkin' })),
-                bundleMessage: '지금 상황에서 바로 해볼 수 있는 미션으로 준비했어요.',
+              navigateWithTransition(() => {
+                setGenResult({
+                  missions: pickFallbackMissions(defaultTypePlan(count)).map((m) => ({ ...m, source: 'checkin' })),
+                  bundleMessage: '지금 상황에서 바로 해볼 수 있는 미션으로 준비했어요.',
+                })
+                setPhase('result')
               })
-              setPhase('result')
             }}
           />
         </div>
@@ -313,7 +328,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
         <div className="mt-6 flex-1 overflow-y-auto lg:flex-none">{stepConfig.body}</div>
         <div className="flex items-center justify-between pt-6">
           {step > 1 ? (
-            <GhostButton label="이전" onClick={() => setStep((s) => s - 1)} />
+            <GhostButton label="이전" onClick={() => navigateWithTransition(() => setStep((s) => s - 1))} />
           ) : (
             <span />
           )}

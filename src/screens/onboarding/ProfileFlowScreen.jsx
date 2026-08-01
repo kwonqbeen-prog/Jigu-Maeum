@@ -4,6 +4,7 @@ import StepProgress from '../../components/common/StepProgress'
 import ChipGroup from '../../components/common/ChipGroup'
 import PrimaryButton from '../../components/common/PrimaryButton'
 import { COPING_STYLES, SOCIAL_PREFERENCES, INTERESTS } from '../../data/constants'
+import { navigateWithTransition } from '../../lib/viewTransition'
 
 const STEP_REACTIONS = ['좋은 방법이네요.', '알려줘서 고마워요.', '멋져요. 거의 다 왔어요!']
 
@@ -43,32 +44,36 @@ export default function ProfileFlowScreen({ onNext, onBack }) {
       onBack()
       return
     }
-    setInternalStep((s) => s - 1)
+    navigateWithTransition(() => setInternalStep((s) => s - 1))
   }
 
   const handleNext = () => {
     setAdvancing(true)
     setReaction(STEP_REACTIONS[internalStep])
     setTimeout(() => {
-      setReaction(null)
-      setAdvancing(false)
       if (internalStep < steps.length - 1) {
-        setInternalStep((s) => s + 1)
+        navigateWithTransition(() => {
+          setReaction(null)
+          setAdvancing(false)
+          setInternalStep((s) => s + 1)
+        })
         return
       }
+      setReaction(null)
+      setAdvancing(false)
       onNext({ coping_style: copingStyle, social_preference: socialPreference, interests })
     }, 1200)
   }
 
   return (
     <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
-      <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[480px] lg:flex-none lg:py-2">
+      <div className="flex w-full flex-1 flex-col lg:mx-auto lg:max-w-[560px] lg:flex-none lg:py-2">
         <AppBar title="" leading="back" onLeadingClick={handleBack} transparent />
-        <div className="flex flex-1 flex-col px-6 pb-6 lg:flex-none">
+        <div className="flex flex-1 flex-col px-6 pb-6 lg:flex-none lg:px-10 lg:pb-10">
           <StepProgress current={3 + internalStep} total={5} />
-          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink">{step.headline}</h1>
-          {step.sub && <p className="mt-2 text-[13px] text-ink-muted">{step.sub}</p>}
-          <p className={`text-[13px] text-ink-muted ${step.sub ? 'mt-1' : 'mt-2'}`}>
+          <h1 className="mt-6 text-[24px] font-medium leading-snug text-ink lg:text-[28px]">{step.headline}</h1>
+          {step.sub && <p className="mt-2 text-[13px] text-ink-muted lg:text-[14px]">{step.sub}</p>}
+          <p className={`text-[13px] text-ink-muted lg:text-[14px] ${step.sub ? 'mt-1' : 'mt-2'}`}>
             이 내용은 설정-나의 프로필에서 언제든지 바꿀 수 있어요.
           </p>
           <div className="mt-6 flex-1 overflow-y-auto">{step.body}</div>
