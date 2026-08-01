@@ -298,7 +298,7 @@ export default function CheckinFlowScreen({ profile, onClose, onGoToMissions, on
   }[step]
 
   return (
-    <div className="flex min-h-svh flex-col bg-surface lg:justify-center">
+    <div className="pastel-wash flex min-h-svh flex-col bg-surface lg:justify-center">
       <div className="flex w-full flex-1 flex-col px-6 py-6 lg:mx-auto lg:max-w-[480px] lg:flex-none lg:py-12">
         <div className="flex items-center justify-between">
           <button type="button" aria-label="닫기" onClick={() => setShowConfirmClose(true)} className="flex h-11 w-11 items-center justify-center -ml-2">

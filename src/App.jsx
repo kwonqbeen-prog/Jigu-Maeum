@@ -1,38 +1,84 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import BottomTabBar from './components/common/BottomTabBar'
+import Icon from './components/Icon'
 import SplashScreen from './screens/SplashScreen'
 import LandingScreen from './screens/LandingScreen'
 import AuthScreen from './screens/AuthScreen'
-import ResetPasswordScreen from './screens/ResetPasswordScreen'
-import ServiceIntroCarouselScreen from './screens/onboarding/ServiceIntroCarouselScreen'
-import WelcomeScreen from './screens/onboarding/WelcomeScreen'
-import ThemeModeScreen from './screens/onboarding/ThemeModeScreen'
-import NicknameScreen from './screens/onboarding/NicknameScreen'
-import ProfileFlowScreen from './screens/onboarding/ProfileFlowScreen'
-import CompletionScreen from './screens/onboarding/CompletionScreen'
 import SupportScreen from './screens/SupportScreen'
 import HomeScreen from './screens/home/HomeScreen'
 import TodayMissionsScreen from './screens/missions/TodayMissionsScreen'
-import MissionArchiveScreen from './screens/missions/MissionArchiveScreen'
 import RecordsHomeScreen from './screens/records/RecordsHomeScreen'
-import HistoryScreen from './screens/records/HistoryScreen'
-import StreakCalendarScreen from './screens/records/StreakCalendarScreen'
 import CheckinFlowScreen from './screens/checkin/CheckinFlowScreen'
-import SettingsHomeScreen from './screens/settings/SettingsHomeScreen'
-import DisplayAccessibilityScreen from './screens/settings/DisplayAccessibilityScreen'
-import AccountScreen from './screens/settings/AccountScreen'
-import ProfileEditScreen from './screens/settings/ProfileEditScreen'
-import ServiceInfoScreen from './screens/settings/ServiceInfoScreen'
-import LogoutWithdrawDialog from './screens/settings/LogoutWithdrawDialog'
 import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider, useToast } from './contexts/ToastContext'
-import CoachmarkTour from './components/common/CoachmarkTour'
 import Sidebar from './components/common/Sidebar'
 import { markOnboardingCompleted, markCoachmarkSeen, getTodayIncompleteMissionCount, hasNewRecordsSince } from './data/storage'
 
+// 첫 진입/복귀 사용자가 매번 거치는 화면(위)은 즉시 로드하고, 온보딩·설정처럼
+// 세션당 한 번이거나 드물게 들어가는 화면(아래)은 지연 로드해 초기 JS 번들을 줄인다
+const ResetPasswordScreen = lazy(() => import('./screens/ResetPasswordScreen'))
+const ServiceIntroCarouselScreen = lazy(() => import('./screens/onboarding/ServiceIntroCarouselScreen'))
+const WelcomeScreen = lazy(() => import('./screens/onboarding/WelcomeScreen'))
+const ThemeModeScreen = lazy(() => import('./screens/onboarding/ThemeModeScreen'))
+const NicknameScreen = lazy(() => import('./screens/onboarding/NicknameScreen'))
+const ProfileFlowScreen = lazy(() => import('./screens/onboarding/ProfileFlowScreen'))
+const CompletionScreen = lazy(() => import('./screens/onboarding/CompletionScreen'))
+const MissionArchiveScreen = lazy(() => import('./screens/missions/MissionArchiveScreen'))
+const HistoryScreen = lazy(() => import('./screens/records/HistoryScreen'))
+const StreakCalendarScreen = lazy(() => import('./screens/records/StreakCalendarScreen'))
+const SettingsHomeScreen = lazy(() => import('./screens/settings/SettingsHomeScreen'))
+const DisplayAccessibilityScreen = lazy(() => import('./screens/settings/DisplayAccessibilityScreen'))
+const AccountScreen = lazy(() => import('./screens/settings/AccountScreen'))
+const ProfileEditScreen = lazy(() => import('./screens/settings/ProfileEditScreen'))
+const ServiceInfoScreen = lazy(() => import('./screens/settings/ServiceInfoScreen'))
+const LogoutWithdrawDialog = lazy(() => import('./screens/settings/LogoutWithdrawDialog'))
+const CoachmarkTour = lazy(() => import('./components/common/CoachmarkTour'))
+
+function ScreenFallback() {
+  return (
+    <div className="flex min-h-svh items-center justify-center bg-surface">
+      <Icon name="progress_activity" className="animate-spin text-2xl text-ink-faint" />
+    </div>
+  )
+}
+
 const RECORDS_LAST_SEEN_KEY = 'jigu-maeum:records-last-seen-at'
+
+const APP_TITLE = '지구 마음ㅣ기후 불안 케어 앱'
+
+const SCREEN_TITLES = {
+  'onb-welcome': '시작하기 · 지구 마음',
+  'onb-theme': '테마 선택 · 지구 마음',
+  'onb-nickname': '닉네임 설정 · 지구 마음',
+  'onb-profile': '프로필 설정 · 지구 마음',
+  'onb-complete': '가입 완료 · 지구 마음',
+  checkin: '오늘의 체크인 · 지구 마음',
+  archive: '미션 보관함 · 지구 마음',
+  history: '완료 히스토리 · 지구 마음',
+  'records-streak': '연속 실천 · 지구 마음',
+  'settings-home': '설정 · 지구 마음',
+  'settings-display': '화면·접근성 · 지구 마음',
+  'settings-account': '계정 · 지구 마음',
+  'settings-reset-password': '비밀번호 변경 · 지구 마음',
+  'settings-profile': '프로필 수정 · 지구 마음',
+  'settings-support': '도움말 · 지구 마음',
+  'settings-about': '서비스 정보 · 지구 마음',
+}
+
+const TAB_TITLES = {
+  planet: APP_TITLE,
+  missions: '미션 · 지구 마음',
+  records: '마음 기록 · 지구 마음',
+}
+
+const PRE_AUTH_TITLES = {
+  carousel: '서비스 소개 · 지구 마음',
+  'auth-login': '로그인 · 지구 마음',
+  'auth-signup': '회원가입 · 지구 마음',
+  'reset-password': '비밀번호 재설정 · 지구 마음',
+}
 
 function AuthenticatedApp({ auth }) {
   const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile, save: saveProfile } = useProfile(auth.user.id)
@@ -52,6 +98,10 @@ function AuthenticatedApp({ auth }) {
   const [justOnboarded, setJustOnboarded] = useState(false)
   const autoTourTriggeredRef = useRef(false)
   const showToast = useToast()
+
+  useEffect(() => {
+    document.title = screen === 'main' ? TAB_TITLES[activeTab] ?? APP_TITLE : SCREEN_TITLES[screen] ?? APP_TITLE
+  }, [screen, activeTab])
 
   // 최초 가입 후 홈 탭에 도착하면 코치마크 투어를 자동으로 한 번 띄운다
   useEffect(() => {
@@ -169,67 +219,81 @@ function AuthenticatedApp({ auth }) {
   }
 
   if (screen === 'onb-welcome') {
-    return <WelcomeScreen onNext={() => setScreen('onb-theme')} />
+    return (
+      <Suspense fallback={<ScreenFallback />}>
+        <WelcomeScreen onNext={() => setScreen('onb-theme')} />
+      </Suspense>
+    )
   }
 
   if (screen === 'onb-theme') {
-    return <ThemeModeScreen onNext={() => setScreen('onb-nickname')} onBack={() => setScreen('onb-welcome')} />
+    return (
+      <Suspense fallback={<ScreenFallback />}>
+        <ThemeModeScreen onNext={() => setScreen('onb-nickname')} onBack={() => setScreen('onb-welcome')} />
+      </Suspense>
+    )
   }
 
   if (screen === 'onb-nickname') {
     return (
-      <NicknameScreen
-        auth={auth}
-        onNext={() => setScreen('onb-profile')}
-        onBack={() => setScreen('onb-theme')}
-        showStepProgress={true}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        <NicknameScreen
+          auth={auth}
+          onNext={() => setScreen('onb-profile')}
+          onBack={() => setScreen('onb-theme')}
+          showStepProgress={true}
+        />
+      </Suspense>
     )
   }
 
   if (screen === 'onb-profile') {
     return (
-      <ProfileFlowScreen
-        onBack={() => setScreen('onb-nickname')}
-        onNext={async (data) => {
-          try {
-            await saveProfile(data)
-            setScreen('onb-complete')
-          } catch {
-            showToast('저장하지 못했어요. 다시 시도해 주세요')
-          }
-        }}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        <ProfileFlowScreen
+          onBack={() => setScreen('onb-nickname')}
+          onNext={async (data) => {
+            try {
+              await saveProfile(data)
+              setScreen('onb-complete')
+            } catch {
+              showToast('저장하지 못했어요. 다시 시도해 주세요')
+            }
+          }}
+        />
+      </Suspense>
     )
   }
 
   if (screen === 'onb-complete') {
     return (
-      <CompletionScreen
-        onStartTour={async () => {
-          try {
-            await markOnboardingCompleted()
-            await refreshProfile()
-            setJustOnboarded(true) // 홈 도착 시 마음 지구 오브가 웃는 눈으로 한 번 반겨준다
-            goHome()
-            setTourRun(true) // 홈 도착 후 코치마크 즉시 시작
-          } catch {
-            showToast('저장하지 못했어요. 다시 시도해 주세요')
-          }
-        }}
-        onSkipTour={async () => {
-          try {
-            await markOnboardingCompleted()
-            // 코치마크를 이미 본 것으로 표시해 autoTourTriggeredRef 자동 실행을 막는다
-            await markCoachmarkSeen()
-            await refreshProfile()
-            setJustOnboarded(true)
-            goHome()
-          } catch {
-            showToast('저장하지 못했어요. 다시 시도해 주세요')
-          }
-        }}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        <CompletionScreen
+          onStartTour={async () => {
+            try {
+              await markOnboardingCompleted()
+              await refreshProfile()
+              setJustOnboarded(true) // 홈 도착 시 마음 지구 오브가 웃는 눈으로 한 번 반겨준다
+              goHome()
+              setTourRun(true) // 홈 도착 후 코치마크 즉시 시작
+            } catch {
+              showToast('저장하지 못했어요. 다시 시도해 주세요')
+            }
+          }}
+          onSkipTour={async () => {
+            try {
+              await markOnboardingCompleted()
+              // 코치마크를 이미 본 것으로 표시해 autoTourTriggeredRef 자동 실행을 막는다
+              await markCoachmarkSeen()
+              await refreshProfile()
+              setJustOnboarded(true)
+              goHome()
+            } catch {
+              showToast('저장하지 못했어요. 다시 시도해 주세요')
+            }
+          }}
+        />
+      </Suspense>
     )
   }
 
@@ -252,35 +316,43 @@ function AuthenticatedApp({ auth }) {
   }
 
   if (screen === 'archive') {
-    return <MissionArchiveScreen onBack={goMain} onStartCheckin={() => setScreen('checkin')} />
+    return (
+      <Suspense fallback={<ScreenFallback />}>
+        <MissionArchiveScreen onBack={goMain} onStartCheckin={() => setScreen('checkin')} />
+      </Suspense>
+    )
   }
 
   if (screen === 'history') {
     return (
-      <HistoryScreen
-        onBack={() => {
-          setScreen('main')
-          setActiveTab('records')
-        }}
-        onStartCheckin={() => setScreen('checkin')}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        <HistoryScreen
+          onBack={() => {
+            setScreen('main')
+            setActiveTab('records')
+          }}
+          onStartCheckin={() => setScreen('checkin')}
+        />
+      </Suspense>
     )
   }
 
   if (screen === 'records-streak') {
     return (
-      <StreakCalendarScreen
-        onBack={() => {
-          setScreen('main')
-          setActiveTab('records')
-        }}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        <StreakCalendarScreen
+          onBack={() => {
+            setScreen('main')
+            setActiveTab('records')
+          }}
+        />
+      </Suspense>
     )
   }
 
   if (screen === 'settings-home') {
     return (
-      <>
+      <Suspense fallback={<ScreenFallback />}>
         <SettingsHomeScreen
           onBack={goHome}
           onOpenDisplay={() => setScreen('settings-display')}
@@ -300,37 +372,49 @@ function AuthenticatedApp({ auth }) {
             onClose={() => setLogoutWithdrawMode(null)}
           />
         )}
-      </>
+      </Suspense>
     )
   }
 
   if (screen === 'settings-display') {
-    return <DisplayAccessibilityScreen onBack={() => setScreen('settings-home')} />
+    return (
+      <Suspense fallback={<ScreenFallback />}>
+        <DisplayAccessibilityScreen onBack={() => setScreen('settings-home')} />
+      </Suspense>
+    )
   }
 
   if (screen === 'settings-account') {
     return (
-      <AccountScreen
-        auth={auth}
-        onBack={() => setScreen('settings-home')}
-        onChangePassword={() => setScreen('settings-reset-password')}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        <AccountScreen
+          auth={auth}
+          onBack={() => setScreen('settings-home')}
+          onChangePassword={() => setScreen('settings-reset-password')}
+        />
+      </Suspense>
     )
   }
 
   if (screen === 'settings-reset-password') {
-    return <ResetPasswordScreen auth={auth} onBack={() => setScreen('settings-account')} />
+    return (
+      <Suspense fallback={<ScreenFallback />}>
+        <ResetPasswordScreen auth={auth} onBack={() => setScreen('settings-account')} />
+      </Suspense>
+    )
   }
 
   if (screen === 'settings-profile') {
     return (
-      <ProfileEditScreen
-        profile={profile}
-        onBack={() => setScreen('settings-home')}
-        onSave={async (data) => {
-          await saveProfile(data)
-        }}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        <ProfileEditScreen
+          profile={profile}
+          onBack={() => setScreen('settings-home')}
+          onSave={async (data) => {
+            await saveProfile(data)
+          }}
+        />
+      </Suspense>
     )
   }
 
@@ -339,7 +423,11 @@ function AuthenticatedApp({ auth }) {
   }
 
   if (screen === 'settings-about') {
-    return <ServiceInfoScreen onBack={() => setScreen('settings-home')} />
+    return (
+      <Suspense fallback={<ScreenFallback />}>
+        <ServiceInfoScreen onBack={() => setScreen('settings-home')} />
+      </Suspense>
+    )
   }
 
   // screen === 'main'
@@ -398,7 +486,9 @@ function AuthenticatedApp({ auth }) {
         </div>
         <BottomTabBar active={activeTab} onChange={setActiveTab} badges={tabBadges} />
       </div>
-      <CoachmarkTour run={tourRun} onFinish={handleTourFinish} />
+      <Suspense fallback={null}>
+        <CoachmarkTour run={tourRun} onFinish={handleTourFinish} />
+      </Suspense>
     </div>
   )
 }
@@ -426,6 +516,11 @@ function AppInner({ auth }) {
     return () => clearTimeout(timer)
   }, [sessionRestored])
 
+  useEffect(() => {
+    if (auth.user) return
+    document.title = PRE_AUTH_TITLES[preAuthScreen] ?? APP_TITLE
+  }, [preAuthScreen, auth.user])
+
   if (auth.loading) {
     return <SplashScreen />
   }
@@ -441,9 +536,17 @@ function AppInner({ auth }) {
     // 이 클래스를 갖고 있어 중복되지만 무해하다
     let content
     if (preAuthScreen === 'reset-password') {
-      content = <ResetPasswordScreen auth={auth} onBack={() => setPreAuthScreen('auth-login')} />
+      content = (
+        <Suspense fallback={<ScreenFallback />}>
+          <ResetPasswordScreen auth={auth} onBack={() => setPreAuthScreen('auth-login')} />
+        </Suspense>
+      )
     } else if (preAuthScreen === 'carousel') {
-      content = <ServiceIntroCarouselScreen onComplete={() => setPreAuthScreen('auth-signup')} />
+      content = (
+        <Suspense fallback={<ScreenFallback />}>
+          <ServiceIntroCarouselScreen onComplete={() => setPreAuthScreen('auth-signup')} />
+        </Suspense>
+      )
     } else if (preAuthScreen === 'auth-login' || preAuthScreen === 'auth-signup') {
       content = (
         <AuthScreen

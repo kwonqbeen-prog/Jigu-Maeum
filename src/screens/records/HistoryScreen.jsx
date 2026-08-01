@@ -17,7 +17,18 @@ export default function HistoryScreen({ onBack, onStartCheckin }) {
     refresh()
   }, [])
 
-  if (missions === null) return null
+  if (missions === null) {
+    return (
+      <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-2xl">
+        <AppBar title="완료 히스토리" leading="back" onLeadingClick={onBack} />
+        <div className="space-y-2 px-4 py-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-16 animate-pulse rounded-2xl bg-surface-alt" />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   const handleToggle = async (mission) => {
     await toggleMissionComplete(mission)

@@ -1,4 +1,4 @@
-@import 'pretendard/dist/web/variable/pretendardvariable.css';
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 
 @tailwind base;
 @tailwind components;
@@ -63,8 +63,8 @@
   --color-surface-alt: #f8f9fa;
   --color-surface-sunken: #eef0f2;
   --color-ink: #26282b;
-  --color-ink-muted: #767b82;
-  --color-ink-faint: #b0b3b8;
+  --color-ink-muted: #6b6f76;
+  --color-ink-faint: #71747a;
   --color-line: #e4e6e9;
   --color-line-input: #c7cacf;
   /* 무채색(다크 그레이) 톤 — 구조적 강조는 순수 그레이 스케일만 사용, accent는 ink와 통일 */
@@ -180,8 +180,8 @@
   --color-surface-alt: #f8f9fa;
   --color-surface-sunken: #eef0f2;
   --color-ink: #26282b;
-  --color-ink-muted: #767b82;
-  --color-ink-faint: #b0b3b8;
+  --color-ink-muted: #6b6f76;
+  --color-ink-faint: #71747a;
   --color-line: #e4e6e9;
   --color-line-input: #c7cacf;
   --color-highlight: #5b5f66;

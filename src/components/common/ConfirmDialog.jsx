@@ -1,9 +1,33 @@
-﻿// C-15 ConfirmDialog — 파괴적 동작은 danger
+﻿import { useEffect, useRef } from 'react'
+
+// C-15 ConfirmDialog — 파괴적 동작은 danger
 export default function ConfirmDialog({ title, body, confirmLabel, cancelLabel = '취소', tone = 'default', onConfirm, onCancel }) {
+  const dialogRef = useRef(null)
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement
+    dialogRef.current?.focus()
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onCancel()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      previouslyFocused?.focus?.()
+    }
+  }, [onCancel])
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
       <button type="button" aria-label="취소" onClick={onCancel} className="absolute inset-0 bg-black/40" />
-      <div role="alertdialog" aria-modal="true" aria-label={title} className="relative w-full max-w-xs rounded-2xl bg-surface-alt p-5">
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        role="alertdialog"
+        aria-modal="true"
+        aria-label={title}
+        className="relative w-full max-w-xs rounded-2xl bg-surface-alt p-5 focus:outline-none"
+      >
         <h2 className="text-[16px] font-medium text-ink">{title}</h2>
         {body && <p className="mt-2 text-[13px] leading-relaxed text-ink-muted">{body}</p>}
         <div className="mt-5 flex gap-2">

@@ -3,6 +3,7 @@ import ConfirmDialog from '../../components/common/ConfirmDialog'
 import AppBar from '../../components/common/AppBar'
 import TextField from '../../components/common/TextField'
 import InlineBanner from '../../components/common/InlineBanner'
+import Icon from '../../components/Icon'
 import { deleteAccount } from '../../data/storage'
 
 // S-64D · 로그아웃 / 회원 탈퇴 (명세 7.4)
@@ -74,11 +75,12 @@ export default function LogoutWithdrawDialog({ mode, auth, onClose }) {
             type="button"
             disabled={!canWithdraw || processing}
             onClick={handleWithdraw}
-            className={`flex h-[52px] w-full items-center justify-center rounded-full text-[15px] font-medium ${
+            className={`flex h-[52px] w-full items-center justify-center gap-2 rounded-full text-[15px] font-medium ${
               !canWithdraw || processing ? 'bg-disabled text-disabled-ink' : 'bg-danger-soft text-danger'
             }`}
           >
-            {processing ? '탈퇴 처리 중...' : '탈퇴하기'}
+            {processing && <Icon name="progress_activity" className="animate-spin text-[18px]" />}
+            <span>탈퇴하기</span>
           </button>
         </div>
       </div>

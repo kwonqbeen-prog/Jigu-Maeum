@@ -43,9 +43,12 @@ export default function AppBar({ title, leading = 'none', onLeadingClick, action
           </button>
         )}
       </div>
-      <h1 className={`flex-1 truncate text-center font-medium text-ink ${isLarge ? 'text-[21px]' : 'text-[15px]'}`}>
-        {title}
-      </h1>
+      {title && (
+        <h1 className={`flex-1 truncate text-center font-medium text-ink ${isLarge ? 'text-[21px]' : 'text-[15px]'}`}>
+          {title}
+        </h1>
+      )}
+      {!title && <div className="flex-1" />}
       <div className="flex w-11 items-center justify-end gap-1">
         {actions.map((action) => (
           <button

@@ -86,7 +86,8 @@ export async function generateMissionsForCheckin(checkin, profile) {
       bundleMessage: result.bundle_message,
       usedFallback: false,
     }
-  } catch {
+  } catch (err) {
+    console.error('[useMissionGeneration] LLM 미션 생성 실패, fallback 사용:', err)
     const typePlan = shortfallTypePlan(recentTypeCounts, profile?.social_preference, missionCount)
     const missions = pickFallbackMissions(typePlan).map((m) => ({ ...m, source: 'checkin' }))
     return {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Icon from '../Icon'
 
 const NOTICE_ITEMS = [
@@ -10,11 +10,32 @@ const NOTICE_ITEMS = [
 // 가입 전 데이터 수집·이용에 대한 명시적 동의를 받는 다이얼로그
 export default function SignupConsentDialog({ onAgree, onCancel }) {
   const [agreed, setAgreed] = useState(false)
+  const dialogRef = useRef(null)
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement
+    dialogRef.current?.focus()
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onCancel()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      previouslyFocused?.focus?.()
+    }
+  }, [onCancel])
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
       <button type="button" aria-label="닫기" onClick={onCancel} className="absolute inset-0 bg-black/40" />
-      <div role="alertdialog" aria-modal="true" aria-label="데이터 수집 안내" className="relative w-full max-w-xs rounded-2xl bg-surface-alt p-5">
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        role="alertdialog"
+        aria-modal="true"
+        aria-label="데이터 수집 안내"
+        className="relative w-full max-w-xs rounded-2xl bg-surface-alt p-5 focus:outline-none"
+      >
         <h2 className="text-[16px] font-medium text-ink">시작하기 전에 알려드려요</h2>
         <ul className="mt-3 space-y-2 text-left">
           {NOTICE_ITEMS.map((item) => (

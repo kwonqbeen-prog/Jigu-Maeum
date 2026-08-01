@@ -34,7 +34,18 @@ export default function StreakCalendarScreen({ onBack }) {
     load()
   }, [])
 
-  if (!data) return null
+  if (!data) {
+    return (
+      <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-2xl">
+        <AppBar title="연속 실천" leading="back" onLeadingClick={onBack} />
+        <div className="grid grid-cols-7 gap-1.5 px-4 py-4">
+          {Array.from({ length: 28 }, (_, i) => (
+            <div key={i} className="aspect-square animate-pulse rounded-2xl bg-surface-alt" />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   const today = new Date()
   const year = today.getFullYear()

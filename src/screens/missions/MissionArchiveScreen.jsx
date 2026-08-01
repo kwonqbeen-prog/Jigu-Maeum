@@ -25,7 +25,18 @@ export default function MissionArchiveScreen({ onBack, onStartCheckin }) {
     refresh()
   }, [])
 
-  if (archive === null) return null
+  if (archive === null) {
+    return (
+      <div className="flex min-h-svh flex-col bg-surface lg:mx-auto lg:max-w-2xl">
+        <AppBar title="미션 보관함" leading="back" onLeadingClick={onBack} />
+        <div className="space-y-2 px-4 py-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-16 animate-pulse rounded-2xl bg-surface-alt" />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   const list = archive.filter((m) => (filter === 'completed' ? m.is_completed : !m.is_completed))
 
